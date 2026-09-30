@@ -156,7 +156,6 @@ test("corrupt save failure is visible without replacing authoritative state", as
   expect(after.tick).toBeGreaterThanOrEqual(beforeState.tick);
 });
 
-
 test("app-owned debug view surfaces admitted frame and persistence observations", async ({
   page,
 }) => {
