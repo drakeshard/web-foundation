@@ -32,7 +32,9 @@ describe("structured persistence failures", () => {
       error: { kind: "corrupt-data", operation: "decode" },
     });
 
-    expect(new SaveMigrationRegistry([]).migrate({ ...source, saveFormatVersion: 4 }, 3)).toMatchObject({
+    expect(
+      new SaveMigrationRegistry([]).migrate({ ...source, saveFormatVersion: 4 }, 3),
+    ).toMatchObject({
       ok: false,
       error: { kind: "unsupported-version", operation: "migrate" },
     });
