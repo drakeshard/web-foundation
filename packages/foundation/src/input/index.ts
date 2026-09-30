@@ -38,6 +38,14 @@ export type {
   ScreenPosition,
   WheelUnit,
 } from "./contracts.js";
+export {
+  type ContextActionOwner,
+  type ContextualActionTransition,
+  type InputContextActionRule,
+  type InputContextDefinition,
+  type InputContextId,
+  InputContextRouter,
+} from "./input-contexts.js";
 export { MonotonicInputSequence } from "./input-sequence.js";
 export {
   KeyboardBrowserAdapter,
