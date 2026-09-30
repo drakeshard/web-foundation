@@ -171,3 +171,19 @@ The probe includes an explicit corrupt-save fixture. Foundation reports the pers
 category, while application code keeps the current authoritative state unchanged. This validates
 the admitted persistence contracts without introducing a shared decoder or renderer-aware save
 format.
+
+
+## App-owned Phaser debug observations
+
+S05-08 keeps debug visualization entirely inside the renderer-probe application. The probe projects
+existing `ProbeSimulationFrame` values into a small debug view, including fixed-step count,
+interpolation alpha, clamped frame time, dropped-step count, and overrun state. These values come
+directly from the already-admitted `FixedStepDriver` result rather than a new diagnostics service.
+
+Persistence failures are projected from the existing `PersistenceResult` category and operation.
+The view retains the last observed failure for inspection but does not become persistence authority.
+Successful operations do not require a new timing hook, and S05-08 introduces no save/load timer,
+counter registry, ring buffer, telemetry API, or Foundation debug UI.
+
+The debug view is optional, app-local presentation code. Missing generic diagnostics APIs remain an
+intentional non-defect under the Sprint 04 admission decision.

@@ -156,6 +156,21 @@ test("corrupt save failure is visible without replacing authoritative state", as
   expect(after.tick).toBeGreaterThanOrEqual(beforeState.tick);
 });
 
+test("app-owned debug view surfaces admitted frame and persistence observations", async ({
+  page,
+}) => {
+  await expect(page.getByTestId("debug-frame")).toContainText('"droppedSteps":');
+  await expect(page.getByTestId("debug-frame")).toContainText('"overrun":');
+  await expect(page.getByTestId("debug-last-persistence-failure")).toHaveText("null");
+
+  await page.getByTestId("seed-corrupt-save").click();
+  await page.getByTestId("load-probe").click();
+
+  await expect(page.getByTestId("debug-last-persistence-failure")).toHaveText(
+    '{"kind":"corrupt-data","operation":"decode"}',
+  );
+});
+
 interface DomainState {
   readonly tick: number;
   readonly probe: { readonly position: { readonly x: number; readonly y: number } };
