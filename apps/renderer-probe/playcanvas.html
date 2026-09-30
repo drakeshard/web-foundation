@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Drakeshard PlayCanvas Renderer Probe</title>
+  <style>
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+      background: #111827;
+      color: #f9fafb;
+      font-family: sans-serif;
+    }
+
+    main {
+      display: grid;
+      gap: 1rem;
+      justify-items: start;
+      padding: 1rem;
+    }
+
+    #playcanvas-probe {
+      width: 640px;
+      height: 480px;
+    }
+
+    #playcanvas-probe canvas {
+      display: block;
+      width: 640px;
+      height: 480px;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>PlayCanvas Renderer Probe</h1>
+    <div id="playcanvas-probe"></div>
+    <output data-testid="playcanvas-probe-status">booting</output>
+    <pre data-testid="playcanvas-domain-state"></pre>
+    <button type="button" data-testid="playcanvas-rebuild">rebuild presentation</button>
+    <output data-testid="playcanvas-rebuild-count">0</output>
+  </main>
+  <script type="module" src="/src/playcanvas-main.ts"></script>
+</body>
+</html>

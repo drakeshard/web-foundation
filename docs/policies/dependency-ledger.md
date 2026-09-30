@@ -12,7 +12,10 @@ This ledger records the dependency set approved for the Web Foundation workspace
 | `@playwright/test` 1.63.0 | Development | Real-browser smoke and browser-integration tests | Apache-2.0 | None | Medium | Required for Chromium/Firefox/WebKit automation |
 | `@biomejs/biome` 2.5.14 | Development | Formatting and static lint checks | MIT / Apache-2.0 | None | Medium | Consolidates formatting and linting with a small tool surface |
 | `idb` 8.0.3 | Runtime (browser storage boundary) | Promise-based IndexedDB wrapper for durable save records | ISC | ~1.19 kB brotli per upstream package documentation; zero runtime dependencies | Low-Medium | Avoids duplicating IndexedDB request/transaction/error plumbing while keeping the wrapper internal to the browser adapter |
-| `phaser` 4.2.1 | Runtime (renderer-probe app only) | Concrete 2D renderer used to pressure-test Foundation boundaries through a real browser presentation stack | MIT | Large renderer/game-framework bundle in the private probe app only; not shipped by `@drakeshard/foundation` | Medium | Sprint 05 requires a real Phaser consumer; dependency remains app-local and has one runtime dependency (`eventemitter3` 5.0.4) |\n| `preact` 10.29.8 | Runtime (renderer-probe app only) | Small component runtime for the Sprint 05 UI bridge pressure test | MIT | Small UI runtime isolated to the private probe app; no Foundation package impact | Low | Provides the concrete UI consumer required by S05-06 without creating a shared UI package |\n| `@preact/signals` 2.11.2 | Runtime (renderer-probe app only) | UI-facing derived/transient signal state for the Preact probe UI | MIT | Small app-local state layer; one runtime dependency (`@preact/signals-core` 1.14.4) plus peer Preact | Low | Exercises the intended view-model/signal boundary while keeping simulation authority outside signals |
+| `phaser` 4.2.1 | Runtime (renderer-probe app only) | Concrete 2D renderer used to pressure-test Foundation boundaries through a real browser presentation stack | MIT | Large renderer/game-framework bundle in the private probe app only; not shipped by `@drakeshard/foundation` | Medium | Sprint 05 requires a real Phaser consumer; dependency remains app-local and has one runtime dependency (`eventemitter3` 5.0.4) |
+| `preact` 10.29.8 | Runtime (renderer-probe app only) | Small component runtime for the Sprint 05 UI bridge pressure test | MIT | Small UI runtime isolated to the private probe app; no Foundation package impact | Low | Provides the concrete UI consumer required by S05-06 without creating a shared UI package |
+| `@preact/signals` 2.11.2 | Runtime (renderer-probe app only) | UI-facing derived/transient signal state for the Preact probe UI | MIT | Small app-local state layer; one runtime dependency (`@preact/signals-core` 1.14.4) plus peer Preact | Low | Exercises the intended view-model/signal boundary while keeping simulation authority outside signals |
+| `playcanvas` 2.22.6 | Runtime (renderer-probe app only) | Concrete 3D renderer used to pressure-test the same Foundation/domain boundaries through a tactical camera stack | MIT | Large 3D engine bundle isolated to the private probe app; not shipped by `@drakeshard/foundation` | Medium | Sprint 06 requires a real second renderer consumer; PlayCanvas remains app-local and its runtime dependency surface is type-only packages (`@types/webxr` 0.5.24 and `@webgpu/types` 0.1.74) |
 
 ## Runtime dependencies
 
@@ -41,6 +44,16 @@ Maintenance/replacement review: both packages are actively maintained in the Pre
 Transitive dependency review: Preact has no required runtime dependencies. `@preact/signals` depends on `@preact/signals-core` ^1.14.4, resolved here as 1.14.4 (MIT), and peers on Preact. These packages require no install scripts or native binaries.
 
 Security/runtime review: the UI bridge renders local derived/transient state and emits app-local intentions. It receives no persistence, network, timing, RNG, or gameplay-state authority. Normal Dependency Review remains required for additions and upgrades.
+
+## PlayCanvas renderer-probe dependency
+
+`playcanvas` 2.22.6 is approved only for `apps/renderer-probe`. It is the concrete second renderer required by Sprint 06 and is not a Foundation dependency, export, shared renderer adapter, or package-extraction decision.
+
+Maintenance/replacement review: PlayCanvas 2.22.6 is an actively maintained MIT-licensed engine release. The integration is isolated behind app-local presentation code and consumes the same renderer-neutral toy domain, so renderer replacement does not change authoritative gameplay state.
+
+Transitive dependency review: PlayCanvas declares `@types/webxr` ^0.5.24 and `@webgpu/types` ^0.1.70, resolved here as 0.5.24 (MIT) and 0.1.74 (BSD-3-Clause). They provide type declarations; no install scripts or native binaries are introduced.
+
+Security/runtime review: PlayCanvas owns only browser presentation and scene objects in this probe. It receives no persistence authority, semantic command ownership, or authoritative gameplay-state role. Normal Dependency Review remains required for additions and upgrades.
 
 ## Review requirements
 

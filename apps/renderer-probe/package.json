@@ -11,7 +11,8 @@
   "dependencies": {
     "@preact/signals": "2.11.2",
     "phaser": "4.2.1",
-    "preact": "10.29.8"
+    "preact": "10.29.8",
+    "playcanvas": "2.22.6"
   },
   "devDependencies": {
     "@drakeshard/foundation": "workspace:*",
