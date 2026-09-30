@@ -137,14 +137,8 @@ describe("BrowserInputLifecycle", () => {
   });
 
   it("suspends while hidden and resumes without replaying old input", () => {
-    const {
-      visibilityTarget,
-      keyboardTarget,
-      pointerTarget,
-      keyboard,
-      pointer,
-      events,
-    } = createFixture();
+    const { visibilityTarget, keyboardTarget, pointerTarget, keyboard, pointer, events } =
+      createFixture();
 
     keyboardTarget.dispatch("keydown", keyEvent("KeyA"));
     pointerTarget.dispatch("pointerdown", pointerEvent(1, 0));
@@ -180,8 +174,7 @@ describe("BrowserInputLifecycle", () => {
   });
 
   it("requires focus to resume after blur and suppresses duplicate resets while suspended", () => {
-    const { focusTarget, visibilityTarget, keyboardTarget, lifecycle, events } =
-      createFixture();
+    const { focusTarget, visibilityTarget, keyboardTarget, lifecycle, events } = createFixture();
 
     keyboardTarget.dispatch("keydown", keyEvent("KeyQ"));
     focusTarget.dispatch("blur");
@@ -231,8 +224,7 @@ describe("BrowserInputLifecycle", () => {
   });
 
   it("lifecycle detach invalidates all state while adapter detach remains scoped", () => {
-    const { lifecycle, keyboard, pointer, keyboardTarget, pointerTarget, events } =
-      createFixture();
+    const { lifecycle, keyboard, pointer, keyboardTarget, pointerTarget, events } = createFixture();
 
     keyboardTarget.dispatch("keydown", keyEvent("KeyQ"));
     pointerTarget.dispatch("pointerdown", pointerEvent(3, 0));
