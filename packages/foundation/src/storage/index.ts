@@ -33,3 +33,7 @@ export {
   SaveMigrationRegistry,
   type SaveMigrationResult,
 } from "./save-migrations.js";
+export {
+  EnvelopeSaveService,
+  type EnvelopeSaveServiceOptions,
+} from "./envelope-save-service.js";
