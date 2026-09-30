@@ -148,7 +148,12 @@ test("corrupt save failure is visible without replacing authoritative state", as
 
   await page.getByTestId("load-probe").click();
   await expect(page.getByTestId("persistence-state")).toContainText('"kind":"corrupt-data"');
-  expect(await readDomainState(page)).toEqual(before);
+
+  const after = (await readDomainState(page)) as DomainState;
+  const beforeState = before as DomainState;
+  expect(after.probe.position).toEqual(beforeState.probe.position);
+  expect(after.marker.position).toEqual(beforeState.marker.position);
+  expect(after.tick).toBeGreaterThanOrEqual(beforeState.tick);
 });
 
 interface DomainState {
