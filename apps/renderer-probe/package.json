@@ -1,0 +1,13 @@
+{
+  "name": "@drakeshard/renderer-probe-app",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc -b",
+    "build": "tsc -b"
+  },
+  "devDependencies": {
+    "@drakeshard/foundation": "workspace:*"
+  }
+}
