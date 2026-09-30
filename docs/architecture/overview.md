@@ -47,6 +47,12 @@ Presentation code may depend on domain and Foundation.
 
 The game domain owns authoritative gameplay state and rules. Renderer objects represent domain state but are not authoritative game entities.
 
+## Time and simulation
+
+Simulation uses caller-driven fixed steps. Foundation never owns the render loop or `requestAnimationFrame`.
+
+The accepted v0.1 time and fixed-step contract is defined in [Time and Fixed-Step Contract](./time.md).
+
 ## Renderer integration
 
 Phaser and PlayCanvas integrations remain application-local in v0.1. Shared renderer adapters are considered only after repeated integration code demonstrates stable common semantics.
