@@ -3,6 +3,9 @@ export const TOY_WORLD_HEIGHT = 8;
 export const TOY_PROBE_ID = "probe" as const;
 
 const UINT32_RANGE = 0x1_0000_0000;
+const TOY_RAMP_START_X = 2;
+const TOY_RAMP_END_X = 4;
+const TOY_HIGH_ELEVATION = 1;
 
 export type ToyAxisStep = -1 | 0 | 1;
 
@@ -78,6 +81,16 @@ export interface ToyDomainRandom {
 export interface ToyDomainTickResult {
   readonly state: ToyDomainState;
   readonly events: readonly ToyDomainEvent[];
+}
+
+export function getToyElevation(point: ToyPoint): number {
+  if (point.x <= TOY_RAMP_START_X) return 0;
+  if (point.x >= TOY_RAMP_END_X) return TOY_HIGH_ELEVATION;
+
+  return (
+    ((point.x - TOY_RAMP_START_X) / (TOY_RAMP_END_X - TOY_RAMP_START_X)) *
+    TOY_HIGH_ELEVATION
+  );
 }
 
 export function createToyDomainState(): ToyDomainState {
