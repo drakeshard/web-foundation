@@ -60,7 +60,7 @@ describe("renderer-free deterministic simulation proof", () => {
 
   it("produces the same simulation result for a different render-frame schedule", () => {
     const evenlyChunked = Array.from({ length: 20 }, () => 10);
-    const irregularlyChunked = [3, 7, 21, 4, 15, 8, 12, 19, 1, 10, 25, 5, 20, 10, 10, 10];
+    const irregularlyChunked = [3, 7, 21, 4, 15, 8, 12, 19, 1, 10, 25, 5, 20, 10, 10, 10, 20];
 
     expect(sum(irregularlyChunked)).toBe(200);
 
