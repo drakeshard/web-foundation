@@ -1,3 +1,4 @@
+import { createProbeDebugView } from "./debug/probe-debug.js";
 import type { ToyDomainCommand, ToyDomainState } from "./domain/index.js";
 import { restoreToyDomain } from "./domain/index.js";
 import { createProbeInputController, type ProbeInputController } from "./input/probe-input.js";
@@ -16,11 +17,13 @@ let simulation = createSimulation();
 
 const parent = getRequiredElement<HTMLElement>("#renderer-probe");
 const uiParent = getRequiredElement<HTMLElement>("#probe-ui");
+const debugParent = getRequiredElement<HTMLElement>("#probe-debug");
 const status = getRequiredElement<HTMLOutputElement>("[data-testid='renderer-probe-status']");
 const persistenceState = getRequiredElement<HTMLOutputElement>("[data-testid='persistence-state']");
 const domainState = getRequiredElement<HTMLElement>("[data-testid='domain-state']");
 const inputContexts = getRequiredElement<HTMLElement>("[data-testid='input-contexts']");
 const frameState = getRequiredElement<HTMLElement>("[data-testid='frame-state']");
+const debug = createProbeDebugView(debugParent);
 
 ui = createProbeUiBridge({
   parent: uiParent,
@@ -44,6 +47,7 @@ createPhaserProbe({
   advanceFrame: (frameDeltaMs) => {
     const frame = simulation.advanceFrame(frameDeltaMs);
     ui?.publishDomainState(frame.state);
+    debug.publishFrame(frame);
     renderDebugState(frame);
     return frame;
   },
@@ -63,6 +67,7 @@ getRequiredElement<HTMLButtonElement>("[data-testid='save-probe']").addEventList
   "click",
   async () => {
     const result = await persistence.save(simulation.state);
+    debug.publishPersistenceResult(result);
     persistenceState.value = JSON.stringify(result.ok ? { ok: true, value: "saved" } : result);
   },
 );
@@ -71,6 +76,7 @@ getRequiredElement<HTMLButtonElement>("[data-testid='load-probe']").addEventList
   "click",
   async () => {
     const result = await persistence.load();
+    debug.publishPersistenceResult(result);
 
     if (!result.ok) {
       persistenceState.value = JSON.stringify(result);
@@ -100,6 +106,7 @@ getRequiredElement<HTMLButtonElement>("[data-testid='seed-corrupt-save']").addEv
   "click",
   async () => {
     const result = await persistence.seedCorruptSave();
+    debug.publishPersistenceResult(result);
     persistenceState.value = JSON.stringify(
       result.ok ? { ok: true, value: "corrupt-seeded" } : result,
     );
