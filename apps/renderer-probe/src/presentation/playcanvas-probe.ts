@@ -19,6 +19,26 @@ const CELL_SIZE = 1;
 const CAMERA_MIN_ORTHO_HEIGHT = 3;
 const CAMERA_MAX_ORTHO_HEIGHT = 10;
 const CAMERA_ZOOM_RATE = 0.0015;
+const TERRAIN_BASE_Y = -0.15;
+const TERRAIN_CELL_GAP = 0.04;
+
+export interface PlayCanvasTerrainCell {
+  readonly point: {
+    readonly x: number;
+    readonly y: number;
+  };
+  readonly elevation: number;
+  readonly position: {
+    readonly x: number;
+    readonly y: number;
+    readonly z: number;
+  };
+  readonly scale: {
+    readonly x: number;
+    readonly y: number;
+    readonly z: number;
+  };
+}
 
 export interface PlayCanvasPresentationView {
   readonly viewId: string;
@@ -151,6 +171,37 @@ export function planPlayCanvasPresentationSync(
   return operations;
 }
 
+export function projectToyTerrainToPlayCanvas(
+  state: ToyDomainState,
+): readonly PlayCanvasTerrainCell[] {
+  const cells: PlayCanvasTerrainCell[] = [];
+
+  for (let x = 0; x < state.world.width; x += 1) {
+    for (let y = 0; y < state.world.height; y += 1) {
+      const point = { x, y };
+      const elevation = getToyElevation(point);
+      const height = elevation - TERRAIN_BASE_Y;
+
+      cells.push({
+        point,
+        elevation,
+        position: {
+          x: x * CELL_SIZE,
+          y: TERRAIN_BASE_Y + height / 2,
+          z: y * CELL_SIZE,
+        },
+        scale: {
+          x: CELL_SIZE - TERRAIN_CELL_GAP,
+          y: height,
+          z: CELL_SIZE - TERRAIN_CELL_GAP,
+        },
+      });
+    }
+  }
+
+  return cells;
+}
+
 export function createPlayCanvasProbe(options: PlayCanvasProbeOptions): PlayCanvasProbe {
   const canvas = document.createElement("canvas");
   canvas.setAttribute("aria-label", "PlayCanvas renderer probe");
@@ -193,11 +244,19 @@ export function createPlayCanvasProbe(options: PlayCanvasProbeOptions): PlayCanv
   light.setEulerAngles(50, 35, 0);
   app.root.addChild(light);
 
-  const ground = new Entity("Ground");
-  ground.addComponent("render", { type: "box" });
-  ground.setPosition(3.5, -0.08, 3.5);
-  ground.setLocalScale(8, 0.15, 8);
-  app.root.addChild(ground);
+  const terrain = new Entity("ToyTerrain");
+
+  for (const cell of projectToyTerrainToPlayCanvas(initialState)) {
+    const entity = new Entity(`terrain:${cell.point.x}:${cell.point.y}`);
+    entity.addComponent("render", { type: "box" });
+    entity.setPosition(cell.position.x, cell.position.y, cell.position.z);
+    entity.setLocalScale(cell.scale.x, cell.scale.y, cell.scale.z);
+    entity.tags.add("terrain-cell");
+    entity.tags.add(`terrain-elevation:${cell.elevation}`);
+    terrain.addChild(entity);
+  }
+
+  app.root.addChild(terrain);
 
   let presentationRoot: Entity | undefined;
   const presentationEntities = new Map<string, Entity>();

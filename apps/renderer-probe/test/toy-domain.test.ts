@@ -19,6 +19,38 @@ describe("renderer-probe toy domain", () => {
     expect(getToyElevation({ x: 3.5, y: 4 })).toBe(0.75);
   });
 
+  it("moves deterministically from low terrain through the ramp to high terrain", () => {
+    const runPath = (): {
+      readonly snapshot: ToyDomainSnapshot;
+      readonly elevations: readonly number[];
+    } => {
+      const random = new DeterministicRng(0x50605);
+      let state = createToyDomainState();
+      const elevations: number[] = [];
+
+      for (const command of [
+        { type: "move", dx: -1, dy: 0 },
+        { type: "move", dx: 1, dy: 0 },
+        { type: "move", dx: 1, dy: 0 },
+      ] as const) {
+        state = advanceToyDomain(state, [command], random).state;
+        elevations.push(getToyElevation(state.probe.position));
+      }
+
+      return {
+        snapshot: snapshotToyDomain(state),
+        elevations,
+      };
+    };
+
+    const first = runPath();
+    const second = runPath();
+
+    expect(first).toEqual(second);
+    expect(first.elevations).toEqual([0, 0.5, 1]);
+    expect(first.snapshot.probe.position).toEqual({ x: 4, y: 3 });
+  });
+
   it("applies fixture-local commands in order without mutating the input state", () => {
     const initial = createToyDomainState();
     const initialSnapshot = snapshotToyDomain(initial);

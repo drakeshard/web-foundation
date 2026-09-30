@@ -272,3 +272,27 @@ already validated by the Phaser probe without introducing a shared renderer inte
 S06-04 adds no Foundation API, generic entity framework, renderer adapter, domain lifecycle API, or
 save-format change. The synchronization planner and entity lifecycle remain private
 renderer-probe application code.
+
+
+## PlayCanvas elevation scenario
+
+S06-05 turns the existing domain-owned elevation profile into a visible tactical scenario without
+introducing terrain tooling. Presentation code projects each toy-world cell as a disposable
+PlayCanvas box whose top surface matches `getToyElevation(point)`: x<=2 is low, x=3 is the
+transition level, and x>=4 is high. The static terrain entities remain renderer-owned and are not
+part of gameplay state or persistence.
+
+The probe exposes a deterministic demonstration path that advances the authoritative toy domain by
+ordinary `move` commands from the initial transition cell to low terrain, back through the
+transition, and onto high terrain. After each domain tick the existing PlayCanvas synchronization
+path updates the probe entity from authoritative state. Renderer transforms do not decide whether a
+move is allowed and are never written back to the domain.
+
+Deterministic tests execute the same low/ramp/high command path twice and require identical snapshots
+and elevation traces. Chromium smoke verifies the visible probe state reaches elevation 0, 0.5, and
+1 while the existing restricted orthographic tactical camera remains in use.
+
+S06-05 adds no LOS/high-ground combat rule, navmesh, production terrain authoring system, Foundation
+terrain API, Tactical API, or save-format change. If later work introduces LOS or high-ground
+gameplay semantics, their truth must remain domain-owned rather than inferred from PlayCanvas
+geometry.
