@@ -1,10 +1,7 @@
 import Phaser from "phaser";
 import type { ToyDomainState } from "../domain/index.js";
 import type { ProbeSimulationFrame } from "../simulation/probe-simulation.js";
-import {
-  projectToyPresentation,
-  type ToyPresentationView,
-} from "./toy-presentation.js";
+import { projectToyPresentation, type ToyPresentationView } from "./toy-presentation.js";
 
 const CELL_SIZE = 40;
 const PROBE_SIZE = 28;
