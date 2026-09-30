@@ -121,3 +121,17 @@ Later Sprint 03 issues own:
 - safe write/migration commit behavior;
 - real-browser persistence integration tests;
 - minimal persistence diagnostics.
+## Safe migration and write commit behavior
+
+S03-07 makes load-time migration explicitly non-committing. `EnvelopeSaveService.load` reads and decodes the stored envelope, runs the complete required migration chain in memory, and returns the migrated payload. It does not replace the stored source record automatically. A caller must make a later explicit `save` call to commit migrated/current payload data.
+
+This policy keeps the last committed source save intact if envelope decoding or migration fails and avoids turning a read/load operation into a hidden write.
+
+`EnvelopeSaveService.save` constructs and validates the complete current envelope and serializes it before calling raw storage. It does not delete or clear the existing slot before the replacement write. The IndexedDB backend performs each slot replacement as one read-write transaction/object-store put, so a failed/aborted transaction retains the previously committed record where IndexedDB atomicity applies.
+
+A corrupt or partially written pre-existing record returns structured `corrupt-data` during load and remains untouched. Recovery or explicit overwrite is an application decision; Foundation does not silently erase the record.
+
+Game-id mismatch is also treated as corrupt/incompatible input for the configured save service and is not auto-rewritten.
+
+Timestamp creation remains caller-controlled through the service's `now` function. Persistence remains application orchestration rather than fixed-step simulation work.
+
