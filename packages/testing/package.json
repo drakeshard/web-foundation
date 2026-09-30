@@ -4,7 +4,9 @@
   "private": true,
   "type": "module",
   "exports": {},
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "typecheck": "tsc -b",
     "build": "tsc -b"
