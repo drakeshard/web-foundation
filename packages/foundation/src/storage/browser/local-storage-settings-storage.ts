@@ -1,12 +1,12 @@
 import type {
   JsonValue,
-  PersistenceDiagnostic,
-  PersistenceFailure,
   PersistenceResult,
   SettingsKey,
   SettingsNamespace,
   SettingsStorage,
 } from "../contracts.js";
+import { persistenceFailureResult } from "../failure-utils.js";
+import { classifyBrowserStorageFailure } from "./browser-storage-failures.js";
 
 export interface BrowserKeyValueStorage {
   getItem(key: string): string | null;
@@ -39,10 +39,10 @@ export class LocalStorageSettingsStorage implements SettingsStorage {
       try {
         return { ok: true, value: JSON.parse(serialized) as JsonValue };
       } catch (error) {
-        return failure("corrupt-data", "decode", error);
+        return persistenceFailureResult("corrupt-data", "decode", error);
       }
     } catch (error) {
-      return failure("read-failed", "read", error);
+      return persistenceFailureResult(classifyBrowserStorageFailure(error, "read-failed"), "read", error);
     }
   }
 
@@ -51,11 +51,11 @@ export class LocalStorageSettingsStorage implements SettingsStorage {
       this.#storage.setItem(this.#physicalKey(key), JSON.stringify(value));
       return { ok: true, value: undefined };
     } catch (error) {
-      if (isNamedError(error, "QuotaExceededError")) {
-        return failure("quota-exceeded", "write", error);
-      }
-
-      return failure("write-failed", "write", error);
+      return persistenceFailureResult(
+        classifyBrowserStorageFailure(error, "write-failed"),
+        "write",
+        error,
+      );
     }
   }
 
@@ -66,7 +66,7 @@ export class LocalStorageSettingsStorage implements SettingsStorage {
       this.#storage.removeItem(physicalKey);
       return { ok: true, value: existed };
     } catch (error) {
-      return failure("delete-failed", "delete", error);
+      return persistenceFailureResult(classifyBrowserStorageFailure(error, "delete-failed"), "delete", error);
     }
   }
 
@@ -75,29 +75,3 @@ export class LocalStorageSettingsStorage implements SettingsStorage {
   }
 }
 
-function failure(
-  kind: PersistenceFailure["kind"],
-  operation: PersistenceFailure["operation"],
-  error: unknown,
-): PersistenceResult<never> {
-  const diagnostic = diagnosticFrom(error);
-
-  return diagnostic
-    ? { ok: false, error: { kind, operation, diagnostic } }
-    : { ok: false, error: { kind, operation } };
-}
-
-function diagnosticFrom(error: unknown): PersistenceDiagnostic | undefined {
-  if (!(error instanceof Error)) {
-    return undefined;
-  }
-
-  return {
-    name: error.name,
-    message: error.message,
-  };
-}
-
-function isNamedError(error: unknown, name: string): boolean {
-  return error instanceof Error && error.name === name;
-}
