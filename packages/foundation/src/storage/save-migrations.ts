@@ -161,12 +161,22 @@ function migrationFailure(error: unknown): PersistenceResult<never> {
 function migrationFailureFromResult(
   result: Extract<PersistenceResult<JsonValue>, { readonly ok: false }>,
 ): PersistenceResult<never> {
-  return {
-    ok: false,
-    error: {
-      kind: "migration-failed",
-      operation: "migrate",
-      diagnostic: result.error.diagnostic,
-    },
-  };
+  const diagnostic = result.error.diagnostic;
+
+  return diagnostic
+    ? {
+        ok: false,
+        error: {
+          kind: "migration-failed",
+          operation: "migrate",
+          diagnostic,
+        },
+      }
+    : {
+        ok: false,
+        error: {
+          kind: "migration-failed",
+          operation: "migrate",
+        },
+      };
 }
