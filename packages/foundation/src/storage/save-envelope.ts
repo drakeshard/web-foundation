@@ -5,6 +5,7 @@ import type {
   PersistenceResult,
   SaveFormatVersion,
 } from "./contracts.js";
+import { persistenceFailureMessage, persistenceFailureResult } from "./failure-utils.js";
 
 export type SaveTimestamp = string;
 export type GameId = string;
@@ -189,27 +190,9 @@ function isJsonValue(value: unknown): value is JsonValue {
 }
 
 function corrupt(error: unknown): PersistenceResult<never> {
-  if (error instanceof Error) {
-    return {
-      ok: false,
-      error: {
-        kind: "corrupt-data",
-        operation: "decode",
-        diagnostic: { name: error.name, message: error.message },
-      },
-    };
-  }
-
-  return corruptMessage("Save envelope could not be decoded.");
+  return persistenceFailureResult("corrupt-data", "decode", error);
 }
 
 function corruptMessage(message: string): PersistenceResult<never> {
-  return {
-    ok: false,
-    error: {
-      kind: "corrupt-data",
-      operation: "decode",
-      diagnostic: { message },
-    },
-  };
+  return persistenceFailureMessage("corrupt-data", "decode", message);
 }

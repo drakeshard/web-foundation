@@ -102,15 +102,15 @@ describe("LocalStorageSettingsStorage", () => {
 
     expect(storage.read("key")).toMatchObject({
       ok: false,
-      error: { kind: "read-failed", operation: "read" },
+      error: { kind: "storage-unavailable", operation: "read" },
     });
     expect(storage.write("key", true)).toMatchObject({
       ok: false,
-      error: { kind: "write-failed", operation: "write" },
+      error: { kind: "storage-unavailable", operation: "write" },
     });
     expect(storage.remove("key")).toMatchObject({
       ok: false,
-      error: { kind: "delete-failed", operation: "delete" },
+      error: { kind: "storage-unavailable", operation: "delete" },
     });
   });
 });

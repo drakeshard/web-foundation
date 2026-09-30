@@ -1,12 +1,8 @@
 import { type DBSchema, type IDBPDatabase, openDB } from "idb";
 
-import type {
-  PersistenceDiagnostic,
-  PersistenceFailure,
-  PersistenceResult,
-  SaveSlotId,
-  SaveStorage,
-} from "../contracts.js";
+import type { PersistenceResult, SaveSlotId, SaveStorage } from "../contracts.js";
+import { persistenceFailureResult } from "../failure-utils.js";
+import { classifyBrowserStorageFailure } from "./browser-storage-failures.js";
 
 interface SaveDatabaseSchema extends DBSchema {
   readonly saves: {
@@ -32,7 +28,11 @@ export class IndexedDbSaveStorage implements SaveStorage {
       const database = await this.#database();
       return { ok: true, value: (await database.get("saves", slotId)) ?? null };
     } catch (error) {
-      return failure(classifyStorageFailure(error, "read-failed"), "read", error);
+      return persistenceFailureResult(
+        classifyBrowserStorageFailure(error, "read-failed"),
+        "read",
+        error,
+      );
     }
   }
 
@@ -44,7 +44,11 @@ export class IndexedDbSaveStorage implements SaveStorage {
       await transaction.done;
       return { ok: true, value: undefined };
     } catch (error) {
-      return failure(classifyStorageFailure(error, "write-failed"), "write", error);
+      return persistenceFailureResult(
+        classifyBrowserStorageFailure(error, "write-failed"),
+        "write",
+        error,
+      );
     }
   }
 
@@ -57,7 +61,11 @@ export class IndexedDbSaveStorage implements SaveStorage {
       await transaction.done;
       return { ok: true, value: existed };
     } catch (error) {
-      return failure(classifyStorageFailure(error, "delete-failed"), "delete", error);
+      return persistenceFailureResult(
+        classifyBrowserStorageFailure(error, "delete-failed"),
+        "delete",
+        error,
+      );
     }
   }
 
@@ -70,7 +78,11 @@ export class IndexedDbSaveStorage implements SaveStorage {
         value: keys.map(String).sort((left, right) => left.localeCompare(right)),
       };
     } catch (error) {
-      return failure(classifyStorageFailure(error, "list-failed"), "list", error);
+      return persistenceFailureResult(
+        classifyBrowserStorageFailure(error, "list-failed"),
+        "list",
+        error,
+      );
     }
   }
 
@@ -85,50 +97,4 @@ export class IndexedDbSaveStorage implements SaveStorage {
 
     return this.#databasePromise;
   }
-}
-
-function classifyStorageFailure(
-  error: unknown,
-  fallback: "read-failed" | "write-failed" | "delete-failed" | "list-failed",
-): PersistenceFailure["kind"] {
-  if (isNamedError(error, "QuotaExceededError")) {
-    return "quota-exceeded";
-  }
-
-  if (
-    isNamedError(error, "SecurityError") ||
-    isNamedError(error, "InvalidStateError") ||
-    isNamedError(error, "NotAllowedError")
-  ) {
-    return "storage-unavailable";
-  }
-
-  return fallback;
-}
-
-function failure(
-  kind: PersistenceFailure["kind"],
-  operation: PersistenceFailure["operation"],
-  error: unknown,
-): PersistenceResult<never> {
-  const diagnostic = diagnosticFrom(error);
-
-  return diagnostic
-    ? { ok: false, error: { kind, operation, diagnostic } }
-    : { ok: false, error: { kind, operation } };
-}
-
-function diagnosticFrom(error: unknown): PersistenceDiagnostic | undefined {
-  if (!(error instanceof Error)) {
-    return undefined;
-  }
-
-  return {
-    name: error.name,
-    message: error.message,
-  };
-}
-
-function isNamedError(error: unknown, name: string): boolean {
-  return error instanceof Error && error.name === name;
 }
