@@ -1,19 +1,34 @@
+import type { ToyDomainCommand } from "./domain/index.js";
 import { createProbeInputController, type ProbeInputController } from "./input/probe-input.js";
 import { createPhaserProbe } from "./presentation/phaser-probe.js";
 import { clientPositionToToyPoint } from "./presentation/screen-to-world.js";
 import { createProbeSimulation, type ProbeSimulationFrame } from "./simulation/probe-simulation.js";
+import { createProbeUiBridge, type ProbeUiBridge, type ProbeUiIntent } from "./ui/probe-ui.js";
 
 let input: ProbeInputController | undefined;
+let ui: ProbeUiBridge | undefined;
+let pendingUiCommands: ToyDomainCommand[] = [];
 
 const simulation = createProbeSimulation({
-  consumeCommands: () => input?.consumeDomainCommands() ?? [],
+  consumeCommands: () => {
+    const commands = [...(input?.consumeDomainCommands() ?? []), ...pendingUiCommands];
+    pendingUiCommands = [];
+    return commands;
+  },
 });
 
 const parent = getRequiredElement<HTMLElement>("#renderer-probe");
+const uiParent = getRequiredElement<HTMLElement>("#probe-ui");
 const status = getRequiredElement<HTMLOutputElement>("[data-testid='renderer-probe-status']");
 const domainState = getRequiredElement<HTMLElement>("[data-testid='domain-state']");
 const inputContexts = getRequiredElement<HTMLElement>("[data-testid='input-contexts']");
 const frameState = getRequiredElement<HTMLElement>("[data-testid='frame-state']");
+
+ui = createProbeUiBridge({
+  parent: uiParent,
+  initialState: simulation.state,
+  onIntent: handleUiIntent,
+});
 
 if (document.visibilityState === "hidden") simulation.pause();
 
@@ -30,6 +45,7 @@ createPhaserProbe({
   readState: () => simulation.state,
   advanceFrame: (frameDeltaMs) => {
     const frame = simulation.advanceFrame(frameDeltaMs);
+    ui?.publishDomainState(frame.state);
     renderDebugState(frame);
     return frame;
   },
@@ -40,25 +56,23 @@ createPhaserProbe({
         clientPositionToToyPoint(position, canvas, simulation.state.world),
     });
     status.value = "phaser-probe-ready";
+    ui?.publishDomainState(simulation.state);
     renderDebugState();
   },
 });
 
-getRequiredElement<HTMLButtonElement>("[data-testid='activate-modal']").addEventListener(
-  "click",
-  () => {
-    input?.setModalActive(true);
-    renderDebugState();
-  },
-);
-
-getRequiredElement<HTMLButtonElement>("[data-testid='deactivate-modal']").addEventListener(
-  "click",
-  () => {
-    input?.setModalActive(false);
-    renderDebugState();
-  },
-);
+function handleUiIntent(intent: ProbeUiIntent): void {
+  switch (intent.type) {
+    case "set-modal-active":
+      input?.setModalActive(intent.active);
+      ui?.setModalActive(intent.active);
+      renderDebugState();
+      return;
+    case "randomize-marker":
+      pendingUiCommands.push({ type: "randomize-marker" });
+      return;
+  }
+}
 
 function renderDebugState(frame?: ProbeSimulationFrame): void {
   domainState.textContent = JSON.stringify(simulation.state);
