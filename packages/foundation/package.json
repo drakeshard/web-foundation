@@ -4,6 +4,10 @@
   "private": true,
   "type": "module",
   "exports": {
+    "./input": {
+      "types": "./dist/input/index.d.ts",
+      "import": "./dist/input/index.js"
+    },
     "./random": {
       "types": "./dist/random/index.d.ts",
       "import": "./dist/random/index.js"
