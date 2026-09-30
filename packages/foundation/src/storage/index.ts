@@ -28,3 +28,8 @@ export {
   serializeSaveEnvelope,
   validateSaveEnvelope,
 } from "./save-envelope.js";
+export {
+  type SaveMigration,
+  SaveMigrationRegistry,
+  type SaveMigrationResult,
+} from "./save-migrations.js";
