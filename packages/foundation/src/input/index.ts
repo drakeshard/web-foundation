@@ -48,12 +48,6 @@ export {
 } from "./input-contexts.js";
 export { MonotonicInputSequence } from "./input-sequence.js";
 export {
-  type ContextualLogicalActionState,
-  type TickInputHandoffOptions,
-  TickInputHandoff,
-  type TickInputSnapshot,
-} from "./tick-input-handoff.js";
-export {
   KeyboardBrowserAdapter,
   type KeyboardBrowserAdapterOptions,
 } from "./keyboard-browser-adapter.js";
@@ -61,3 +55,9 @@ export {
   PointerBrowserAdapter,
   type PointerBrowserAdapterOptions,
 } from "./pointer-browser-adapter.js";
+export {
+  type ContextualLogicalActionState,
+  TickInputHandoff,
+  type TickInputHandoffOptions,
+  type TickInputSnapshot,
+} from "./tick-input-handoff.js";
