@@ -1,15 +1,15 @@
-import { IndexedDbSaveStorage } from "@drakeshard/foundation/storage/browser";
 import {
   EnvelopeSaveService,
   type JsonValue,
   type PersistenceResult,
   SaveMigrationRegistry,
 } from "@drakeshard/foundation/storage";
+import { IndexedDbSaveStorage } from "@drakeshard/foundation/storage/browser";
 import {
   snapshotToyDomain,
+  TOY_PROBE_ID,
   type ToyDomainSnapshot,
   type ToyDomainState,
-  TOY_PROBE_ID,
 } from "../domain/index.js";
 
 const PROBE_SAVE_SLOT = "probe";
@@ -55,9 +55,7 @@ export function createProbePersistence(
   };
 }
 
-export function decodeToyDomainSnapshot(
-  value: JsonValue,
-): PersistenceResult<ToyDomainSnapshot> {
+export function decodeToyDomainSnapshot(value: JsonValue): PersistenceResult<ToyDomainSnapshot> {
   if (!isRecord(value)) {
     return corrupt("Toy-domain save payload must be an object.");
   }
