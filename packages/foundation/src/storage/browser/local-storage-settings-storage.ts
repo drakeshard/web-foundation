@@ -42,7 +42,11 @@ export class LocalStorageSettingsStorage implements SettingsStorage {
         return persistenceFailureResult("corrupt-data", "decode", error);
       }
     } catch (error) {
-      return persistenceFailureResult(classifyBrowserStorageFailure(error, "read-failed"), "read", error);
+      return persistenceFailureResult(
+        classifyBrowserStorageFailure(error, "read-failed"),
+        "read",
+        error,
+      );
     }
   }
 
@@ -66,7 +70,11 @@ export class LocalStorageSettingsStorage implements SettingsStorage {
       this.#storage.removeItem(physicalKey);
       return { ok: true, value: existed };
     } catch (error) {
-      return persistenceFailureResult(classifyBrowserStorageFailure(error, "delete-failed"), "delete", error);
+      return persistenceFailureResult(
+        classifyBrowserStorageFailure(error, "delete-failed"),
+        "delete",
+        error,
+      );
     }
   }
 
@@ -74,4 +82,3 @@ export class LocalStorageSettingsStorage implements SettingsStorage {
     return `${this.#prefix}${encodeURIComponent(key)}`;
   }
 }
-
