@@ -30,6 +30,39 @@ test("PlayCanvas renderer probe boots from the shared toy domain", async ({ page
   await expect(canvas).toHaveCount(1);
 });
 
+test("PlayCanvas elevation demo moves deterministically from low through ramp to high", async ({
+  page,
+}) => {
+  await page.goto("http://127.0.0.1:4174/playcanvas.html");
+  await expect(page.getByTestId("playcanvas-probe-status")).toHaveText("playcanvas-probe-ready");
+
+  const elevationState = page.getByTestId("playcanvas-elevation-demo-state");
+  const advance = page.getByTestId("playcanvas-elevation-demo-advance");
+
+  await expect(elevationState).toHaveText(
+    '{"tick":0,"position":{"x":3,"y":3},"elevation":0.5}',
+  );
+
+  await advance.click();
+  await expect(elevationState).toHaveText(
+    '{"tick":1,"position":{"x":2,"y":3},"elevation":0}',
+  );
+
+  await advance.click();
+  await expect(elevationState).toHaveText(
+    '{"tick":2,"position":{"x":3,"y":3},"elevation":0.5}',
+  );
+
+  await advance.click();
+  await expect(elevationState).toHaveText(
+    '{"tick":3,"position":{"x":4,"y":3},"elevation":1}',
+  );
+  await expect(page.getByTestId("playcanvas-domain-state")).toContainText(
+    '"position":{"x":4,"y":3}',
+  );
+  await expect(page.getByTestId("playcanvas-presentation-sync")).toContainText('"updated":2');
+});
+
 test("PlayCanvas camera zoom and pointer selection stay presentation-local", async ({ page }) => {
   await page.goto("http://127.0.0.1:4174/playcanvas.html");
   await expect(page.getByTestId("playcanvas-probe-status")).toHaveText("playcanvas-probe-ready");
