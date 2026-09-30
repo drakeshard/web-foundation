@@ -85,7 +85,6 @@ test("random toy-domain command advances Foundation deterministic RNG on a fixed
   );
 });
 
-
 test("Preact UI bridge projects domain state and issues domain intent", async ({ page }) => {
   await expect(page.getByTestId("ui-domain-summary")).toContainText("tick ");
   await expect(page.getByTestId("ui-domain-summary")).toContainText("probe (3, 3)");
@@ -93,16 +92,13 @@ test("Preact UI bridge projects domain state and issues domain intent", async ({
   const before = (await readDomainState(page)) as DomainState;
   await page.getByTestId("ui-randomize-marker").click();
 
-  await page.waitForFunction(
-    (initialMarker) => {
-      const state = JSON.parse(
-        document.querySelector<HTMLElement>("[data-testid='domain-state']")?.textContent ?? "null",
-      ) as { marker?: { position?: { x?: number; y?: number } } } | null;
-      const marker = state?.marker?.position;
-      return marker !== undefined && (marker.x !== initialMarker.x || marker.y !== initialMarker.y);
-    },
-    before.marker.position,
-  );
+  await page.waitForFunction((initialMarker) => {
+    const state = JSON.parse(
+      document.querySelector<HTMLElement>("[data-testid='domain-state']")?.textContent ?? "null",
+    ) as { marker?: { position?: { x?: number; y?: number } } } | null;
+    const marker = state?.marker?.position;
+    return marker !== undefined && (marker.x !== initialMarker.x || marker.y !== initialMarker.y);
+  }, before.marker.position);
 
   const after = (await readDomainState(page)) as DomainState;
   expect(after.marker.position).not.toEqual(before.marker.position);
