@@ -214,3 +214,21 @@ same toy-domain snapshot produces equivalent projected presentation data without
 from PlayCanvas entities or components. This establishes the S06-01 boundary; elevation semantics,
 pointer/raycast interaction, and ongoing entity synchronization remain scoped to later Sprint 06
 issues.
+
+
+## PlayCanvas elevation mapping
+
+S06-02 adds fixture-local elevation metadata to the renderer-neutral toy domain through
+`getToyElevation(point)`. The profile has a low region, a deterministic transition between x=2
+and x=4, and a high region. Elevation is derived from domain coordinates rather than stored in or
+read back from PlayCanvas transforms, so the existing save snapshot shape and save-format version
+do not change.
+
+The PlayCanvas projection converts domain x/y into presentation x/z and adds domain-owned elevation
+to presentation y. Probe movement across the transition interpolates both horizontal coordinates
+and elevation using the render alpha, but interpolation exists only in the presentation projection
+and never writes values into `ToyDomainState`.
+
+This remains fixture metadata, not a Foundation terrain/elevation contract and not a Tactical
+library API. PlayCanvas vectors, entities, components, and transforms remain outside the domain
+surface.
