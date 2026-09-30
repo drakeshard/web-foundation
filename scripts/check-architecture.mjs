@@ -1,11 +1,11 @@
 import fs from "node:fs";
 import path from "node:path";
 import {
-  ScriptTarget,
   createSourceFile,
   isExportDeclaration,
   isImportDeclaration,
   isStringLiteral,
+  ScriptTarget,
 } from "typescript";
 
 const root = process.cwd();
