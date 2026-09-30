@@ -1,5 +1,5 @@
-import type { LogicalActionId } from "./contracts.js";
 import type { LogicalActionTransition } from "./action-mapping.js";
+import type { LogicalActionId } from "./contracts.js";
 
 export type InputContextId = string;
 
