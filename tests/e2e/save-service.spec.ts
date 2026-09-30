@@ -56,12 +56,12 @@ test("real browser load applies a multi-step migration without replacing the sou
   await expect
     .poll(() => readResult(page))
     .toMatchObject({
-    ok: true,
-    value: {
-      saveFormatVersion: 1,
-      payload: { hp: 10 },
-    },
-  });
+      ok: true,
+      value: {
+        saveFormatVersion: 1,
+        payload: { hp: 10 },
+      },
+    });
 });
 
 test("corrupt and unsupported future saves produce structured failures", async ({ page }) => {
@@ -72,9 +72,9 @@ test("corrupt and unsupported future saves produce structured failures", async (
   await expect
     .poll(() => readResult(page))
     .toMatchObject({
-    ok: false,
-    error: { kind: "corrupt-data", operation: "decode" },
-  });
+      ok: false,
+      error: { kind: "corrupt-data", operation: "decode" },
+    });
 
   await page.getByTestId("save-service-seed-future").click();
   await expectResult(page, { ok: true });
@@ -83,9 +83,9 @@ test("corrupt and unsupported future saves produce structured failures", async (
   await expect
     .poll(() => readResult(page))
     .toMatchObject({
-    ok: false,
-    error: { kind: "unsupported-version", operation: "migrate" },
-  });
+      ok: false,
+      error: { kind: "unsupported-version", operation: "migrate" },
+    });
 });
 
 test("failed migration leaves the browser source save unchanged", async ({ page }) => {
@@ -96,13 +96,13 @@ test("failed migration leaves the browser source save unchanged", async ({ page 
   await expect
     .poll(() => readResult(page))
     .toMatchObject({
-    ok: false,
-    error: {
-      kind: "migration-failed",
-      operation: "migrate",
-      diagnostic: { message: "fixture migration failure" },
-    },
-  });
+      ok: false,
+      error: {
+        kind: "migration-failed",
+        operation: "migrate",
+        diagnostic: { message: "fixture migration failure" },
+      },
+    });
 
   await page.getByTestId("save-service-inspect").click();
   await expect
