@@ -1,4 +1,8 @@
 export type {
+  BrowserInputEventTarget,
+  BrowserVisibilityTarget,
+} from "./browser-event-target.js";
+export type {
   DigitalInputPhase,
   InputCommand,
   InputSequence,
@@ -23,3 +27,7 @@ export type {
   WheelUnit,
 } from "./contracts.js";
 export { MonotonicInputSequence } from "./input-sequence.js";
+export {
+  KeyboardBrowserAdapter,
+  type KeyboardBrowserAdapterOptions,
+} from "./keyboard-browser-adapter.js";
