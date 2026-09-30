@@ -1,12 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import {
-  createSourceFile,
-  isExportDeclaration,
-  isImportDeclaration,
-  isStringLiteral,
-  ScriptTarget,
-} from "typescript";
+import ts from "typescript";
 
 const root = process.cwd();
 const sourceRoots = [{ kind: "foundation", dir: path.join(root, "packages/foundation/src") }];
@@ -71,13 +65,13 @@ function checkImport(file, specifier, kind) {
 for (const sourceRoot of sourceRoots) {
   for (const file of walk(sourceRoot.dir)) {
     const source = fs.readFileSync(file, "utf8");
-    const node = createSourceFile(file, source, ScriptTarget.Latest, true);
+    const node = ts.createSourceFile(file, source, 99, true);
 
     for (const statement of node.statements) {
       if (
-        (isImportDeclaration(statement) || isExportDeclaration(statement)) &&
+        (ts.isImportDeclaration(statement) || ts.isExportDeclaration(statement)) &&
         statement.moduleSpecifier &&
-        isStringLiteral(statement.moduleSpecifier)
+        ts.isStringLiteral(statement.moduleSpecifier)
       ) {
         checkImport(file, statement.moduleSpecifier.text, sourceRoot.kind);
       }
