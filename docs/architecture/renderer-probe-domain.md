@@ -122,7 +122,6 @@ On document visibility suspension the application resets the fixed-step driver. 
 again and discards the first resumed frame delta, preventing hidden-tab elapsed time from entering
 the simulation accumulator. Foundation still owns no `requestAnimationFrame` or Phaser lifecycle.
 
-
 ## Phaser presentation synchronization
 
 S05-05 makes the Phaser scene a disposable projection of authoritative toy-domain state. An
@@ -155,7 +154,6 @@ share mutable gameplay authority with Phaser.
 The UI bridge remains app-local. S05-06 adds no Foundation UI API, signal contract, shared component
 package, or renderer/UI coordination abstraction.
 
-
 ## Phaser persistence probe
 
 S05-07 stores only a JSON copy of `ToyDomainSnapshot` through Foundation
@@ -172,7 +170,6 @@ category, while application code keeps the current authoritative state unchanged
 the admitted persistence contracts without introducing a shared decoder or renderer-aware save
 format.
 
-
 ## App-owned Phaser debug observations
 
 S05-08 keeps debug visualization entirely inside the renderer-probe application. The probe projects
@@ -188,7 +185,6 @@ counter registry, ring buffer, telemetry API, or Foundation debug UI.
 The debug view is optional, app-local presentation code. Missing generic diagnostics APIs remain an
 intentional non-defect under the Sprint 04 admission decision.
 
-
 ## Sprint 05 extraction result
 
 The completed Phaser probe did not justify a shared Phaser adapter or new Foundation runtime API.
@@ -196,7 +192,6 @@ Renderer lifecycle, view synchronization, coordinate conversion, UI orchestratio
 debug visualization, and baseline timing remain application-local. Sprint 06 will pressure-test the
 same domain and Foundation contracts through PlayCanvas before any cross-renderer extraction
 decision.
-
 
 ## PlayCanvas probe integration
 
@@ -215,7 +210,6 @@ from PlayCanvas entities or components. This establishes the S06-01 boundary; el
 pointer/raycast interaction, and ongoing entity synchronization remain scoped to later Sprint 06
 issues.
 
-
 ## PlayCanvas elevation mapping
 
 S06-02 adds fixture-local elevation metadata to the renderer-neutral toy domain through
@@ -232,3 +226,26 @@ and never writes values into `ToyDomainState`.
 This remains fixture metadata, not a Foundation terrain/elevation contract and not a Tactical
 library API. PlayCanvas vectors, entities, components, and transforms remain outside the domain
 surface.
+
+## PlayCanvas tactical camera and pointer interaction
+
+S06-03 keeps tactical camera control inside the PlayCanvas presentation. Right-button drag pans the
+camera over the bounded toy world and wheel input changes orthographic height within app-local
+limits. These controls may use browser event details because they alter only disposable
+presentation state; no camera value is added to Foundation input or toy-domain contracts.
+
+Primary pointer selection still enters through the admitted Foundation browser pointer adapter,
+action mapping, and explicit input-context ownership. The PlayCanvas selection bridge emits a
+plain app-local selection request only when the gameplay context owns the primary action. It does
+not deliver raw DOM events or `pc.Entity` objects.
+
+Presentation code converts the normalized client position with PlayCanvas
+`CameraComponent.screenToWorld` into a world-space ray. The toy scenario then reports one of three
+explicit results: a domain-elevation cell intersection, occlusion by the probe presentation volume,
+or a miss. Only an intersection is translated to the fixture-local `set-marker` command/intention.
+
+S06-03 deliberately does not apply that intention to authoritative simulation state. Doing so
+asynchronously from the pointer event would bypass the Sprint 02 tick-handoff contract. A later
+simulation integration must enqueue plain intention data and consume it only on executable fixed
+ticks. Likewise, incremental `pc.Entity` create/update/destroy synchronization remains owned by
+S06-04. No Foundation API, renderer abstraction, terrain API, or save-format change is introduced.
