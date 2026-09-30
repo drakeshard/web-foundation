@@ -1,3 +1,15 @@
+export {
+  type ActionBinding,
+  ActionBindingResolver,
+  type ActiveActionSource,
+  type ActiveActionSourceIdentity,
+  type ActiveKeyActionSource,
+  type ActivePointerButtonActionSource,
+  type DigitalPhysicalBinding,
+  type KeyPhysicalBinding,
+  type LogicalActionTransition,
+  type PointerButtonPhysicalBinding,
+} from "./action-mapping.js";
 export type {
   BrowserInputEventTarget,
   BrowserVisibilityTarget,
