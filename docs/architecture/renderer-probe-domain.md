@@ -139,3 +139,18 @@ Recreating presentation from a domain snapshot produces the same projected visib
 projection applies interpolation only to derived presentation coordinates and does not mutate
 authoritative domain state. No generic renderer interface or Foundation renderer abstraction is
 introduced.
+
+## Preact UI bridge
+
+S05-06 adds Preact only to the private renderer-probe app. The UI receives an explicit
+`ProbeUiDomainView` projection containing copied, UI-facing values from authoritative
+`ToyDomainState`. Signals store that derived projection plus transient UI state such as whether
+the modal controls are active; they never store or replace the authoritative simulation state.
+
+UI controls emit app-local `ProbeUiIntent` values. Application orchestration translates those
+intentions into input-context changes or fixture-local `ToyDomainCommand` values that are consumed
+on fixed simulation ticks. Preact components therefore do not mutate domain objects and do not
+share mutable gameplay authority with Phaser.
+
+The UI bridge remains app-local. S05-06 adds no Foundation UI API, signal contract, shared component
+package, or renderer/UI coordination abstraction.
