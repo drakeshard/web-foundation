@@ -12,6 +12,10 @@ on:
         required: true
         type: boolean
         default: true
+      branch:
+        description: "Optional non-default branch to clean immediately"
+        required: false
+        type: string
       stale_days:
         description: "Age threshold for scheduled/manual stale-branch cleanup"
         required: true
@@ -36,6 +40,7 @@ jobs:
       PR_HEAD_REF: ${{ github.event.pull_request.head.ref }}
       PR_HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
       DRY_RUN_INPUT: ${{ inputs.dry_run }}
+      MANUAL_BRANCH: ${{ inputs.branch }}
       STALE_DAYS_INPUT: ${{ inputs.stale_days }}
     steps:
       - name: Cleanup completed workflow runs
@@ -115,6 +120,16 @@ jobs:
             fi
 
             cleanup_branch "${PR_HEAD_REF}"
+            exit 0
+          fi
+
+          if [[ "${EVENT_NAME}" == "workflow_dispatch" && -n "${MANUAL_BRANCH:-}" ]]; then
+            if [[ "${MANUAL_BRANCH}" == "${DEFAULT_BRANCH}" ]]; then
+              echo "refusing to clean default branch: ${DEFAULT_BRANCH}"
+              exit 1
+            fi
+
+            cleanup_branch "${MANUAL_BRANCH}"
             exit 0
           fi
 
