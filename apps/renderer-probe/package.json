@@ -4,10 +4,15 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "dev": "vite",
     "typecheck": "tsc -b",
-    "build": "tsc -b"
+    "build": "vite build"
+  },
+  "dependencies": {
+    "phaser": "4.2.1"
   },
   "devDependencies": {
-    "@drakeshard/foundation": "workspace:*"
+    "@drakeshard/foundation": "workspace:*",
+    "vite": "8.3.1"
   }
 }

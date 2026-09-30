@@ -70,3 +70,13 @@ Any untrusted save/input validation and debug presentation remains application-l
 S05-01 introduces no new Foundation public API and no new shared package. The fixture remains local
 until later renderer-probe evidence demonstrates a stable abstraction that independently passes the
 Foundation admission rule.
+
+## Phaser probe integration
+
+S05-02 adds Phaser only under `apps/renderer-probe/src/presentation`. The application creates the
+authoritative `ToyDomainState` outside Phaser and passes a read-only state accessor into the
+presentation layer. The Phaser Scene owns only disposable display objects derived from that state.
+
+The scene can therefore be destroyed and recreated from current authoritative state without
+recovering gameplay truth from Phaser objects. This is a concrete renderer integration, not a
+generic renderer interface or a Foundation renderer adapter.

@@ -13,7 +13,7 @@
     "typecheck": "tsc -b",
     "test": "vitest run --passWithNoTests",
     "test:e2e": "playwright test",
-    "build": "tsc -b",
+    "build": "tsc -b && pnpm --filter @drakeshard/renderer-probe-app build",
     "verify": "pnpm check && pnpm typecheck && pnpm test && pnpm build && pnpm test:e2e"
   },
   "devDependencies": {
