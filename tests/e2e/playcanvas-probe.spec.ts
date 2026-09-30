@@ -12,9 +12,7 @@ test("PlayCanvas renderer probe boots from the shared toy domain", async ({ page
   await expect(canvas).toHaveAttribute("height", "480");
 
   await expect(page.getByTestId("playcanvas-domain-state")).toContainText('"id":"probe"');
-  await expect(page.getByTestId("playcanvas-input-contexts")).toHaveText(
-    '["playcanvas-gameplay"]',
-  );
+  await expect(page.getByTestId("playcanvas-input-contexts")).toHaveText('["playcanvas-gameplay"]');
 
   await page.getByTestId("playcanvas-rebuild").click();
   await expect(page.getByTestId("playcanvas-rebuild-count")).toHaveText("1");
