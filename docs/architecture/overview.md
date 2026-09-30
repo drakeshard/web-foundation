@@ -53,6 +53,12 @@ Simulation uses caller-driven fixed steps. Foundation never owns the render loop
 
 The accepted v0.1 time and fixed-step contract is defined in [Time and Fixed-Step Contract](./time.md).
 
+## Deterministic random
+
+Deterministic gameplay randomness uses an explicit versioned algorithm and state contract. Foundation deterministic paths must not use `Math.random()`.
+
+The accepted v0.1 RNG contract is defined in [Deterministic RNG Contract](./random.md).
+
 ## Renderer integration
 
 Phaser and PlayCanvas integrations remain application-local in v0.1. Shared renderer adapters are considered only after repeated integration code demonstrates stable common semantics.
