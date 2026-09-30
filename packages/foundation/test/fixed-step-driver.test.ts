@@ -181,10 +181,7 @@ describe("FixedStepDriver", () => {
     ["stepMs", { stepMs: Number.POSITIVE_INFINITY, maxFrameDeltaMs: 100, maxStepsPerFrame: 4 }],
     ["maxFrameDeltaMs", { stepMs: 20, maxFrameDeltaMs: 0, maxStepsPerFrame: 4 }],
     ["maxFrameDeltaMs", { stepMs: 20, maxFrameDeltaMs: -1, maxStepsPerFrame: 4 }],
-    [
-      "maxFrameDeltaMs",
-      { stepMs: 20, maxFrameDeltaMs: Number.NaN, maxStepsPerFrame: 4 },
-    ],
+    ["maxFrameDeltaMs", { stepMs: 20, maxFrameDeltaMs: Number.NaN, maxStepsPerFrame: 4 }],
     [
       "maxFrameDeltaMs",
       { stepMs: 20, maxFrameDeltaMs: Number.POSITIVE_INFINITY, maxStepsPerFrame: 4 },
