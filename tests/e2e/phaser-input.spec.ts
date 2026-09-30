@@ -167,7 +167,7 @@ test("app-owned debug view surfaces admitted frame and persistence observations"
   await page.getByTestId("load-probe").click();
 
   await expect(page.getByTestId("debug-last-persistence-failure")).toHaveText(
-    '{"kind":"corrupt-data","operation":"read"}',
+    '{"kind":"corrupt-data","operation":"decode"}',
   );
 });
 
