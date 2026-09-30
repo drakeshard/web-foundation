@@ -157,7 +157,9 @@ test("corrupt save failure is visible without replacing authoritative state", as
 });
 
 
-test("app-owned debug view surfaces admitted frame and persistence observations", async ({ page }) => {
+test("app-owned debug view surfaces admitted frame and persistence observations", async ({
+  page,
+}) => {
   await expect(page.getByTestId("debug-frame")).toContainText('"droppedSteps":');
   await expect(page.getByTestId("debug-frame")).toContainText('"overrun":');
   await expect(page.getByTestId("debug-last-persistence-failure")).toHaveText("null");
