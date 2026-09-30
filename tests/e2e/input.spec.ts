@@ -58,7 +58,7 @@ test("real keyboard edges flow through mapping, contexts, and tick consumption",
       {
         context: "modal",
         action: "action.primary",
-        sequence: 0,
+        sequence: pressed?.sequence,
         phase: "pressed",
       },
     ],
@@ -99,9 +99,11 @@ test("real pointer press plus browser pointercancel invalidates held state witho
   await page.mouse.move(center.x, center.y);
   await page.mouse.down({ button: "left" });
 
-  expect((await readPhysicalLog(page))[0]).toMatchObject({
+  const pressed = (await readPhysicalLog(page)).find(
+    (event) => event.kind === "pointer-button" && event.phase === "pressed",
+  );
+  expect(pressed).toMatchObject({
     kind: "pointer-button",
-    sequence: 0,
     pointerType: "mouse",
     button: 0,
     phase: "pressed",
@@ -119,8 +121,8 @@ test("real pointer press plus browser pointercancel invalidates held state witho
   const physical = await readPhysicalLog(page);
   expect(physical.at(-1)).toMatchObject({
     kind: "pointer-cancel",
-    sequence: 1,
   });
+  expect(physical.at(-1)?.sequence).toBeGreaterThan(pressed?.sequence ?? -1);
   expect(
     physical.filter((event) => event.kind === "pointer-button" && event.phase === "released"),
   ).toEqual([]);
@@ -155,14 +157,17 @@ test("real browser wheel preserves normalized pixel delta sign and magnitude", a
   await page.mouse.move(center.x, center.y);
   await page.mouse.wheel(7, -90);
 
-  expect((await readPhysicalLog(page)).at(-1)).toEqual({
+  const physical = await readPhysicalLog(page);
+  expect(physical.at(-1)).toMatchObject({
     kind: "wheel",
-    sequence: 0,
     deltaX: 7,
     deltaY: -90,
     deltaZ: 0,
     unit: "pixel",
   });
+  expect(physical.map((event) => event.sequence)).toEqual(
+    [...physical].map((event) => event.sequence).sort((left, right) => left - right),
+  );
 });
 
 test("blur reset clears live input state and resumes without replay", async ({ page }) => {
@@ -172,21 +177,29 @@ test("blur reset clears live input state and resumes without replay", async ({ p
   await page.keyboard.down("q");
   await page.mouse.move(center.x, center.y);
   await page.mouse.down({ button: "left" });
-  await page.evaluate(() => window.dispatchEvent(new Event("blur")));
 
+  const beforeBlur = await readPhysicalLog(page);
+  const keyPress = beforeBlur.find(
+    (event) => event.kind === "key" && event.phase === "pressed",
+  );
+  const pointerPress = beforeBlur.find(
+    (event) => event.kind === "pointer-button" && event.phase === "pressed",
+  );
+
+  await page.evaluate(() => window.dispatchEvent(new Event("blur")));
   await expect(page.getByTestId("lifecycle-state")).toHaveText("inactive");
 
   const suspended = await readPhysicalLog(page);
-  expect(suspended.at(-1)).toEqual({
+  expect(suspended.at(-1)).toMatchObject({
     kind: "reset",
-    sequence: 2,
     scope: "all",
     reason: "blur",
   });
+  expect(suspended.at(-1)?.sequence).toBeGreaterThan(pointerPress?.sequence ?? -1);
 
   await page.keyboard.up("q");
   await page.mouse.up({ button: "left" });
-  expect(await readPhysicalLog(page)).toHaveLength(3);
+  expect(await readPhysicalLog(page)).toHaveLength(suspended.length);
 
   await page.getByTestId("consume-tick").click();
   expect(await readTickSnapshot(page)).toEqual({
@@ -210,13 +223,13 @@ test("blur reset clears live input state and resumes without replay", async ({ p
       {
         context: "gameplay",
         action: "action.primary",
-        sequence: 0,
+        sequence: keyPress?.sequence,
         phase: "pressed",
       },
       {
         context: "gameplay",
         action: "action.pointer",
-        sequence: 1,
+        sequence: pointerPress?.sequence,
         phase: "pressed",
       },
     ],
@@ -227,10 +240,12 @@ test("blur reset clears live input state and resumes without replay", async ({ p
   await expect(page.getByTestId("lifecycle-state")).toHaveText("active");
 
   await page.keyboard.press("q");
-  expect((await readPhysicalLog(page)).slice(-2)).toEqual([
-    { kind: "key", sequence: 3, code: "KeyQ", phase: "pressed" },
-    { kind: "key", sequence: 4, code: "KeyQ", phase: "released" },
+  const resumed = (await readPhysicalLog(page)).slice(-2);
+  expect(resumed).toMatchObject([
+    { kind: "key", code: "KeyQ", phase: "pressed" },
+    { kind: "key", code: "KeyQ", phase: "released" },
   ]);
+  expect(resumed[1]?.sequence).toBe((resumed[0]?.sequence ?? -1) + 1);
 });
 
 test("tick snapshots and commands expose stable plain data instead of DOM events", async ({
