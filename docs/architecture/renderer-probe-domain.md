@@ -80,3 +80,27 @@ presentation layer. The Phaser Scene owns only disposable display objects derive
 The scene can therefore be destroyed and recreated from current authoritative state without
 recovering gameplay truth from Phaser objects. This is a concrete renderer integration, not a
 generic renderer interface or a Foundation renderer adapter.
+
+## Browser input bridge
+
+S05-03 wires the accepted Foundation browser-input path into the probe:
+
+```text
+KeyboardEvent / PointerEvent
+  -> Foundation browser adapters
+  -> Foundation physical input
+  -> action mapping + input contexts + tick handoff
+  -> app-local translation
+  -> ToyDomainCommand
+```
+
+The app-local input bridge translates gameplay-owned logical actions into fixture-local movement
+commands. Pointer presses use Foundation `InputCommand` only to carry the normalized client
+position alongside the action transition; the app then converts client coordinates to a toy-world
+cell before constructing `set-marker`. Foundation `InputCommand` is therefore still an
+input-delivery record, not the semantic domain-command model.
+
+A higher-priority modal context consumes the same gameplay actions so they do not become domain
+commands while the modal is active. Phaser's own input system is not used as domain authority.
+The explicit "consume input tick" control is a Sprint 05 integration harness only; frame-driven
+fixed-step simulation remains owned by S05-04.

@@ -8,7 +8,7 @@ const MARKER_RADIUS = 8;
 export interface PhaserProbeOptions {
   readonly parent: HTMLElement;
   readonly readState: () => ToyDomainState;
-  readonly onReady?: () => void;
+  readonly onReady?: (canvas: HTMLCanvasElement) => void;
 }
 
 export function createPhaserProbe(options: PhaserProbeOptions): Phaser.Game {
@@ -19,7 +19,7 @@ export function createPhaserProbe(options: PhaserProbeOptions): Phaser.Game {
 
     public create(): void {
       this.renderAuthoritativeState(options.readState());
-      options.onReady?.();
+      options.onReady?.(this.game.canvas);
     }
 
     private renderAuthoritativeState(state: ToyDomainState): void {
