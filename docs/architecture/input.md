@@ -127,3 +127,10 @@ A tick snapshot contains three coordinated views: contextual action states, orde
 Held action state is recomputed from current action mapping and current context ownership at every tick. It persists across ticks without repeating edge flags and disappears immediately after cancellation/reset invalidates its physical sources. Cancellation/reset do not fabricate release transitions.
 
 Generic `InputCommand` values are delivered in ascending originating `InputSequence`; commands sharing a sequence retain enqueue order. Commands and transitions are drained after one tick, while held action state remains until changed or invalidated. The handoff owns no render loop and is consumed once for each executable step returned by `FixedStepDriver`.
+## Browser lifecycle reset coordination
+
+S02-07 centralizes window focus/blur and document visibility handling in one narrow `BrowserInputLifecycle` shared by browser input adapters. The lifecycle owns exactly one blur/focus listener pair and one visibility-change listener set. Keyboard and pointer adapters no longer register duplicate global lifecycle listeners.
+
+Blur or transition to hidden suspends input. Before one `all`-scope reset record is emitted, the lifecycle synchronously notifies attached adapters to clear their local physical held state. This order prevents a normalized reset from reaching action mapping while an adapter still believes a key or pointer button is held. Repeated blur/hidden signals while already suspended do not emit duplicate resets.
+
+Focus and visible transitions only resume acceptance when both focus and visibility conditions permit it. They do not replay input accumulated while suspended and do not synthesize pressed/released edges. Adapter-local detach remains scoped (`keyboard` or `pointer`) so removing one adapter cannot invalidate another. Lifecycle detach invalidates all attached adapter physical state with an `all`-scope detach reset. Pointer cancellation and lost pointer capture remain pointer-local invalidation records rather than global lifecycle resets.
