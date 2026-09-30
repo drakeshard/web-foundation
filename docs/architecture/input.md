@@ -102,3 +102,13 @@ Dedicated later issues own:
 - gamepad;
 - persistence;
 - game-specific controls.
+## Action mapping
+
+S02-04 maps normalized digital physical input to opaque logical action identifiers. The shared mapping surface covers keyboard codes and pointer buttons only. Pointer position and wheel records remain normalized physical data because they do not have held-state semantics; any wheel-to-command policy belongs to a later consumer rather than the digital action resolver.
+
+One logical action may have multiple physical bindings. Its logical held state is active while at least one matching physical source is active. A logical pressed transition is emitted only when the first matching source becomes active, and a logical released transition is emitted only when the final matching source releases normally. One physical source may map to multiple logical actions; transitions for that physical event preserve binding declaration order and share the originating `InputSequence`.
+
+Pointer identity is retained while a pointer button is active so multiple simultaneous pointers cannot release one another's state. Pointer cancellation and scoped reset records invalidate matching active sources without fabricating logical released transitions. Replacing the binding configuration also invalidates current resolver state without synthetic action edges; a fresh physical edge is required under the new configuration.
+
+The resolver exposes normalized active-source state so later generic input-context resolution can deterministically recompute ownership without reading DOM state or browser event objects.
+
