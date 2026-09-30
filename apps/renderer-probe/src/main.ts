@@ -108,7 +108,7 @@ getRequiredElement<HTMLButtonElement>("[data-testid='seed-corrupt-save']").addEv
 
 function createSimulation(initialState?: ToyDomainState) {
   return createProbeSimulation({
-    initialState,
+    ...(initialState ? { initialState } : {}),
     consumeCommands: () => {
       const commands = [...(input?.consumeDomainCommands() ?? []), ...pendingUiCommands];
       pendingUiCommands = [];
