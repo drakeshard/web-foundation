@@ -8,15 +8,18 @@ on:
       - .github/workflows/bootstrap-lockfile.yml
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   lockfile:
+    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: chore/sprint-00-hardening
 
       - name: Setup Node
         uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
@@ -29,13 +32,12 @@ jobs:
       - name: Resolve lockfile
         run: pnpm install --lockfile-only
 
-      - name: Verify lockfile
-        run: test -s pnpm-lock.yaml
-
-      - name: Upload lockfile
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
-        with:
-          name: pnpm-lockfile
-          path: pnpm-lock.yaml
-          if-no-files-found: error
-          retention-days: 1
+      - name: Commit lockfile
+        run: |
+          test -s pnpm-lock.yaml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add pnpm-lock.yaml
+          git diff --cached --quiet && exit 0
+          git commit -m "chore: generate pnpm lockfile"
+          git push
