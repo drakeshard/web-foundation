@@ -26,8 +26,8 @@ export type {
   ScreenPosition,
   WheelUnit,
 } from "./contracts.js";
+export { MonotonicInputSequence } from "./input-sequence.js";
 export {
   KeyboardBrowserAdapter,
   type KeyboardBrowserAdapterOptions,
 } from "./keyboard-browser-adapter.js";
-export { MonotonicInputSequence } from "./input-sequence.js";
