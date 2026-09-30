@@ -7,9 +7,7 @@ test.beforeEach(async ({ page }) => {
 
 test("settings persist through browser reload and remain JSON data", async ({ page }) => {
   await page.getByTestId("settings-write").click();
-  await expect(page.getByTestId("settings-result")).toHaveText(
-    JSON.stringify({ ok: true }),
-  );
+  await expect(page.getByTestId("settings-result")).toHaveText(JSON.stringify({ ok: true }));
 
   await page.reload();
   await page.getByTestId("settings-read").click();
