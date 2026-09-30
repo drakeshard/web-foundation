@@ -1,14 +1,19 @@
 # Drakeshard Web Foundation
 
-Shared, renderer-neutral web-game infrastructure for Drakeshard Studios.
+Shared web-game infrastructure for Drakeshard Studios.
 
-## Status
+## Repository scope
 
-Foundation v0.1 — engineering baseline.
+This repository contains renderer-neutral infrastructure and test support used by Drakeshard browser games. It does not provide a general-purpose game engine.
 
-This repository is **not** a custom game engine. Shared functionality is added only when a real game or validated architecture probe demonstrates a reusable need.
+Initial shared packages:
 
-## Architecture
+- `@drakeshard/foundation`
+- `@drakeshard/testing`
+
+Renderer-specific integration remains application-local until repeated use justifies extraction.
+
+## Technology baseline
 
 - TypeScript
 - pnpm workspace
@@ -16,26 +21,21 @@ This repository is **not** a custom game engine. Shared functionality is added o
 - Vitest
 - Playwright
 - Biome
-- Preact for application UI only
+- Preact for application UI
 - Phaser for 2D presentation
-- PlayCanvas for true 2.5D presentation
+- PlayCanvas for 2.5D presentation
 
-The game domain and `@drakeshard/foundation` must not depend on Phaser, PlayCanvas, Preact, or renderer-specific objects.
+## Architecture boundary
 
-## Initial workspace
+`@drakeshard/foundation` and game-domain code must not depend on Phaser, PlayCanvas, Preact, or renderer-specific objects.
 
-```text
-packages/
-  foundation/
-  testing/
+See:
 
-apps/
-  probe-phaser/      # added when renderer probing begins
-  probe-playcanvas/  # added when renderer probing begins
-```
+- `docs/architecture/overview.md`
+- `docs/policies/dependencies.md`
+- `CONTRIBUTING.md`
+- `SECURITY.md`
 
-## Development
+## Current phase
 
-Toolchain versions are pinned in the repository. A committed lockfile and green frozen-install CI are required before feature implementation begins.
-
-See `docs/architecture/overview.md` and `CONTRIBUTING.md`.
+v0.1 is in the engineering-baseline phase. Feature implementation begins after the repository passes its Sprint 00 exit criteria, including a committed lockfile, reproducible frozen installs, required CI checks, and repository rule enforcement.
