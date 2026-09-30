@@ -42,8 +42,12 @@ export function createProbePersistence(
 
     async load(): Promise<PersistenceResult<ToyDomainSnapshot | null>> {
       const loaded = await service.load(PROBE_SAVE_SLOT);
-      if (!loaded.ok || loaded.value === null) {
+      if (!loaded.ok) {
         return loaded;
+      }
+
+      if (loaded.value === null) {
+        return { ok: true, value: null };
       }
 
       return decodeToyDomainSnapshot(loaded.value);
