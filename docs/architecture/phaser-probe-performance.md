@@ -31,12 +31,15 @@ logs the browser user agent, viewport, device-pixel ratio, and canvas size with 
 
 The first green S05-09 PR CI observation is recorded here before merge.
 
-- CI run: pending
-- frame delta mean / p95 / max: pending
-- simulation advance duration mean / p95 / max: pending
-- total fixed simulation steps: pending
-- dropped steps: pending
-- overrun frames: pending
+- CI run: 36746309530
+- Chromium user agent: Chrome 153.0.8010.12 as reported by the Playwright browser
+- viewport / device-pixel ratio: 1280×720 / 1
+- canvas: 320×320
+- frame delta mean / p95 / max: 16.644 ms / 16.7 ms / 16.8 ms
+- simulation advance duration mean / p95 / max: 0.012 ms / 0.1 ms / 0.1 ms
+- total fixed simulation steps across 120 sampled frames: 40
+- dropped steps: 0
+- overrun frames: 0
 
 ## Interpretation boundary
 
