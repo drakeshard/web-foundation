@@ -123,17 +123,12 @@ export function validateSaveEnvelope(value: unknown): PersistenceResult<SaveEnve
   };
 }
 
-function validateMetadata(
-  metadata: SaveEnvelopeMetadata,
-): PersistenceResult<SaveEnvelopeMetadata> {
+function validateMetadata(metadata: SaveEnvelopeMetadata): PersistenceResult<SaveEnvelopeMetadata> {
   if (!isNonEmptyString(metadata.gameId)) {
     return corruptMessage("gameId must be a non-empty string.");
   }
 
-  if (
-    !Number.isSafeInteger(metadata.saveFormatVersion) ||
-    metadata.saveFormatVersion < 0
-  ) {
+  if (!Number.isSafeInteger(metadata.saveFormatVersion) || metadata.saveFormatVersion < 0) {
     return corruptMessage("saveFormatVersion must be a non-negative safe integer.");
   }
 
@@ -174,11 +169,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 }
 
 function isJsonValue(value: unknown): value is JsonValue {
-  if (
-    value === null ||
-    typeof value === "string" ||
-    typeof value === "boolean"
-  ) {
+  if (value === null || typeof value === "string" || typeof value === "boolean") {
     return true;
   }
 
