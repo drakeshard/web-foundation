@@ -1,4 +1,5 @@
 import type { JsonValue, PersistenceResult, SaveFormatVersion } from "./contracts.js";
+import { persistenceFailureMessage, persistenceFailureResult } from "./failure-utils.js";
 import type { SaveEnvelope } from "./save-envelope.js";
 
 export interface SaveMigration {
@@ -127,35 +128,11 @@ function cloneJsonValue(value: JsonValue): JsonValue {
 }
 
 function unsupported(message: string): PersistenceResult<never> {
-  return {
-    ok: false,
-    error: {
-      kind: "unsupported-version",
-      operation: "migrate",
-      diagnostic: { message },
-    },
-  };
+  return persistenceFailureMessage("unsupported-version", "migrate", message);
 }
 
 function migrationFailure(error: unknown): PersistenceResult<never> {
-  if (error instanceof Error) {
-    return {
-      ok: false,
-      error: {
-        kind: "migration-failed",
-        operation: "migrate",
-        diagnostic: { name: error.name, message: error.message },
-      },
-    };
-  }
-
-  return {
-    ok: false,
-    error: {
-      kind: "migration-failed",
-      operation: "migrate",
-    },
-  };
+  return persistenceFailureResult("migration-failed", "migrate", error);
 }
 
 function migrationFailureFromResult(
