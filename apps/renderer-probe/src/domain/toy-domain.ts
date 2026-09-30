@@ -87,10 +87,7 @@ export function getToyElevation(point: ToyPoint): number {
   if (point.x <= TOY_RAMP_START_X) return 0;
   if (point.x >= TOY_RAMP_END_X) return TOY_HIGH_ELEVATION;
 
-  return (
-    ((point.x - TOY_RAMP_START_X) / (TOY_RAMP_END_X - TOY_RAMP_START_X)) *
-    TOY_HIGH_ELEVATION
-  );
+  return ((point.x - TOY_RAMP_START_X) / (TOY_RAMP_END_X - TOY_RAMP_START_X)) * TOY_HIGH_ELEVATION;
 }
 
 export function createToyDomainState(): ToyDomainState {
