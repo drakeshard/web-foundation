@@ -59,6 +59,12 @@ Deterministic gameplay randomness uses an explicit versioned algorithm and state
 
 The accepted v0.1 RNG contract is defined in [Deterministic RNG Contract](./random.md).
 
+## Browser input
+
+Browser keyboard, pointer, and wheel input is normalized at a renderer-neutral boundary before logical action mapping or deterministic simulation consumption. DOM event objects and renderer coordinate types never enter deterministic contracts.
+
+The accepted v0.1 browser input contract is defined in [Browser Input Boundary Contract](./input.md).
+
 ## Renderer integration
 
 Phaser and PlayCanvas integrations remain application-local in v0.1. Shared renderer adapters are considered only after repeated integration code demonstrates stable common semantics.
