@@ -196,3 +196,21 @@ Renderer lifecycle, view synchronization, coordinate conversion, UI orchestratio
 debug visualization, and baseline timing remain application-local. Sprint 06 will pressure-test the
 same domain and Foundation contracts through PlayCanvas before any cross-renderer extraction
 decision.
+
+
+## PlayCanvas probe integration
+
+S06-01 adds PlayCanvas 2.22.6 only to the private renderer-probe application and reuses the same
+renderer-neutral `ToyDomainState` defined for Sprint 05. The PlayCanvas entry is a separate page
+inside the existing probe app; no shared renderer package or Foundation adapter is introduced.
+
+An app-local `projectToyStateToPlayCanvas` function converts copied toy-domain coordinates into
+plain three-dimensional presentation descriptors. PlayCanvas `Application`, `Entity`, camera,
+light, render components, and tags remain presentation-owned and never enter domain contracts.
+
+The probe uses a restricted orthographic tactical camera and creates disposable presentation
+entities from the authoritative state accessor. Destroying and rebuilding those entities from the
+same toy-domain snapshot produces equivalent projected presentation data without recovering state
+from PlayCanvas entities or components. This establishes the S06-01 boundary; elevation semantics,
+pointer/raycast interaction, and ongoing entity synchronization remain scoped to later Sprint 06
+issues.
