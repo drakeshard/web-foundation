@@ -73,37 +73,37 @@ export function createProbeUiBridge(options: ProbeUiBridgeOptions): ProbeUiBridg
       ),
       h("div", {}, [
         h(
-            "button",
-            {
-              type: "button",
-              "data-testid": "activate-modal",
-              onClick: () => {
-                modalActive.value = true;
-                options.onIntent({ type: "set-modal-active", active: true });
-              },
+          "button",
+          {
+            type: "button",
+            "data-testid": "activate-modal",
+            onClick: () => {
+              modalActive.value = true;
+              options.onIntent({ type: "set-modal-active", active: true });
             },
-            "activate modal",
-          ),
-          h(
-            "button",
-            {
-              type: "button",
-              "data-testid": "deactivate-modal",
-              onClick: () => {
-                modalActive.value = false;
-                options.onIntent({ type: "set-modal-active", active: false });
-              },
+          },
+          "activate modal",
+        ),
+        h(
+          "button",
+          {
+            type: "button",
+            "data-testid": "deactivate-modal",
+            onClick: () => {
+              modalActive.value = false;
+              options.onIntent({ type: "set-modal-active", active: false });
             },
-            "deactivate modal",
-          ),
-          h(
-            "button",
-            {
-              type: "button",
-              "data-testid": "ui-randomize-marker",
-              onClick: () => options.onIntent({ type: "randomize-marker" }),
-            },
-            "randomize marker",
+          },
+          "deactivate modal",
+        ),
+        h(
+          "button",
+          {
+            type: "button",
+            "data-testid": "ui-randomize-marker",
+            onClick: () => options.onIntent({ type: "randomize-marker" }),
+          },
+          "randomize marker",
         ),
       ]),
     ]);
