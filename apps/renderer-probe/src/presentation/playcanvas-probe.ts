@@ -125,6 +125,7 @@ export function createPlayCanvasProbe(options: PlayCanvasProbeOptions): PlayCanv
     throw new Error("PlayCanvas tactical camera component was not created");
   }
 
+  const tacticalCamera = cameraComponent;
   const cameraPosition = { x: 8.5, y: 9, z: 8.5 };
   const cameraTarget = {
     x: (initialState.world.width - 1) / 2,
@@ -183,7 +184,7 @@ export function createPlayCanvasProbe(options: PlayCanvasProbeOptions): PlayCanv
     return {
       position: { ...cameraPosition },
       target: { ...cameraTarget },
-      orthoHeight: cameraComponent.orthoHeight,
+      orthoHeight: tacticalCamera.orthoHeight,
     };
   }
 
@@ -200,14 +201,14 @@ export function createPlayCanvasProbe(options: PlayCanvasProbeOptions): PlayCanv
     event.preventDefault();
 
     const nextHeight = clamp(
-      cameraComponent.orthoHeight * Math.exp(event.deltaY * CAMERA_ZOOM_RATE),
+      tacticalCamera.orthoHeight * Math.exp(event.deltaY * CAMERA_ZOOM_RATE),
       CAMERA_MIN_ORTHO_HEIGHT,
       CAMERA_MAX_ORTHO_HEIGHT,
     );
 
-    if (nextHeight === cameraComponent.orthoHeight) return;
+    if (nextHeight === tacticalCamera.orthoHeight) return;
 
-    cameraComponent.orthoHeight = nextHeight;
+    tacticalCamera.orthoHeight = nextHeight;
     publishCameraState();
   };
 
@@ -255,7 +256,7 @@ export function createPlayCanvasProbe(options: PlayCanvasProbeOptions): PlayCanv
     const normalizedForwardZ = forwardZ / forwardLength;
     const rightX = -normalizedForwardZ;
     const rightZ = normalizedForwardX;
-    const unitsPerPixel = (cameraComponent.orthoHeight * 2) / Math.max(canvas.clientHeight, 1);
+    const unitsPerPixel = (tacticalCamera.orthoHeight * 2) / Math.max(canvas.clientHeight, 1);
     const requestedX = (-deltaX * rightX + deltaY * normalizedForwardX) * unitsPerPixel;
     const requestedZ = (-deltaX * rightZ + deltaY * normalizedForwardZ) * unitsPerPixel;
     const world = options.readState().world;
@@ -295,7 +296,7 @@ export function createPlayCanvasProbe(options: PlayCanvasProbeOptions): PlayCanv
       position: ScreenPosition,
       state = options.readState(),
     ): PlayCanvasPointerInteraction {
-      return resolvePlayCanvasPointerInteraction(position, canvas, cameraComponent, state);
+      return resolvePlayCanvasPointerInteraction(position, canvas, tacticalCamera, state);
     },
     readCameraState,
     destroy(): void {
