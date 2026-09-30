@@ -1,9 +1,4 @@
 import { describe, expect, it } from "vitest";
-
-import {
-  MonotonicInputSequence,
-  type PhysicalInputEvent,
-} from "../src/input/index.ts";
 import {
   type BrowserInputEventTarget,
   BrowserInputLifecycle,
@@ -11,6 +6,7 @@ import {
   KeyboardBrowserAdapter,
   PointerBrowserAdapter,
 } from "../src/input/browser/index.ts";
+import { MonotonicInputSequence, type PhysicalInputEvent } from "../src/input/index.ts";
 
 class TestEventTarget implements BrowserInputEventTarget {
   readonly #listeners = new Map<string, Set<EventListener>>();
