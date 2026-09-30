@@ -1,9 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import {
-  type PhysicalInputEvent,
-  MonotonicInputSequence,
-} from "../src/input/index.ts";
+import { type PhysicalInputEvent, MonotonicInputSequence } from "../src/input/index.ts";
 
 describe("input contracts", () => {
   it("assigns monotonically increasing sequence values from a shared source", () => {
@@ -44,11 +41,6 @@ describe("input contracts", () => {
       { kind: "reset", sequence: 3, reason: "blur" },
     ];
 
-    expect(events.map((event) => event.kind)).toEqual([
-      "key",
-      "pointer-button",
-      "wheel",
-      "reset",
-    ]);
+    expect(events.map((event) => event.kind)).toEqual(["key", "pointer-button", "wheel", "reset"]);
   });
 });
