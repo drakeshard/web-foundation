@@ -14,6 +14,7 @@ export type {
 export {
   advanceToyDomain,
   createToyDomainState,
+  getToyElevation,
   restoreToyDomain,
   snapshotToyDomain,
   TOY_PROBE_ID,

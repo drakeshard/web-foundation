@@ -6,7 +6,7 @@ import {
   PROJECTION_ORTHOGRAPHIC,
   RESOLUTION_FIXED,
 } from "playcanvas";
-import type { ToyDomainState } from "../domain/index.js";
+import { getToyElevation, type ToyDomainState } from "../domain/index.js";
 
 const CANVAS_WIDTH = 640;
 const CANVAS_HEIGHT = 480;
@@ -37,16 +37,29 @@ export interface PlayCanvasProbe {
 
 export function projectToyStateToPlayCanvas(
   state: ToyDomainState,
+  alpha = 1,
 ): readonly PlayCanvasPresentationView[] {
+  const interpolationAlpha = clamp(alpha, 0, 1);
+  const probePosition = {
+    x: interpolate(state.probe.previousPosition.x, state.probe.position.x, interpolationAlpha),
+    y: interpolate(state.probe.previousPosition.y, state.probe.position.y, interpolationAlpha),
+  };
+  const probeElevation = interpolate(
+    getToyElevation(state.probe.previousPosition),
+    getToyElevation(state.probe.position),
+    interpolationAlpha,
+  );
+  const markerElevation = getToyElevation(state.marker.position);
+
   return [
     {
       viewId: `probe:${state.probe.id}`,
       kind: "probe",
       domainEntityId: state.probe.id,
       position: {
-        x: state.probe.position.x * CELL_SIZE,
-        y: 0.5,
-        z: state.probe.position.y * CELL_SIZE,
+        x: probePosition.x * CELL_SIZE,
+        y: probeElevation + 0.5,
+        z: probePosition.y * CELL_SIZE,
       },
     },
     {
@@ -54,7 +67,7 @@ export function projectToyStateToPlayCanvas(
       kind: "marker",
       position: {
         x: state.marker.position.x * CELL_SIZE,
-        y: 0.25,
+        y: markerElevation + 0.25,
         z: state.marker.position.y * CELL_SIZE,
       },
     },
@@ -135,4 +148,12 @@ export function createPlayCanvasProbe(options: PlayCanvasProbeOptions): PlayCanv
       canvas.remove();
     },
   };
+}
+
+function interpolate(previous: number, current: number, alpha: number): number {
+  return previous + (current - previous) * alpha;
+}
+
+function clamp(value: number, minimum: number, maximum: number): number {
+  return Math.min(maximum, Math.max(minimum, value));
 }
