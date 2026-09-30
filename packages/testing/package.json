@@ -3,7 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "exports": {},
+  "exports": {
+    "./clock": {
+      "types": "./dist/clock/index.d.ts",
+      "import": "./dist/clock/index.js"
+    }
+  },
   "files": [
     "dist"
   ],
