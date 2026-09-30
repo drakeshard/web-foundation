@@ -30,11 +30,7 @@ export function decodeExampleProfile(input: unknown): ProfileDecodeResult {
     });
   }
 
-  if (
-    input.difficulty !== "easy" &&
-    input.difficulty !== "normal" &&
-    input.difficulty !== "hard"
-  ) {
+  if (input.difficulty !== "easy" && input.difficulty !== "normal" && input.difficulty !== "hard") {
     errors.push({
       path: "$.difficulty",
       message: 'Expected "easy", "normal", or "hard".',
