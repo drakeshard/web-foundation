@@ -154,3 +154,20 @@ share mutable gameplay authority with Phaser.
 
 The UI bridge remains app-local. S05-06 adds no Foundation UI API, signal contract, shared component
 package, or renderer/UI coordination abstraction.
+
+
+## Phaser persistence probe
+
+S05-07 stores only a JSON copy of `ToyDomainSnapshot` through Foundation
+`EnvelopeSaveService` and `IndexedDbSaveStorage`. Phaser scenes, display objects, Preact
+signals, input contexts, and frame/interpolation state are not part of the gameplay save payload.
+
+Loaded envelope payloads pass through app-local toy-domain validation before they can become
+authoritative state. A successful load recreates `ProbeSimulation` from
+`restoreToyDomain(snapshot)`; the existing Phaser state accessor then projects the recreated
+authoritative state into disposable renderer objects on subsequent frames.
+
+The probe includes an explicit corrupt-save fixture. Foundation reports the persistence failure
+category, while application code keeps the current authoritative state unchanged. This validates
+the admitted persistence contracts without introducing a shared decoder or renderer-aware save
+format.
