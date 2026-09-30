@@ -27,6 +27,22 @@ describe("FixedStepDriver", () => {
     });
   });
 
+  it("clamps frame time and bounds catch-up work", () => {
+    const driver = new FixedStepDriver({
+      stepMs: 10,
+      maxFrameDeltaMs: 60,
+      maxStepsPerFrame: 3,
+    });
+
+    expect(driver.advance(95)).toEqual({
+      steps: 3,
+      alpha: 0,
+      clampedMs: 35,
+      droppedSteps: 3,
+      overrun: true,
+    });
+  });
+
   it("resets accumulated partial time", () => {
     const driver = new FixedStepDriver({
       stepMs: 20,
