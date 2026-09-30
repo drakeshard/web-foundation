@@ -7,6 +7,7 @@ export type PointerType = "mouse" | "pen" | "touch" | "unknown";
 export type DigitalInputPhase = "pressed" | "released";
 export type WheelUnit = "pixel" | "line" | "page";
 export type PhysicalInputResetReason = "blur" | "hidden" | "detach";
+export type PhysicalInputResetScope = "keyboard" | "pointer" | "all";
 
 export interface ScreenPosition {
   readonly x: number;
@@ -56,6 +57,7 @@ export interface PhysicalWheelInput {
 export interface PhysicalInputReset {
   readonly kind: "reset";
   readonly sequence: InputSequence;
+  readonly scope: PhysicalInputResetScope;
   readonly reason: PhysicalInputResetReason;
 }
 
