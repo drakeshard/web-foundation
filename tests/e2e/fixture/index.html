@@ -1,5 +1,29 @@
 <!doctype html>
 <html lang="en">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Drakeshard Browser Smoke</title></head>
-<body><main data-testid="smoke-root">browser-smoke-ready</main></body>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Drakeshard Browser Smoke</title>
+</head>
+<body>
+  <main data-testid="smoke-root">browser-smoke-ready</main>
+  <section>
+    <div
+      data-testid="input-surface"
+      tabindex="0"
+      style="width: 320px; height: 180px; border: 1px solid black;"
+    >
+      input-surface
+    </div>
+    <button type="button" data-testid="consume-tick">consume tick</button>
+    <button type="button" data-testid="activate-modal">activate modal</button>
+    <button type="button" data-testid="deactivate-modal">deactivate modal</button>
+    <button type="button" data-testid="enqueue-command">enqueue command</button>
+    <output data-testid="lifecycle-state"></output>
+    <output data-testid="context-state"></output>
+    <pre data-testid="physical-log"></pre>
+    <pre data-testid="tick-snapshot"></pre>
+  </section>
+  <script type="module" src="./input.ts"></script>
+</body>
 </html>
