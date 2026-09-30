@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 
 import {
-  ActionBindingResolver,
   type ActionBinding,
+  ActionBindingResolver,
   type PhysicalInputEvent,
 } from "../src/input/index.ts";
 
@@ -25,12 +25,12 @@ describe("ActionBindingResolver", () => {
   it("maps one physical source to ordered logical action transitions", () => {
     const resolver = new ActionBindingResolver(bindings);
 
-    expect(
-      consume(resolver, { kind: "key", sequence: 0, code: "KeyQ", phase: "pressed" }),
-    ).toEqual([
-      { action: "action.primary", sequence: 0, phase: "pressed" },
-      { action: "action.secondary", sequence: 0, phase: "pressed" },
-    ]);
+    expect(consume(resolver, { kind: "key", sequence: 0, code: "KeyQ", phase: "pressed" })).toEqual(
+      [
+        { action: "action.primary", sequence: 0, phase: "pressed" },
+        { action: "action.secondary", sequence: 0, phase: "pressed" },
+      ],
+    );
 
     expect(resolver.heldActions()).toEqual(["action.primary", "action.secondary"]);
     expect(resolver.activeSources()).toEqual([
@@ -57,9 +57,9 @@ describe("ActionBindingResolver", () => {
       consume(resolver, { kind: "key", sequence: 0, code: "KeyQ", phase: "pressed" }),
     ).toContainEqual({ action: "action.primary", sequence: 0, phase: "pressed" });
 
-    expect(
-      consume(resolver, { kind: "key", sequence: 1, code: "KeyE", phase: "pressed" }),
-    ).toEqual([]);
+    expect(consume(resolver, { kind: "key", sequence: 1, code: "KeyE", phase: "pressed" })).toEqual(
+      [],
+    );
 
     expect(
       consume(resolver, { kind: "key", sequence: 2, code: "KeyQ", phase: "released" }),
@@ -185,17 +185,15 @@ describe("ActionBindingResolver", () => {
     consume(resolver, { kind: "key", sequence: 0, code: "KeyR", phase: "pressed" });
     expect(resolver.isHeld("action.old")).toBe(true);
 
-    resolver.replaceBindings([
-      { action: "action.new", binding: { kind: "key", code: "KeyR" } },
-    ]);
+    resolver.replaceBindings([{ action: "action.new", binding: { kind: "key", code: "KeyR" } }]);
 
     expect(resolver.heldActions()).toEqual([]);
     expect(
       consume(resolver, { kind: "key", sequence: 1, code: "KeyR", phase: "released" }),
     ).toEqual([]);
-    expect(
-      consume(resolver, { kind: "key", sequence: 2, code: "KeyR", phase: "pressed" }),
-    ).toEqual([{ action: "action.new", sequence: 2, phase: "pressed" }]);
+    expect(consume(resolver, { kind: "key", sequence: 2, code: "KeyR", phase: "pressed" })).toEqual(
+      [{ action: "action.new", sequence: 2, phase: "pressed" }],
+    );
   });
 
   it("ignores pointer-position and wheel records for digital action state", () => {
