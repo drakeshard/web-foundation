@@ -233,7 +233,6 @@ test("blur reset clears live input state and resumes without replay", async ({ p
     ],
     commands: [],
   });
-
 });
 
 test("tick snapshots and commands expose stable plain data instead of DOM events", async ({
