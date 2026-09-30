@@ -9,8 +9,8 @@ import {
 } from "playcanvas";
 import { getToyElevation, type ToyDomainState } from "../domain/index.js";
 import {
-  resolvePlayCanvasPointerInteraction,
   type PlayCanvasPointerInteraction,
+  resolvePlayCanvasPointerInteraction,
 } from "./playcanvas-interaction.js";
 
 const CANVAS_WIDTH = 640;
@@ -255,12 +255,9 @@ export function createPlayCanvasProbe(options: PlayCanvasProbeOptions): PlayCanv
     const normalizedForwardZ = forwardZ / forwardLength;
     const rightX = -normalizedForwardZ;
     const rightZ = normalizedForwardX;
-    const unitsPerPixel =
-      (cameraComponent.orthoHeight * 2) / Math.max(canvas.clientHeight, 1);
-    const requestedX =
-      (-deltaX * rightX + deltaY * normalizedForwardX) * unitsPerPixel;
-    const requestedZ =
-      (-deltaX * rightZ + deltaY * normalizedForwardZ) * unitsPerPixel;
+    const unitsPerPixel = (cameraComponent.orthoHeight * 2) / Math.max(canvas.clientHeight, 1);
+    const requestedX = (-deltaX * rightX + deltaY * normalizedForwardX) * unitsPerPixel;
+    const requestedZ = (-deltaX * rightZ + deltaY * normalizedForwardZ) * unitsPerPixel;
     const world = options.readState().world;
     const nextTargetX = clamp(cameraTarget.x + requestedX, 0, world.width - 1);
     const nextTargetZ = clamp(cameraTarget.z + requestedZ, 0, world.height - 1);
