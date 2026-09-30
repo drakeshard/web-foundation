@@ -1,3 +1,15 @@
+export {
+  type ActionBinding,
+  ActionBindingResolver,
+  type ActiveActionSource,
+  type ActiveActionSourceIdentity,
+  type ActiveKeyActionSource,
+  type ActivePointerButtonActionSource,
+  type DigitalPhysicalBinding,
+  type KeyPhysicalBinding,
+  type LogicalActionTransition,
+  type PointerButtonPhysicalBinding,
+} from "./action-mapping.js";
 export type {
   BrowserInputEventTarget,
   BrowserVisibilityTarget,
@@ -35,15 +47,3 @@ export {
   PointerBrowserAdapter,
   type PointerBrowserAdapterOptions,
 } from "./pointer-browser-adapter.js";
-export {
-  type ActionBinding,
-  ActionBindingResolver,
-  type ActiveActionSource,
-  type ActiveActionSourceIdentity,
-  type ActiveKeyActionSource,
-  type ActivePointerButtonActionSource,
-  type DigitalPhysicalBinding,
-  type KeyPhysicalBinding,
-  type LogicalActionTransition,
-  type PointerButtonPhysicalBinding,
-} from "./action-mapping.js";
