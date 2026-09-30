@@ -1,8 +1,4 @@
-import {
-  openDB,
-  type DBSchema,
-  type IDBPDatabase,
-} from "idb";
+import { openDB, type DBSchema, type IDBPDatabase } from "idb";
 
 import type {
   PersistenceDiagnostic,
