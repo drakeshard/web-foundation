@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { type PhysicalInputEvent, MonotonicInputSequence } from "../src/input/index.ts";
+import { MonotonicInputSequence, type PhysicalInputEvent } from "../src/input/index.ts";
 
 describe("input contracts", () => {
   it("assigns monotonically increasing sequence values from a shared source", () => {
