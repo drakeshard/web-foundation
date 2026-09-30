@@ -1,11 +1,13 @@
 import {
-  ActionBindingResolver,
   BrowserInputLifecycle,
-  InputContextRouter,
   KeyboardBrowserAdapter,
+  PointerBrowserAdapter,
+} from "../../../packages/foundation/src/input/browser/index.ts";
+import {
+  ActionBindingResolver,
+  InputContextRouter,
   MonotonicInputSequence,
   type PhysicalInputEvent,
-  PointerBrowserAdapter,
   TickInputHandoff,
   type TickInputSnapshot,
 } from "../../../packages/foundation/src/input/index.ts";

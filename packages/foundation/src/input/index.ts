@@ -11,15 +11,6 @@ export {
   type PointerButtonPhysicalBinding,
 } from "./action-mapping.js";
 export type {
-  BrowserInputEventTarget,
-  BrowserVisibilityTarget,
-} from "./browser-event-target.js";
-export {
-  BrowserInputLifecycle,
-  type BrowserInputLifecycleOptions,
-  type BrowserInputResetListener,
-} from "./browser-input-lifecycle.js";
-export type {
   DigitalInputPhase,
   InputCommand,
   InputSequence,
@@ -52,14 +43,6 @@ export {
   InputContextRouter,
 } from "./input-contexts.js";
 export { MonotonicInputSequence } from "./input-sequence.js";
-export {
-  KeyboardBrowserAdapter,
-  type KeyboardBrowserAdapterOptions,
-} from "./keyboard-browser-adapter.js";
-export {
-  PointerBrowserAdapter,
-  type PointerBrowserAdapterOptions,
-} from "./pointer-browser-adapter.js";
 export {
   type ContextualLogicalActionState,
   TickInputHandoff,

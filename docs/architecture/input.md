@@ -134,3 +134,11 @@ S02-07 centralizes window focus/blur and document visibility handling in one nar
 Blur or transition to hidden suspends input. Before one `all`-scope reset record is emitted, the lifecycle synchronously notifies attached adapters to clear their local physical held state. This order prevents a normalized reset from reaching action mapping while an adapter still believes a key or pointer button is held. Repeated blur/hidden signals while already suspended do not emit duplicate resets.
 
 Focus and visible transitions only resume acceptance when both focus and visibility conditions permit it. They do not replay input accumulated while suspended and do not synthesize pressed/released edges. Adapter-local detach remains scoped (`keyboard` or `pointer`) so removing one adapter cannot invalidate another. Lifecycle detach invalidates all attached adapter physical state with an `all`-scope detach reset. Pointer cancellation and lost pointer capture remain pointer-local invalidation records rather than global lifecycle resets.
+## Public module boundary
+
+S02-09 separates renderer-neutral input APIs from browser integration APIs at the package boundary.
+
+`@drakeshard/foundation/input` exposes normalized physical records, action mapping, contexts, input sequencing, and tick handoff. `@drakeshard/foundation/input/browser` exposes browser event-target abstractions, lifecycle coordination, and keyboard/pointer browser adapters.
+
+Browser code may normalize into the core input contracts. Core deterministic input and simulation-facing code must not depend on the browser subpath. Raw DOM events remain confined to browser adapters and never enter action/context/tick contracts.
+
