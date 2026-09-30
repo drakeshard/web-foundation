@@ -108,12 +108,12 @@ test("failed migration leaves the browser source save unchanged", async ({ page 
   await expect
     .poll(() => readResult(page))
     .toMatchObject({
-    ok: true,
-    value: {
-      saveFormatVersion: 1,
-      payload: { hp: 10 },
-    },
-  });
+      ok: true,
+      value: {
+        saveFormatVersion: 1,
+        payload: { hp: 10 },
+      },
+    });
 });
 
 async function expectResult(page: Page, expected: unknown): Promise<void> {
