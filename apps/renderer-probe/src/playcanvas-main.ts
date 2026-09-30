@@ -1,14 +1,32 @@
-import type { ToyDomainCommand } from "./domain/index.js";
-import { createToyDomainState } from "./domain/index.js";
+import { DeterministicRng } from "@drakeshard/foundation/random";
+import {
+  advanceToyDomain,
+  createToyDomainState,
+  getToyElevation,
+  type ToyDomainCommand,
+} from "./domain/index.js";
 import { createPlayCanvasSelectionInput } from "./input/playcanvas-selection-input.js";
 import { createPlayCanvasProbe } from "./presentation/playcanvas-probe.js";
 
-const authoritativeState = createToyDomainState();
+const ELEVATION_DEMO_COMMANDS: readonly ToyDomainCommand[] = [
+  { type: "move", dx: -1, dy: 0 },
+  { type: "move", dx: 1, dy: 0 },
+  { type: "move", dx: 1, dy: 0 },
+  { type: "move", dx: -1, dy: 0 },
+];
+
+let authoritativeState = createToyDomainState();
+const elevationDemoRandom = new DeterministicRng(0x5_06_05);
+let elevationDemoStep = 0;
+
 const parent = getRequiredElement<HTMLElement>("#playcanvas-probe");
 const status = getRequiredElement<HTMLOutputElement>("[data-testid='playcanvas-probe-status']");
 const domainState = getRequiredElement<HTMLElement>("[data-testid='playcanvas-domain-state']");
 const syncButton = getRequiredElement<HTMLButtonElement>("[data-testid='playcanvas-sync']");
 const rebuildButton = getRequiredElement<HTMLButtonElement>("[data-testid='playcanvas-rebuild']");
+const elevationDemoButton = getRequiredElement<HTMLButtonElement>(
+  "[data-testid='playcanvas-elevation-demo-advance']",
+);
 const rebuildCount = getRequiredElement<HTMLOutputElement>(
   "[data-testid='playcanvas-rebuild-count']",
 );
@@ -16,13 +34,17 @@ const cameraState = getRequiredElement<HTMLElement>("[data-testid='playcanvas-ca
 const presentationSync = getRequiredElement<HTMLElement>(
   "[data-testid='playcanvas-presentation-sync']",
 );
+const elevationDemoState = getRequiredElement<HTMLElement>(
+  "[data-testid='playcanvas-elevation-demo-state']",
+);
 const pointerResult = getRequiredElement<HTMLElement>("[data-testid='playcanvas-pointer-result']");
 const selectionIntent = getRequiredElement<HTMLElement>(
   "[data-testid='playcanvas-selection-intent']",
 );
 const inputContexts = getRequiredElement<HTMLElement>("[data-testid='playcanvas-input-contexts']");
 
-domainState.textContent = JSON.stringify(authoritativeState);
+renderDomainState();
+renderElevationDemoState();
 pointerResult.textContent = JSON.stringify(null);
 selectionIntent.textContent = JSON.stringify(null);
 
@@ -70,6 +92,24 @@ rebuildButton.addEventListener("click", () => {
   rebuildCount.value = String(rebuilds);
 });
 
+elevationDemoButton.addEventListener("click", () => {
+  const command = ELEVATION_DEMO_COMMANDS[elevationDemoStep % ELEVATION_DEMO_COMMANDS.length];
+
+  if (!command) {
+    throw new Error("Missing elevation demo command");
+  }
+
+  authoritativeState = advanceToyDomain(
+    authoritativeState,
+    [command],
+    elevationDemoRandom,
+  ).state;
+  elevationDemoStep += 1;
+  renderDomainState();
+  renderElevationDemoState();
+  probe.syncPresentation(authoritativeState);
+});
+
 window.addEventListener(
   "pagehide",
   () => {
@@ -78,6 +118,18 @@ window.addEventListener(
   },
   { once: true },
 );
+
+function renderDomainState(): void {
+  domainState.textContent = JSON.stringify(authoritativeState);
+}
+
+function renderElevationDemoState(): void {
+  elevationDemoState.textContent = JSON.stringify({
+    tick: authoritativeState.tick,
+    position: authoritativeState.probe.position,
+    elevation: getToyElevation(authoritativeState.probe.position),
+  });
+}
 
 function getRequiredElement<TElement extends Element>(selector: string): TElement {
   const element = document.querySelector<TElement>(selector);
