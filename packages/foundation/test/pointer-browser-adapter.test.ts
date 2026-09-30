@@ -51,12 +51,7 @@ function pointerEvent(
   return { pointerId, button, clientX, clientY, pointerType } as unknown as Event;
 }
 
-function wheelEvent(
-  deltaX: number,
-  deltaY: number,
-  deltaZ: number,
-  deltaMode: number,
-): Event {
+function wheelEvent(deltaX: number, deltaY: number, deltaZ: number, deltaMode: number): Event {
   return { deltaX, deltaY, deltaZ, deltaMode } as unknown as Event;
 }
 
@@ -172,9 +167,9 @@ describe("PointerBrowserAdapter", () => {
     expect(adapter.isHeld(7, 0)).toBe(false);
     expect(adapter.isHeld(7, 2)).toBe(false);
     expect(events.at(-1)).toEqual({ kind: "pointer-cancel", sequence: 2, pointerId: 7 });
-    expect(events.filter((event) => event.kind === "pointer-button" && event.phase === "released")).toEqual(
-      [],
-    );
+    expect(
+      events.filter((event) => event.kind === "pointer-button" && event.phase === "released"),
+    ).toEqual([]);
   });
 
   it("treats lost pointer capture with held buttons as cancellation", () => {
