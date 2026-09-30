@@ -25,7 +25,7 @@ export function createPhaserProbe(options: PhaserProbeOptions): Phaser.Game {
       options.onReady?.(this.game.canvas);
     }
 
-    public update(_time: number, frameDeltaMs: number): void {
+    public override update(_time: number, frameDeltaMs: number): void {
       const frame = options.advanceFrame(frameDeltaMs);
       this.renderFrame(frame.state, frame.alpha);
     }
