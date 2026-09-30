@@ -6,7 +6,10 @@ import {
   restoreToyDomain,
   snapshotToyDomain,
 } from "../src/domain/index.ts";
-import { projectToyStateToPlayCanvas } from "../src/presentation/playcanvas-probe.ts";
+import {
+  planPlayCanvasPresentationSync,
+  projectToyStateToPlayCanvas,
+} from "../src/presentation/playcanvas-probe.ts";
 
 describe("PlayCanvas presentation projection", () => {
   it("maps renderer-neutral elevation into disposable 3D view data", () => {
@@ -44,6 +47,33 @@ describe("PlayCanvas presentation projection", () => {
       position: { x: 3.5, y: 1.25, z: 3 },
     });
     expect(snapshotToyDomain(moved)).toEqual(before);
+  });
+
+  it("plans create, update, and destroy operations by stable presentation identity", () => {
+    const nextViews = projectToyStateToPlayCanvas(createToyDomainState());
+
+    expect(planPlayCanvasPresentationSync(["probe:probe", "stale-view"], nextViews)).toEqual([
+      {
+        kind: "update",
+        view: nextViews[0],
+      },
+      {
+        kind: "create",
+        view: nextViews[1],
+      },
+      {
+        kind: "destroy",
+        viewId: "stale-view",
+      },
+    ]);
+  });
+
+  it("rejects duplicate presentation identities before entity synchronization", () => {
+    const [view] = projectToyStateToPlayCanvas(createToyDomainState());
+
+    expect(() => planPlayCanvasPresentationSync([], [view, view])).toThrow(
+      "Duplicate PlayCanvas presentation view id: probe:probe",
+    );
   });
 
   it("recreates the same presentation projection from a domain snapshot", () => {
