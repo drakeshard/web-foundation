@@ -249,3 +249,26 @@ asynchronously from the pointer event would bypass the Sprint 02 tick-handoff co
 simulation integration must enqueue plain intention data and consume it only on executable fixed
 ticks. Likewise, incremental `pc.Entity` create/update/destroy synchronization remains owned by
 S06-04. No Foundation API, renderer abstraction, terrain API, or save-format change is introduced.
+
+
+## PlayCanvas presentation synchronization
+
+S06-04 makes the PlayCanvas entity tree an incrementally synchronized projection of authoritative
+toy-domain state. The presentation layer keeps a map keyed by stable presentation view ids; the
+probe entity view id embeds the toy-domain entity id and is additionally tagged with that domain id.
+Missing projected views create `pc.Entity` objects, existing views update transforms, and stale
+views are destroyed.
+
+The synchronization plan is derived only from plain `PlayCanvasPresentationView` descriptors.
+PlayCanvas entities/components are never passed into the toy domain, and synchronization does not
+read renderer transforms or components back into authoritative gameplay state. Interpolation
+continues to modify only projected presentation coordinates.
+
+Destroying the complete PlayCanvas presentation tree clears the renderer-owned map. Rebuilding from
+the same authoritative domain snapshot recreates equivalent projected views, so PlayCanvas entity
+identity remains disposable rather than gameplay identity. This mirrors the ownership boundary
+already validated by the Phaser probe without introducing a shared renderer interface.
+
+S06-04 adds no Foundation API, generic entity framework, renderer adapter, domain lifecycle API, or
+save-format change. The synchronization planner and entity lifecycle remain private
+renderer-probe application code.

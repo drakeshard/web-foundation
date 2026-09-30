@@ -31,6 +31,23 @@ export interface PlayCanvasPresentationView {
   };
 }
 
+export type PlayCanvasPresentationSyncOperation =
+  | {
+      readonly kind: "create" | "update";
+      readonly view: PlayCanvasPresentationView;
+    }
+  | {
+      readonly kind: "destroy";
+      readonly viewId: string;
+    };
+
+export interface PlayCanvasPresentationSyncResult {
+  readonly created: number;
+  readonly updated: number;
+  readonly destroyed: number;
+  readonly viewIds: readonly string[];
+}
+
 export interface PlayCanvasCameraState {
   readonly position: {
     readonly x: number;
@@ -50,12 +67,14 @@ export interface PlayCanvasProbeOptions {
   readonly readState: () => ToyDomainState;
   readonly onReady?: (canvas: HTMLCanvasElement) => void;
   readonly onCameraChanged?: (state: PlayCanvasCameraState) => void;
+  readonly onPresentationSynchronized?: (result: PlayCanvasPresentationSyncResult) => void;
 }
 
 export interface PlayCanvasProbe {
   readonly app: Application;
   readonly canvas: HTMLCanvasElement;
-  rebuildPresentation(state?: ToyDomainState): void;
+  syncPresentation(state?: ToyDomainState, alpha?: number): PlayCanvasPresentationSyncResult;
+  rebuildPresentation(state?: ToyDomainState): PlayCanvasPresentationSyncResult;
   resolvePointerInteraction(
     position: ScreenPosition,
     state?: ToyDomainState,
@@ -101,6 +120,35 @@ export function projectToyStateToPlayCanvas(
       },
     },
   ];
+}
+
+export function planPlayCanvasPresentationSync(
+  existingViewIds: readonly string[],
+  nextViews: readonly PlayCanvasPresentationView[],
+): readonly PlayCanvasPresentationSyncOperation[] {
+  const existing = new Set(existingViewIds);
+  const desired = new Set<string>();
+  const operations: PlayCanvasPresentationSyncOperation[] = [];
+
+  for (const view of nextViews) {
+    if (desired.has(view.viewId)) {
+      throw new Error(`Duplicate PlayCanvas presentation view id: ${view.viewId}`);
+    }
+
+    desired.add(view.viewId);
+    operations.push({
+      kind: existing.has(view.viewId) ? "update" : "create",
+      view,
+    });
+  }
+
+  for (const viewId of existingViewIds) {
+    if (!desired.has(viewId)) {
+      operations.push({ kind: "destroy", viewId });
+    }
+  }
+
+  return operations;
 }
 
 export function createPlayCanvasProbe(options: PlayCanvasProbeOptions): PlayCanvasProbe {
@@ -152,32 +200,90 @@ export function createPlayCanvasProbe(options: PlayCanvasProbeOptions): PlayCanv
   app.root.addChild(ground);
 
   let presentationRoot: Entity | undefined;
+  const presentationEntities = new Map<string, Entity>();
   let dragPointerId: number | undefined;
   let lastDragPosition: { readonly x: number; readonly y: number } | undefined;
 
-  function rebuildPresentation(state = options.readState()): void {
-    presentationRoot?.destroy();
-    presentationRoot = new Entity("ToyPresentation");
+  function syncPresentation(
+    state = options.readState(),
+    alpha = 1,
+  ): PlayCanvasPresentationSyncResult {
+    const root = ensurePresentationRoot();
+    const nextViews = projectToyStateToPlayCanvas(state, alpha);
+    const operations = planPlayCanvasPresentationSync([...presentationEntities.keys()], nextViews);
+    let created = 0;
+    let updated = 0;
+    let destroyed = 0;
 
-    for (const view of projectToyStateToPlayCanvas(state)) {
-      const entity = new Entity(view.viewId);
-      entity.addComponent("render", {
-        type: view.kind === "probe" ? "box" : "sphere",
-      });
-      entity.setPosition(view.position.x, view.position.y, view.position.z);
-      entity.setLocalScale(
-        view.kind === "probe" ? 0.7 : 0.35,
-        view.kind === "probe" ? 1 : 0.35,
-        view.kind === "probe" ? 0.7 : 0.35,
-      );
-      entity.tags.add(`presentation-view:${view.viewId}`);
-      if (view.domainEntityId) {
-        entity.tags.add(`domain-entity:${view.domainEntityId}`);
+    for (const operation of operations) {
+      if (operation.kind === "destroy") {
+        presentationEntities.get(operation.viewId)?.destroy();
+        presentationEntities.delete(operation.viewId);
+        destroyed += 1;
+        continue;
       }
-      presentationRoot.addChild(entity);
+
+      let entity = presentationEntities.get(operation.view.viewId);
+
+      if (!entity) {
+        entity = createPresentationEntity(operation.view);
+        presentationEntities.set(operation.view.viewId, entity);
+        root.addChild(entity);
+        created += 1;
+      } else {
+        updated += 1;
+      }
+
+      updatePresentationEntity(entity, operation.view);
     }
 
-    app.root.addChild(presentationRoot);
+    const result: PlayCanvasPresentationSyncResult = {
+      created,
+      updated,
+      destroyed,
+      viewIds: [...presentationEntities.keys()],
+    };
+    options.onPresentationSynchronized?.(result);
+    return result;
+  }
+
+  function rebuildPresentation(state = options.readState()): PlayCanvasPresentationSyncResult {
+    presentationRoot?.destroy();
+    presentationRoot = undefined;
+    presentationEntities.clear();
+    return syncPresentation(state);
+  }
+
+  function ensurePresentationRoot(): Entity {
+    if (!presentationRoot) {
+      presentationRoot = new Entity("ToyPresentation");
+      app.root.addChild(presentationRoot);
+    }
+
+    return presentationRoot;
+  }
+
+  function createPresentationEntity(view: PlayCanvasPresentationView): Entity {
+    const entity = new Entity(view.viewId);
+    entity.addComponent("render", {
+      type: view.kind === "probe" ? "box" : "sphere",
+    });
+    entity.tags.add(`presentation-view:${view.viewId}`);
+
+    if (view.domainEntityId) {
+      entity.tags.add(`domain-entity:${view.domainEntityId}`);
+    }
+
+    return entity;
+  }
+
+  function updatePresentationEntity(entity: Entity, view: PlayCanvasPresentationView): void {
+    entity.setPosition(view.position.x, view.position.y, view.position.z);
+    entity.setLocalScale(
+      view.kind === "probe" ? 0.7 : 0.35,
+      view.kind === "probe" ? 1 : 0.35,
+      view.kind === "probe" ? 0.7 : 0.35,
+    );
   }
 
   function readCameraState(): PlayCanvasCameraState {
@@ -291,6 +397,7 @@ export function createPlayCanvasProbe(options: PlayCanvasProbeOptions): PlayCanv
   return {
     app,
     canvas,
+    syncPresentation,
     rebuildPresentation,
     resolvePointerInteraction(
       position: ScreenPosition,
@@ -308,6 +415,7 @@ export function createPlayCanvasProbe(options: PlayCanvasProbeOptions): PlayCanv
       canvas.removeEventListener("lostpointercapture", onPointerEnd);
       canvas.removeEventListener("contextmenu", onContextMenu);
       presentationRoot?.destroy();
+      presentationEntities.clear();
       app.destroy();
       canvas.remove();
     },
