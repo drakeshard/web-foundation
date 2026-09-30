@@ -41,5 +41,16 @@
   </section>
   <script type="module" src="./settings.ts"></script>
   <script type="module" src="./save-storage.ts"></script>
+  <section>
+    <button type="button" data-testid="save-service-save">save current envelope</button>
+    <button type="button" data-testid="save-service-load">load current service</button>
+    <button type="button" data-testid="save-service-inspect">inspect raw envelope</button>
+    <button type="button" data-testid="save-service-seed-legacy">seed legacy save</button>
+    <button type="button" data-testid="save-service-seed-corrupt">seed corrupt save</button>
+    <button type="button" data-testid="save-service-seed-future">seed future save</button>
+    <button type="button" data-testid="save-service-load-failing">load failing migration</button>
+    <pre data-testid="save-service-result"></pre>
+  </section>
+  <script type="module" src="./save-service.ts"></script>
 </body>
 </html>
