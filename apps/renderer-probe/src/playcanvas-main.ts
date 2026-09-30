@@ -99,11 +99,7 @@ elevationDemoButton.addEventListener("click", () => {
     throw new Error("Missing elevation demo command");
   }
 
-  authoritativeState = advanceToyDomain(
-    authoritativeState,
-    [command],
-    elevationDemoRandom,
-  ).state;
+  authoritativeState = advanceToyDomain(authoritativeState, [command], elevationDemoRandom).state;
   elevationDemoStep += 1;
   renderDomainState();
   renderElevationDemoState();
