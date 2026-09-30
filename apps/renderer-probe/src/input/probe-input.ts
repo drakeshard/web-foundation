@@ -30,6 +30,7 @@ const MOVE_ACTIONS = {
 } as const satisfies Record<string, ToyDomainCommand>;
 
 const POINTER_ACTION = "probe.pointer-primary";
+const RANDOMIZE_ACTION = "probe.randomize-marker";
 
 export interface ProbeInputController {
   consumeDomainCommands(): readonly ToyDomainCommand[];
@@ -53,6 +54,7 @@ export function createProbeInputController(
     { action: "probe.move-up", binding: { kind: "key", code: "KeyW" } },
     { action: "probe.move-down", binding: { kind: "key", code: "KeyS" } },
     { action: POINTER_ACTION, binding: { kind: "pointer-button", button: 0 } },
+    { action: RANDOMIZE_ACTION, binding: { kind: "key", code: "KeyR" } },
   ]);
   const contexts = new InputContextRouter([
     {
@@ -64,6 +66,7 @@ export function createProbeInputController(
         { action: "probe.move-up" },
         { action: "probe.move-down" },
         { action: POINTER_ACTION },
+        { action: RANDOMIZE_ACTION },
       ],
     },
     {
@@ -75,6 +78,7 @@ export function createProbeInputController(
         { action: "probe.move-up" },
         { action: "probe.move-down" },
         { action: POINTER_ACTION },
+        { action: RANDOMIZE_ACTION },
       ],
     },
   ]);
@@ -127,7 +131,14 @@ export function createProbeInputController(
       const commands: ToyDomainCommand[] = [];
 
       for (const action of snapshot.actions) {
-        if (action.context !== GAMEPLAY_CONTEXT || !action.held) continue;
+        if (action.context !== GAMEPLAY_CONTEXT) continue;
+
+        if (action.action === RANDOMIZE_ACTION && action.pressed) {
+          commands.push({ type: "randomize-marker" });
+          continue;
+        }
+
+        if (!action.held) continue;
 
         const command = MOVE_ACTIONS[action.action as keyof typeof MOVE_ACTIONS];
         if (command) commands.push(command);

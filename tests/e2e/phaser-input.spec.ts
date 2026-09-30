@@ -5,61 +5,112 @@ test.beforeEach(async ({ page }) => {
   await expect(page.getByTestId("renderer-probe-status")).toHaveText("phaser-probe-ready");
 });
 
-test("keyboard input crosses Foundation mapping before becoming a toy-domain move", async ({
-  page,
-}) => {
+test("held keyboard input is consumed on fixed simulation ticks", async ({ page }) => {
   await page.keyboard.down("d");
-  await page.getByTestId("consume-input").click();
+  await page.waitForFunction(() => {
+    const state = JSON.parse(
+      document.querySelector<HTMLElement>("[data-testid='domain-state']")?.textContent ?? "null",
+    ) as { probe?: { position?: { x?: number } } } | null;
+    return (state?.probe?.position?.x ?? 0) > 3;
+  });
+  await page.keyboard.up("d");
 
   expect(await readDomainState(page)).toMatchObject({
-    tick: 1,
     probe: {
-      position: { x: 4, y: 3 },
+      position: { y: 3 },
     },
   });
-
-  await page.keyboard.up("d");
 });
 
-test("pointer input is converted from client coordinates only in the probe app layer", async ({
+test("pointer input is converted once and consumed by the next fixed simulation tick", async ({
   page,
 }) => {
   const canvas = page.locator("#renderer-probe canvas");
   const box = await requiredBox(canvas);
 
   await page.mouse.click(box.x + 6.5 * 40, box.y + 5.5 * 40);
-  await page.getByTestId("consume-input").click();
+  await page.waitForFunction(() => {
+    const state = JSON.parse(
+      document.querySelector<HTMLElement>("[data-testid='domain-state']")?.textContent ?? "null",
+    ) as { marker?: { position?: { x?: number; y?: number } } } | null;
+    return state?.marker?.position?.x === 6 && state.marker.position.y === 5;
+  });
 
   expect(await readDomainState(page)).toMatchObject({
-    tick: 1,
     marker: {
       position: { x: 6, y: 5 },
     },
   });
 });
 
-test("modal input context consumes gameplay actions before domain-command translation", async ({
-  page,
-}) => {
+test("modal input context consumes gameplay movement across fixed ticks", async ({ page }) => {
   await page.getByTestId("activate-modal").click();
   await expect(page.getByTestId("input-contexts")).toHaveText('["modal","gameplay"]');
 
+  const before = await readDomainState(page);
+  const beforeTick = readTick(before);
+
   await page.keyboard.down("d");
-  await page.getByTestId("consume-input").click();
+  await waitForTick(page, beforeTick + 2);
+  await page.keyboard.up("d");
 
   expect(await readDomainState(page)).toMatchObject({
-    tick: 0,
     probe: {
       position: { x: 3, y: 3 },
     },
   });
 
-  await page.keyboard.up("d");
   await page.getByTestId("deactivate-modal").click();
 });
 
+test("random toy-domain command advances Foundation deterministic RNG on a fixed tick", async ({
+  page,
+}) => {
+  const before = await readDomainState(page);
+
+  await page.keyboard.press("r");
+  await page.waitForFunction(
+    (initialMarker) => {
+      const state = JSON.parse(
+        document.querySelector<HTMLElement>("[data-testid='domain-state']")?.textContent ?? "null",
+      ) as { marker?: { position?: { x?: number; y?: number } } } | null;
+      const marker = state?.marker?.position;
+      return (
+        marker !== undefined &&
+        (marker.x !== initialMarker.x || marker.y !== initialMarker.y)
+      );
+    },
+    (before as DomainState).marker.position,
+  );
+
+  expect((await readDomainState(page) as DomainState).marker.position).not.toEqual(
+    (before as DomainState).marker.position,
+  );
+});
+
+interface DomainState {
+  readonly tick: number;
+  readonly marker: { readonly position: { readonly x: number; readonly y: number } };
+}
+
 async function readDomainState(page: Page): Promise<unknown> {
   return readJson(page.getByTestId("domain-state"));
+}
+
+function readTick(value: unknown): number {
+  return (value as { tick: number }).tick;
+}
+
+async function waitForTick(page: Page, minimumTick: number): Promise<void> {
+  await page.waitForFunction(
+    (minimum) => {
+      const state = JSON.parse(
+        document.querySelector<HTMLElement>("[data-testid='domain-state']")?.textContent ?? "null",
+      ) as { tick?: number } | null;
+      return (state?.tick ?? -1) >= minimum;
+    },
+    minimumTick,
+  );
 }
 
 async function readJson(locator: Locator): Promise<unknown> {
