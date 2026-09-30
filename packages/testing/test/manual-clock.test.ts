@@ -27,13 +27,10 @@ describe("ManualClock", () => {
     },
   );
 
-  it.each([-1, Number.NaN, Number.POSITIVE_INFINITY])(
-    "rejects invalid delta %s",
-    (deltaMs) => {
-      const clock = new ManualClock();
+  it.each([-1, Number.NaN, Number.POSITIVE_INFINITY])("rejects invalid delta %s", (deltaMs) => {
+    const clock = new ManualClock();
 
-      expect(() => clock.advanceBy(deltaMs)).toThrow(RangeError);
-      expect(clock.nowMs()).toBe(0);
-    },
-  );
+    expect(() => clock.advanceBy(deltaMs)).toThrow(RangeError);
+    expect(clock.nowMs()).toBe(0);
+  });
 });
