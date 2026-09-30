@@ -1,8 +1,4 @@
-import type {
-  PersistenceDiagnostic,
-  PersistenceFailure,
-  PersistenceResult,
-} from "./contracts.js";
+import type { PersistenceDiagnostic, PersistenceFailure, PersistenceResult } from "./contracts.js";
 
 export function persistenceFailureResult(
   kind: PersistenceFailure["kind"],
