@@ -1,7 +1,4 @@
-import type {
-  BrowserInputEventTarget,
-  BrowserVisibilityTarget,
-} from "./browser-event-target.js";
+import type { BrowserInputEventTarget, BrowserVisibilityTarget } from "./browser-event-target.js";
 import type {
   InputSequenceSource,
   PhysicalInputResetReason,
