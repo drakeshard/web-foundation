@@ -23,6 +23,10 @@
     "./storage": {
       "types": "./dist/storage/index.d.ts",
       "import": "./dist/storage/index.js"
+    },
+    "./storage/browser": {
+      "types": "./dist/storage/browser/index.d.ts",
+      "import": "./dist/storage/browser/index.js"
     }
   },
   "files": [
