@@ -1,7 +1,6 @@
-import { describe, expect, it } from "vitest";
-
 import { DeterministicRng, RNG_ALGORITHM_ID } from "@drakeshard/foundation/random";
 import { FixedStepDriver } from "@drakeshard/foundation/time";
+import { describe, expect, it } from "vitest";
 import { ManualClock } from "../src/clock/index.ts";
 
 interface SimulationState {
