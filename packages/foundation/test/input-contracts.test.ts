@@ -38,7 +38,7 @@ describe("input contracts", () => {
         position: { x: 100, y: 200 },
       },
       { kind: "wheel", sequence: 2, deltaX: 0, deltaY: -3, deltaZ: 0, unit: "line" },
-      { kind: "reset", sequence: 3, reason: "blur" },
+      { kind: "reset", sequence: 3, scope: "all", reason: "blur" },
     ];
 
     expect(events.map((event) => event.kind)).toEqual(["key", "pointer-button", "wheel", "reset"]);
