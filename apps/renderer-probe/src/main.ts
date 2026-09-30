@@ -1,12 +1,5 @@
-import {
-  advanceToyDomain,
-  createToyDomainState,
-  type ToyDomainRandom,
-} from "./domain/index.js";
-import {
-  createProbeInputController,
-  type ProbeInputController,
-} from "./input/probe-input.js";
+import { advanceToyDomain, createToyDomainState, type ToyDomainRandom } from "./domain/index.js";
+import { createProbeInputController, type ProbeInputController } from "./input/probe-input.js";
 import { createPhaserProbe } from "./presentation/phaser-probe.js";
 import { clientPositionToToyPoint } from "./presentation/screen-to-world.js";
 
