@@ -35,9 +35,7 @@ describe("LocalStorageSettingsStorage", () => {
       value: { volume: 0.75, muted: false },
     });
 
-    expect([...raw.values.keys()]).toEqual([
-      "@drakeshard/settings/game%3Aprod/audio%2Fmaster",
-    ]);
+    expect([...raw.values.keys()]).toEqual(["@drakeshard/settings/game%3Aprod/audio%2Fmaster"]);
   });
 
   it("returns structured corruption when persisted JSON is malformed", () => {
