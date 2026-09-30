@@ -3,9 +3,7 @@ import path from "node:path";
 import ts from "typescript";
 
 const root = process.cwd();
-const sourceRoots = [
-  { kind: "foundation", dir: path.join(root, "packages/foundation/src") },
-];
+const sourceRoots = [{ kind: "foundation", dir: path.join(root, "packages/foundation/src") }];
 
 const appsDir = path.join(root, "apps");
 if (fs.existsSync(appsDir)) {
@@ -18,13 +16,7 @@ if (fs.existsSync(appsDir)) {
   }
 }
 
-const forbiddenPackages = new Set([
-  "phaser",
-  "playcanvas",
-  "preact",
-  "@preact/signals",
-]);
-
+const forbiddenPackages = new Set(["phaser", "playcanvas", "preact", "@preact/signals"]);
 const sourceExtensions = new Set([".ts", ".tsx", ".js", ".jsx", ".mts", ".cts"]);
 const violations = [];
 
