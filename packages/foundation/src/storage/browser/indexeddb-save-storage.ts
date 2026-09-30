@@ -32,7 +32,7 @@ export class IndexedDbSaveStorage implements SaveStorage {
       const database = await this.#database();
       return { ok: true, value: (await database.get("saves", slotId)) ?? null };
     } catch (error) {
-      return failure(classifyStorageFailure(error, "read"), "read", error);
+      return failure(classifyStorageFailure(error, "read-failed"), "read", error);
     }
   }
 
@@ -44,7 +44,7 @@ export class IndexedDbSaveStorage implements SaveStorage {
       await transaction.done;
       return { ok: true, value: undefined };
     } catch (error) {
-      return failure(classifyStorageFailure(error, "write"), "write", error);
+      return failure(classifyStorageFailure(error, "write-failed"), "write", error);
     }
   }
 
@@ -57,7 +57,7 @@ export class IndexedDbSaveStorage implements SaveStorage {
       await transaction.done;
       return { ok: true, value: existed };
     } catch (error) {
-      return failure(classifyStorageFailure(error, "delete"), "delete", error);
+      return failure(classifyStorageFailure(error, "delete-failed"), "delete", error);
     }
   }
 
@@ -70,7 +70,7 @@ export class IndexedDbSaveStorage implements SaveStorage {
         value: keys.map(String).sort((left, right) => left.localeCompare(right)),
       };
     } catch (error) {
-      return failure(classifyStorageFailure(error, "list"), "list", error);
+      return failure(classifyStorageFailure(error, "list-failed"), "list", error);
     }
   }
 
