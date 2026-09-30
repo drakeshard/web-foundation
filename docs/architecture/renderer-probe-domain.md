@@ -102,5 +102,22 @@ input-delivery record, not the semantic domain-command model.
 
 A higher-priority modal context consumes the same gameplay actions so they do not become domain
 commands while the modal is active. Phaser's own input system is not used as domain authority.
-The explicit "consume input tick" control is a Sprint 05 integration harness only; frame-driven
-fixed-step simulation remains owned by S05-04.
+S05-04 consumes the handoff only on fixed simulation ticks; browser event cadence therefore never
+becomes simulation cadence.
+
+## Fixed-step Phaser frame integration
+
+S05-04 keeps Phaser responsible only for producing render-frame delta values. App-local simulation
+orchestration passes each delta to Foundation `FixedStepDriver`, executes the returned 0..N toy
+domain ticks, and passes the resulting authoritative state plus interpolation alpha back to the
+Phaser presentation.
+
+Toy-domain random commands use Foundation `DeterministicRng` with a fixed probe seed. The probe
+does not call `Math.random()` for simulation behavior.
+
+Interpolation reads `previousPosition` and `position` from authoritative state and applies alpha
+only to Phaser display-object coordinates. It never writes interpolated values into domain state.
+
+On document visibility suspension the application resets the fixed-step driver. On resume it resets
+again and discards the first resumed frame delta, preventing hidden-tab elapsed time from entering
+the simulation accumulator. Foundation still owns no `requestAnimationFrame` or Phaser lifecycle.

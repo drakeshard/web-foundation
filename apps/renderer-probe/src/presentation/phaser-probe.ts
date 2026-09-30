@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 import type { ToyDomainState } from "../domain/index.js";
+import type { ProbeSimulationFrame } from "../simulation/probe-simulation.js";
 
 const CELL_SIZE = 40;
 const PROBE_SIZE = 28;
@@ -8,6 +9,7 @@ const MARKER_RADIUS = 8;
 export interface PhaserProbeOptions {
   readonly parent: HTMLElement;
   readonly readState: () => ToyDomainState;
+  readonly advanceFrame: (frameDeltaMs: number) => ProbeSimulationFrame;
   readonly onReady?: (canvas: HTMLCanvasElement) => void;
 }
 
@@ -15,37 +17,53 @@ export function createPhaserProbe(options: PhaserProbeOptions): Phaser.Game {
   const initialState = options.readState();
 
   class ProbeScene extends Phaser.Scene {
-    private readonly renderedObjects: Phaser.GameObjects.GameObject[] = [];
+    private probeObject: Phaser.GameObjects.Rectangle | undefined;
+    private markerObject: Phaser.GameObjects.Arc | undefined;
 
     public create(): void {
-      this.renderAuthoritativeState(options.readState());
+      this.createPresentation(options.readState());
       options.onReady?.(this.game.canvas);
     }
 
-    private renderAuthoritativeState(state: ToyDomainState): void {
-      for (const gameObject of this.renderedObjects) {
-        gameObject.destroy();
-      }
-      this.renderedObjects.length = 0;
+    public override update(_time: number, frameDeltaMs: number): void {
+      const frame = options.advanceFrame(frameDeltaMs);
+      this.renderFrame(frame.state, frame.alpha);
+    }
 
-      const probe = this.add.rectangle(
+    private createPresentation(state: ToyDomainState): void {
+      this.probeObject = this.add.rectangle(
         toScreenCoordinate(state.probe.position.x),
         toScreenCoordinate(state.probe.position.y),
         PROBE_SIZE,
         PROBE_SIZE,
         0x60a5fa,
       );
-      probe.setData("domainEntityId", state.probe.id);
+      this.probeObject.setData("domainEntityId", state.probe.id);
 
-      const marker = this.add.circle(
+      this.markerObject = this.add.circle(
         toScreenCoordinate(state.marker.position.x),
         toScreenCoordinate(state.marker.position.y),
         MARKER_RADIUS,
         0xfbbf24,
       );
-      marker.setData("presentationRole", "marker");
+      this.markerObject.setData("presentationRole", "marker");
+    }
 
-      this.renderedObjects.push(probe, marker);
+    private renderFrame(state: ToyDomainState, alpha: number): void {
+      if (!this.probeObject || !this.markerObject) return;
+
+      this.probeObject.setPosition(
+        toScreenCoordinate(
+          interpolate(state.probe.previousPosition.x, state.probe.position.x, alpha),
+        ),
+        toScreenCoordinate(
+          interpolate(state.probe.previousPosition.y, state.probe.position.y, alpha),
+        ),
+      );
+      this.markerObject.setPosition(
+        toScreenCoordinate(state.marker.position.x),
+        toScreenCoordinate(state.marker.position.y),
+      );
     }
   }
 
@@ -58,6 +76,10 @@ export function createPhaserProbe(options: PhaserProbeOptions): Phaser.Game {
     scene: ProbeScene,
     banner: false,
   });
+}
+
+function interpolate(previous: number, current: number, alpha: number): number {
+  return previous + (current - previous) * alpha;
 }
 
 function toScreenCoordinate(domainCoordinate: number): number {
