@@ -1,14 +1,16 @@
 import {
   ActionBindingResolver,
-  BrowserInputLifecycle,
   InputContextRouter,
-  KeyboardBrowserAdapter,
   MonotonicInputSequence,
   type PhysicalInputEvent,
-  PointerBrowserAdapter,
   TickInputHandoff,
   type TickInputSnapshot,
 } from "../../../packages/foundation/src/input/index.ts";
+import {
+  BrowserInputLifecycle,
+  KeyboardBrowserAdapter,
+  PointerBrowserAdapter,
+} from "../../../packages/foundation/src/input/browser/index.ts";
 
 type FixtureCommandId = "fixture.command";
 interface FixtureCommandPayload {
