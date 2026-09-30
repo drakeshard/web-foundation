@@ -1,10 +1,10 @@
+import type { BrowserInputEventTarget, BrowserVisibilityTarget } from "./browser-event-target.js";
 import type {
   InputSequenceSource,
   PhysicalInputResetReason,
   PhysicalInputSink,
   PhysicalKeyCode,
 } from "./contracts.js";
-import type { BrowserInputEventTarget, BrowserVisibilityTarget } from "./browser-event-target.js";
 
 export interface KeyboardBrowserAdapterOptions {
   readonly keyboardTarget: BrowserInputEventTarget;
