@@ -71,11 +71,8 @@ export function createProbeUiBridge(options: ProbeUiBridgeOptions): ProbeUiBridg
         { "data-testid": "ui-modal-state" },
         view.modalActive ? "modal active" : "modal inactive",
       ),
-      h(
-        "div",
-        {},
-        [
-          h(
+      h("div", {}, [
+        h(
             "button",
             {
               type: "button",
@@ -107,9 +104,8 @@ export function createProbeUiBridge(options: ProbeUiBridgeOptions): ProbeUiBridg
               onClick: () => options.onIntent({ type: "randomize-marker" }),
             },
             "randomize marker",
-          ),
-        ],
-      ),
+        ),
+      ]),
     ]);
   }
 
