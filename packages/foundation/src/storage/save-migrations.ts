@@ -1,8 +1,4 @@
-import type {
-  JsonValue,
-  PersistenceResult,
-  SaveFormatVersion,
-} from "./contracts.js";
+import type { JsonValue, PersistenceResult, SaveFormatVersion } from "./contracts.js";
 import type { SaveEnvelope } from "./save-envelope.js";
 
 export interface SaveMigration {
