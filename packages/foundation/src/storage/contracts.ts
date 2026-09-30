@@ -13,13 +13,7 @@ export type JsonValue =
   | readonly JsonValue[]
   | { readonly [key: string]: JsonValue };
 
-export type PersistenceOperation =
-  | "read"
-  | "write"
-  | "delete"
-  | "list"
-  | "decode"
-  | "migrate";
+export type PersistenceOperation = "read" | "write" | "delete" | "list" | "decode" | "migrate";
 
 export type PersistenceFailureKind =
   | "storage-unavailable"
