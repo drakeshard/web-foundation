@@ -121,3 +121,21 @@ only to Phaser display-object coordinates. It never writes interpolated values i
 On document visibility suspension the application resets the fixed-step driver. On resume it resets
 again and discards the first resumed frame delta, preventing hidden-tab elapsed time from entering
 the simulation accumulator. Foundation still owns no `requestAnimationFrame` or Phaser lifecycle.
+
+
+## Phaser presentation synchronization
+
+S05-05 makes the Phaser scene a disposable projection of authoritative toy-domain state. An
+app-local `projectToyPresentation` function derives presentation view descriptors from
+`ToyDomainState` and interpolation alpha. The descriptors carry stable presentation ids plus the
+probe domain id where relevant; they do not become domain objects.
+
+The Phaser scene reconciles display objects by presentation id. Missing projected views create
+display objects, existing views update presentation coordinates, and stale views are destroyed.
+This lifecycle remains entirely inside the renderer layer. Domain updates never query Phaser
+objects, and Phaser object identity never becomes gameplay identity.
+
+Recreating presentation from a domain snapshot produces the same projected visible state. The
+projection applies interpolation only to derived presentation coordinates and does not mutate
+authoritative domain state. No generic renderer interface or Foundation renderer abstraction is
+introduced.
