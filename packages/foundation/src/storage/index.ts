@@ -19,6 +19,10 @@ export type {
   SettingsStorage,
 } from "./contracts.js";
 export {
+  EnvelopeSaveService,
+  type EnvelopeSaveServiceOptions,
+} from "./envelope-save-service.js";
+export {
   createSaveEnvelope,
   deserializeSaveEnvelope,
   type GameId,
@@ -33,7 +37,3 @@ export {
   SaveMigrationRegistry,
   type SaveMigrationResult,
 } from "./save-migrations.js";
-export {
-  EnvelopeSaveService,
-  type EnvelopeSaveServiceOptions,
-} from "./envelope-save-service.js";
