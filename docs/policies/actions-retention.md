@@ -20,6 +20,8 @@ This policy applies to workflow-run history in `drakeshard/web-foundation`.
 
 Manual runs default to dry-run mode. Use dry-run to review candidates before enabling deletion.
 
+A manual run may specify a non-default branch for immediate cleanup. This is the preferred way to clean an already-closed branch without waiting for the scheduled stale-branch threshold.
+
 The stale-branch age threshold defaults to seven days.
 
 ## Rationale
