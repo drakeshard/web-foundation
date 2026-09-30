@@ -55,3 +55,9 @@ export {
   PointerBrowserAdapter,
   type PointerBrowserAdapterOptions,
 } from "./pointer-browser-adapter.js";
+export {
+  type ContextualLogicalActionState,
+  TickInputHandoff,
+  type TickInputHandoffOptions,
+  type TickInputSnapshot,
+} from "./tick-input-handoff.js";
