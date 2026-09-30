@@ -10,10 +10,7 @@ const PROBE_HALF_EXTENTS = {
   z: 0.35,
 } as const;
 
-type PlayCanvasCameraProjector = Pick<
-  CameraComponent,
-  "nearClip" | "farClip" | "screenToWorld"
->;
+type PlayCanvasCameraProjector = Pick<CameraComponent, "nearClip" | "farClip" | "screenToWorld">;
 
 export interface PlayCanvasWorldVector {
   readonly x: number;
@@ -141,9 +138,7 @@ function findNearestTerrainIntersection(
   ray: PlayCanvasWorldRay,
   state: ToyDomainState,
 ): Extract<PlayCanvasPointerInteraction, { readonly kind: "intersection" }> | undefined {
-  let nearest:
-    | Extract<PlayCanvasPointerInteraction, { readonly kind: "intersection" }>
-    | undefined;
+  let nearest: Extract<PlayCanvasPointerInteraction, { readonly kind: "intersection" }> | undefined;
 
   if (Math.abs(ray.direction.y) <= EPSILON) return nearest;
 
