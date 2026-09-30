@@ -1,9 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  createToyDomainState,
-  restoreToyDomain,
-  snapshotToyDomain,
-} from "../src/domain/index.ts";
+import { createToyDomainState, restoreToyDomain, snapshotToyDomain } from "../src/domain/index.ts";
 import { projectToyStateToPlayCanvas } from "../src/presentation/playcanvas-probe.ts";
 
 describe("PlayCanvas presentation projection", () => {
