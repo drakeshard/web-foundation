@@ -8,6 +8,7 @@ export type {
   PhysicalInputEvent,
   PhysicalInputReset,
   PhysicalInputResetReason,
+  PhysicalInputResetScope,
   PhysicalInputSink,
   PhysicalKeyCode,
   PhysicalKeyInput,
