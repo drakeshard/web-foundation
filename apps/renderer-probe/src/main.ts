@@ -1,10 +1,7 @@
 import { createProbeInputController, type ProbeInputController } from "./input/probe-input.js";
 import { createPhaserProbe } from "./presentation/phaser-probe.js";
 import { clientPositionToToyPoint } from "./presentation/screen-to-world.js";
-import {
-  createProbeSimulation,
-  type ProbeSimulationFrame,
-} from "./simulation/probe-simulation.js";
+import { createProbeSimulation, type ProbeSimulationFrame } from "./simulation/probe-simulation.js";
 
 let input: ProbeInputController | undefined;
 
