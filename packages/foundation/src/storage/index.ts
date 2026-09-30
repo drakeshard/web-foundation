@@ -18,3 +18,13 @@ export type {
   SettingsNamespace,
   SettingsStorage,
 } from "./contracts.js";
+export {
+  createSaveEnvelope,
+  deserializeSaveEnvelope,
+  type GameId,
+  type SaveEnvelope,
+  type SaveEnvelopeMetadata,
+  type SaveTimestamp,
+  serializeSaveEnvelope,
+  validateSaveEnvelope,
+} from "./save-envelope.js";
