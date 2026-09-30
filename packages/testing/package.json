@@ -1,0 +1,15 @@
+{
+  "name": "@drakeshard/testing",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {},
+  "files": ["dist"],
+  "scripts": {
+    "typecheck": "tsc -b",
+    "build": "tsc -b"
+  },
+  "devDependencies": {
+    "@drakeshard/foundation": "workspace:*"
+  }
+}
