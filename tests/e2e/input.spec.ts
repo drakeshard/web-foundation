@@ -179,9 +179,7 @@ test("blur reset clears live input state and resumes without replay", async ({ p
   await page.mouse.down({ button: "left" });
 
   const beforeBlur = await readPhysicalLog(page);
-  const keyPress = beforeBlur.find(
-    (event) => event.kind === "key" && event.phase === "pressed",
-  );
+  const keyPress = beforeBlur.find((event) => event.kind === "key" && event.phase === "pressed");
   const pointerPress = beforeBlur.find(
     (event) => event.kind === "pointer-button" && event.phase === "pressed",
   );
