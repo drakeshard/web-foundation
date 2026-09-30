@@ -41,16 +41,8 @@ export function projectToyStateToPlayCanvas(
 ): readonly PlayCanvasPresentationView[] {
   const interpolationAlpha = clamp(alpha, 0, 1);
   const probePosition = {
-    x: interpolate(
-      state.probe.previousPosition.x,
-      state.probe.position.x,
-      interpolationAlpha,
-    ),
-    y: interpolate(
-      state.probe.previousPosition.y,
-      state.probe.position.y,
-      interpolationAlpha,
-    ),
+    x: interpolate(state.probe.previousPosition.x, state.probe.position.x, interpolationAlpha),
+    y: interpolate(state.probe.previousPosition.y, state.probe.position.y, interpolationAlpha),
   };
   const probeElevation = interpolate(
     getToyElevation(state.probe.previousPosition),
