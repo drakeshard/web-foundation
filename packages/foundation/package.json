@@ -8,6 +8,10 @@
       "types": "./dist/input/index.d.ts",
       "import": "./dist/input/index.js"
     },
+    "./input/browser": {
+      "types": "./dist/input/browser/index.d.ts",
+      "import": "./dist/input/browser/index.js"
+    },
     "./random": {
       "types": "./dist/random/index.d.ts",
       "import": "./dist/random/index.js"
