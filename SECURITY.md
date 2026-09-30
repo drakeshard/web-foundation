@@ -1,13 +1,24 @@
 # Security Policy
 
-## Principles
+## Scope
 
-- No secrets belong in browser code or repository history.
-- Treat saves, network payloads, external configuration, URL parameters, and future user-generated content as untrusted input.
-- Lock dependencies and use frozen installs in CI.
-- Review vulnerabilities, licenses, unusual lifecycle scripts, and supply-chain risk for new dependencies.
-- Prefer least-privilege GitHub Actions permissions.
+This policy applies to source code, build configuration, dependencies, CI workflows, and release artifacts in this repository.
 
-## Reporting
+## Requirements
 
-Do not disclose suspected vulnerabilities in public issues. Use the repository or organization private security reporting mechanism when enabled, or contact the repository owner privately.
+- Secrets must not be committed to source control or embedded in browser-delivered code.
+- External data, save data, configuration, URL-derived values, and future user-generated content must be treated as untrusted input.
+- Dependency versions must be locked and CI must use frozen installs.
+- New dependencies require vulnerability, license, maintenance, and lifecycle-script review.
+- GitHub Actions workflows must use least-privilege permissions.
+- Security-sensitive changes require tests that cover the corrected behavior when reproducible.
+
+## Reporting a vulnerability
+
+Do not report suspected vulnerabilities in public issues.
+
+Use GitHub private vulnerability reporting when enabled. If private reporting is unavailable, contact the repository owner through a private channel.
+
+## Disclosure
+
+Security fixes and release notes must avoid publishing exploit-enabling detail before a remediation is available to affected consumers.
