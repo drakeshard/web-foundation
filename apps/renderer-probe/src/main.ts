@@ -45,10 +45,12 @@ createPhaserProbe({
   parent,
   readState: () => simulation.state,
   advanceFrame: (frameDeltaMs) => {
+    const simulationStart = performance.now();
     const frame = simulation.advanceFrame(frameDeltaMs);
+    const simulationDurationMs = performance.now() - simulationStart;
     ui?.publishDomainState(frame.state);
     debug.publishFrame(frame);
-    renderDebugState(frame);
+    renderDebugState(frame, simulationDurationMs);
     return frame;
   },
   onReady: (canvas) => {
@@ -137,7 +139,7 @@ function handleUiIntent(intent: ProbeUiIntent): void {
   }
 }
 
-function renderDebugState(frame?: ProbeSimulationFrame): void {
+function renderDebugState(frame?: ProbeSimulationFrame, simulationDurationMs?: number): void {
   domainState.textContent = JSON.stringify(simulation.state);
   inputContexts.textContent = JSON.stringify(input?.activeContexts() ?? []);
   frameState.textContent = JSON.stringify(
@@ -148,6 +150,7 @@ function renderDebugState(frame?: ProbeSimulationFrame): void {
           clampedMs: frame.clampedMs,
           droppedSteps: frame.droppedSteps,
           overrun: frame.overrun,
+          simulationDurationMs: simulationDurationMs ?? null,
         }
       : null,
   );
