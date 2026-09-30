@@ -39,24 +39,16 @@ test("PlayCanvas elevation demo moves deterministically from low through ramp to
   const elevationState = page.getByTestId("playcanvas-elevation-demo-state");
   const advance = page.getByTestId("playcanvas-elevation-demo-advance");
 
-  await expect(elevationState).toHaveText(
-    '{"tick":0,"position":{"x":3,"y":3},"elevation":0.5}',
-  );
+  await expect(elevationState).toHaveText('{"tick":0,"position":{"x":3,"y":3},"elevation":0.5}');
 
   await advance.click();
-  await expect(elevationState).toHaveText(
-    '{"tick":1,"position":{"x":2,"y":3},"elevation":0}',
-  );
+  await expect(elevationState).toHaveText('{"tick":1,"position":{"x":2,"y":3},"elevation":0}');
 
   await advance.click();
-  await expect(elevationState).toHaveText(
-    '{"tick":2,"position":{"x":3,"y":3},"elevation":0.5}',
-  );
+  await expect(elevationState).toHaveText('{"tick":2,"position":{"x":3,"y":3},"elevation":0.5}');
 
   await advance.click();
-  await expect(elevationState).toHaveText(
-    '{"tick":3,"position":{"x":4,"y":3},"elevation":1}',
-  );
+  await expect(elevationState).toHaveText('{"tick":3,"position":{"x":4,"y":3},"elevation":1}');
   await expect(page.getByTestId("playcanvas-domain-state")).toContainText(
     '"position":{"x":4,"y":3}',
   );
