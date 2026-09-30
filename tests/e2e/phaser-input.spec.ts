@@ -75,15 +75,12 @@ test("random toy-domain command advances Foundation deterministic RNG on a fixed
         document.querySelector<HTMLElement>("[data-testid='domain-state']")?.textContent ?? "null",
       ) as { marker?: { position?: { x?: number; y?: number } } } | null;
       const marker = state?.marker?.position;
-      return (
-        marker !== undefined &&
-        (marker.x !== initialMarker.x || marker.y !== initialMarker.y)
-      );
+      return marker !== undefined && (marker.x !== initialMarker.x || marker.y !== initialMarker.y);
     },
     (before as DomainState).marker.position,
   );
 
-  expect((await readDomainState(page) as DomainState).marker.position).not.toEqual(
+  expect(((await readDomainState(page)) as DomainState).marker.position).not.toEqual(
     (before as DomainState).marker.position,
   );
 });
@@ -102,15 +99,12 @@ function readTick(value: unknown): number {
 }
 
 async function waitForTick(page: Page, minimumTick: number): Promise<void> {
-  await page.waitForFunction(
-    (minimum) => {
-      const state = JSON.parse(
-        document.querySelector<HTMLElement>("[data-testid='domain-state']")?.textContent ?? "null",
-      ) as { tick?: number } | null;
-      return (state?.tick ?? -1) >= minimum;
-    },
-    minimumTick,
-  );
+  await page.waitForFunction((minimum) => {
+    const state = JSON.parse(
+      document.querySelector<HTMLElement>("[data-testid='domain-state']")?.textContent ?? "null",
+    ) as { tick?: number } | null;
+    return (state?.tick ?? -1) >= minimum;
+  }, minimumTick);
 }
 
 async function readJson(locator: Locator): Promise<unknown> {
