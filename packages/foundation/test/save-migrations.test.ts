@@ -168,9 +168,7 @@ describe("SaveMigrationRegistry", () => {
   it("rejects skipped or duplicate registration as programming errors", () => {
     expect(
       () =>
-        new SaveMigrationRegistry([
-          migration(1, 3, (payload) => ({ ok: true, value: payload })),
-        ]),
+        new SaveMigrationRegistry([migration(1, 3, (payload) => ({ ok: true, value: payload }))]),
     ).toThrow(RangeError);
 
     expect(
