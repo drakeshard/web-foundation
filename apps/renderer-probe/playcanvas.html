@@ -31,6 +31,17 @@
       width: 640px;
       height: 480px;
     }
+
+    .probe-data {
+      display: grid;
+      gap: 0.5rem;
+    }
+
+    .probe-data pre {
+      margin: 0;
+      max-width: 640px;
+      white-space: pre-wrap;
+    }
   </style>
 </head>
 <body>
@@ -38,7 +49,14 @@
     <h1>PlayCanvas Renderer Probe</h1>
     <div id="playcanvas-probe"></div>
     <output data-testid="playcanvas-probe-status">booting</output>
-    <pre data-testid="playcanvas-domain-state"></pre>
+    <p>Right-drag to pan. Use the mouse wheel to zoom. Left-click selects the toy world.</p>
+    <div class="probe-data">
+      <pre data-testid="playcanvas-camera-state"></pre>
+      <pre data-testid="playcanvas-input-contexts"></pre>
+      <pre data-testid="playcanvas-pointer-result"></pre>
+      <pre data-testid="playcanvas-selection-intent"></pre>
+      <pre data-testid="playcanvas-domain-state"></pre>
+    </div>
     <button type="button" data-testid="playcanvas-rebuild">rebuild presentation</button>
     <output data-testid="playcanvas-rebuild-count">0</output>
   </main>
