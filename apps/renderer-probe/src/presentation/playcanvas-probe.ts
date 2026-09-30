@@ -210,10 +210,7 @@ export function createPlayCanvasProbe(options: PlayCanvasProbeOptions): PlayCanv
   ): PlayCanvasPresentationSyncResult {
     const root = ensurePresentationRoot();
     const nextViews = projectToyStateToPlayCanvas(state, alpha);
-    const operations = planPlayCanvasPresentationSync(
-      [...presentationEntities.keys()],
-      nextViews,
-    );
+    const operations = planPlayCanvasPresentationSync([...presentationEntities.keys()], nextViews);
     let created = 0;
     let updated = 0;
     let destroyed = 0;
@@ -280,10 +277,7 @@ export function createPlayCanvasProbe(options: PlayCanvasProbeOptions): PlayCanv
     return entity;
   }
 
-  function updatePresentationEntity(
-    entity: Entity,
-    view: PlayCanvasPresentationView,
-  ): void {
+  function updatePresentationEntity(entity: Entity, view: PlayCanvasPresentationView): void {
     entity.setPosition(view.position.x, view.position.y, view.position.z);
     entity.setLocalScale(
       view.kind === "probe" ? 0.7 : 0.35,
