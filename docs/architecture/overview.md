@@ -1,37 +1,74 @@
 # Architecture Overview
 
-Drakeshard Web Foundation is shared browser-game infrastructure, not a custom game engine.
+## Status
 
-## Dependency direction
+Current architecture baseline for Web Foundation v0.1.
+
+## Layering
 
 ```text
-Application UI (Preact)
+Application UI
+Preact + HTML + CSS
         |
-Presentation (Phaser or PlayCanvas)
+Presentation
+Phaser or PlayCanvas
         |
-Game Domain (plain TypeScript)
+Game Domain
+Plain TypeScript gameplay rules and state
         |
-@drakeshard/foundation
+Drakeshard Foundation
+Renderer-neutral infrastructure
 ```
 
-The lower layers must not import renderer or UI technology.
+Dependencies flow downward. Lower layers must not depend on higher layers.
 
-## Initial shared packages
+## Package scope
+
+v0.1 defines two shared packages:
 
 - `@drakeshard/foundation`
 - `@drakeshard/testing`
 
-No renderer adapter packages exist in v0.1.
+Additional packages require demonstrated cross-game need.
 
-## Rules
+## Required boundaries
 
-- Domain state is authoritative gameplay truth.
-- Phaser and PlayCanvas are presentation technologies.
-- Foundation must not import Phaser, PlayCanvas, Preact, or game packages.
-- Domain code must not import renderer objects, scenes, entities, cameras, or UI modules.
-- Shared abstractions require demonstrated reuse or risk reduction.
-- No speculative ECS, physics, navigation, networking, or AI framework.
+Foundation and game-domain code must not import:
 
-## Extraction rule
+- Phaser;
+- PlayCanvas;
+- Preact or `@preact/signals`;
+- renderer scenes, entities, cameras, materials, sprites, or UI modules;
+- game-specific packages from another title.
 
-Code starts game-local unless infrastructure consistency or safety justifies earlier sharing. A shared extraction should normally have a real consumer, tests, renderer-neutral semantics, and a smaller maintenance surface than the duplicated implementations it replaces.
+Presentation code may depend on domain and Foundation.
+
+## Domain ownership
+
+The game domain owns authoritative gameplay state and rules. Renderer objects represent domain state but are not authoritative game entities.
+
+## Renderer integration
+
+Phaser and PlayCanvas integrations remain application-local in v0.1. Shared renderer adapters are considered only after repeated integration code demonstrates stable common semantics.
+
+## Extraction criteria
+
+Code may move into the shared Foundation when:
+
+- a current consumer needs the behavior;
+- the behavior is covered by tests;
+- renderer-specific assumptions are absent;
+- extraction reduces duplicated maintenance or operational risk;
+- the shared API is narrower than the game-specific implementations it replaces.
+
+## Deferred systems
+
+The following are not part of the v0.1 Foundation unless later evidence justifies them:
+
+- ECS;
+- physics;
+- navigation;
+- networking;
+- AI framework;
+- universal scene graph;
+- universal entity model.
