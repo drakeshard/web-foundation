@@ -20,6 +20,14 @@
       justify-items: start;
       padding: 1rem;
     }
+
+    #probe-ui section,
+    #probe-ui div {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
   </style>
 </head>
 <body>
@@ -27,9 +35,8 @@
     <h1>Phaser Renderer Probe</h1>
     <div id="renderer-probe"></div>
     <output data-testid="renderer-probe-status">booting</output>
+    <div id="probe-ui"></div>
     <section>
-      <button type="button" data-testid="activate-modal">activate modal</button>
-      <button type="button" data-testid="deactivate-modal">deactivate modal</button>
       <pre data-testid="input-contexts"></pre>
       <pre data-testid="domain-state"></pre>
       <pre data-testid="frame-state"></pre>
