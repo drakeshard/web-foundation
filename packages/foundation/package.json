@@ -35,5 +35,8 @@
   "scripts": {
     "typecheck": "tsc -b",
     "build": "tsc -b"
+  },
+  "dependencies": {
+    "idb": "8.0.3"
   }
 }
