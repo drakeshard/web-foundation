@@ -1,7 +1,7 @@
-import type { BrowserInputEventTarget, BrowserVisibilityTarget } from "./browser-event-target.js";
+import type { BrowserInputEventTarget } from "./browser-event-target.js";
+import type { BrowserInputLifecycle } from "./browser-input-lifecycle.js";
 import type {
   InputSequenceSource,
-  PhysicalInputResetReason,
   PhysicalInputSink,
   PointerButton,
   PointerId,
@@ -12,8 +12,7 @@ import type {
 export interface PointerBrowserAdapterOptions {
   readonly pointerTarget: BrowserInputEventTarget;
   readonly wheelTarget: BrowserInputEventTarget;
-  readonly blurTarget: BrowserInputEventTarget;
-  readonly visibilityTarget: BrowserVisibilityTarget;
+  readonly lifecycle: BrowserInputLifecycle;
   readonly sequence: InputSequenceSource;
   readonly sink: PhysicalInputSink;
 }
@@ -21,15 +20,15 @@ export interface PointerBrowserAdapterOptions {
 export class PointerBrowserAdapter {
   readonly #pointerTarget: BrowserInputEventTarget;
   readonly #wheelTarget: BrowserInputEventTarget;
-  readonly #blurTarget: BrowserInputEventTarget;
-  readonly #visibilityTarget: BrowserVisibilityTarget;
+  readonly #lifecycle: BrowserInputLifecycle;
   readonly #sequence: InputSequenceSource;
   readonly #sink: PhysicalInputSink;
   readonly #heldButtons = new Map<PointerId, Set<PointerButton>>();
+  #unsubscribeReset: (() => void) | undefined;
   #attached = false;
 
   readonly #onPointerMove: EventListener = (event) => {
-    if (this.#visibilityTarget.visibilityState === "hidden") return;
+    if (!this.#lifecycle.active) return;
 
     const pointerEvent = event as PointerEvent;
     this.#sink({
@@ -37,15 +36,12 @@ export class PointerBrowserAdapter {
       sequence: this.#sequence.next(),
       pointerId: pointerEvent.pointerId,
       pointerType: normalizePointerType(pointerEvent.pointerType),
-      position: {
-        x: pointerEvent.clientX,
-        y: pointerEvent.clientY,
-      },
+      position: { x: pointerEvent.clientX, y: pointerEvent.clientY },
     });
   };
 
   readonly #onPointerDown: EventListener = (event) => {
-    if (this.#visibilityTarget.visibilityState === "hidden") return;
+    if (!this.#lifecycle.active) return;
 
     const pointerEvent = event as PointerEvent;
     let held = this.#heldButtons.get(pointerEvent.pointerId);
@@ -65,24 +61,18 @@ export class PointerBrowserAdapter {
       pointerType: normalizePointerType(pointerEvent.pointerType),
       button: pointerEvent.button,
       phase: "pressed",
-      position: {
-        x: pointerEvent.clientX,
-        y: pointerEvent.clientY,
-      },
+      position: { x: pointerEvent.clientX, y: pointerEvent.clientY },
     });
   };
 
   readonly #onPointerUp: EventListener = (event) => {
-    if (this.#visibilityTarget.visibilityState === "hidden") return;
+    if (!this.#lifecycle.active) return;
 
     const pointerEvent = event as PointerEvent;
     const held = this.#heldButtons.get(pointerEvent.pointerId);
 
     if (!held?.delete(pointerEvent.button)) return;
-
-    if (held.size === 0) {
-      this.#heldButtons.delete(pointerEvent.pointerId);
-    }
+    if (held.size === 0) this.#heldButtons.delete(pointerEvent.pointerId);
 
     this.#sink({
       kind: "pointer-button",
@@ -91,15 +81,12 @@ export class PointerBrowserAdapter {
       pointerType: normalizePointerType(pointerEvent.pointerType),
       button: pointerEvent.button,
       phase: "released",
-      position: {
-        x: pointerEvent.clientX,
-        y: pointerEvent.clientY,
-      },
+      position: { x: pointerEvent.clientX, y: pointerEvent.clientY },
     });
   };
 
   readonly #onPointerCancel: EventListener = (event) => {
-    if (this.#visibilityTarget.visibilityState === "hidden") return;
+    if (!this.#lifecycle.active) return;
 
     const pointerEvent = event as PointerEvent;
     this.#heldButtons.delete(pointerEvent.pointerId);
@@ -107,7 +94,7 @@ export class PointerBrowserAdapter {
   };
 
   readonly #onLostPointerCapture: EventListener = (event) => {
-    if (this.#visibilityTarget.visibilityState === "hidden") return;
+    if (!this.#lifecycle.active) return;
 
     const pointerEvent = event as PointerEvent;
     const held = this.#heldButtons.get(pointerEvent.pointerId);
@@ -119,7 +106,7 @@ export class PointerBrowserAdapter {
   };
 
   readonly #onWheel: EventListener = (event) => {
-    if (this.#visibilityTarget.visibilityState === "hidden") return;
+    if (!this.#lifecycle.active) return;
 
     const wheelEvent = event as WheelEvent;
     const unit = normalizeWheelUnit(wheelEvent.deltaMode);
@@ -136,21 +123,10 @@ export class PointerBrowserAdapter {
     });
   };
 
-  readonly #onBlur: EventListener = () => {
-    this.#reset("blur");
-  };
-
-  readonly #onVisibilityChange: EventListener = () => {
-    if (this.#visibilityTarget.visibilityState === "hidden") {
-      this.#reset("hidden");
-    }
-  };
-
   constructor(options: PointerBrowserAdapterOptions) {
     this.#pointerTarget = options.pointerTarget;
     this.#wheelTarget = options.wheelTarget;
-    this.#blurTarget = options.blurTarget;
-    this.#visibilityTarget = options.visibilityTarget;
+    this.#lifecycle = options.lifecycle;
     this.#sequence = options.sequence;
     this.#sink = options.sink;
   }
@@ -168,13 +144,10 @@ export class PointerBrowserAdapter {
     this.#pointerTarget.addEventListener("pointercancel", this.#onPointerCancel);
     this.#pointerTarget.addEventListener("lostpointercapture", this.#onLostPointerCapture);
     this.#wheelTarget.addEventListener("wheel", this.#onWheel);
-    this.#blurTarget.addEventListener("blur", this.#onBlur);
-    this.#visibilityTarget.addEventListener("visibilitychange", this.#onVisibilityChange);
+    this.#unsubscribeReset = this.#lifecycle.subscribeReset(() => {
+      this.#heldButtons.clear();
+    });
     this.#attached = true;
-
-    if (this.#visibilityTarget.visibilityState === "hidden") {
-      this.#reset("hidden");
-    }
   }
 
   detach(): void {
@@ -186,10 +159,17 @@ export class PointerBrowserAdapter {
     this.#pointerTarget.removeEventListener("pointercancel", this.#onPointerCancel);
     this.#pointerTarget.removeEventListener("lostpointercapture", this.#onLostPointerCapture);
     this.#wheelTarget.removeEventListener("wheel", this.#onWheel);
-    this.#blurTarget.removeEventListener("blur", this.#onBlur);
-    this.#visibilityTarget.removeEventListener("visibilitychange", this.#onVisibilityChange);
+    this.#unsubscribeReset?.();
+    this.#unsubscribeReset = undefined;
     this.#attached = false;
-    this.#reset("detach");
+    this.#heldButtons.clear();
+
+    this.#sink({
+      kind: "reset",
+      sequence: this.#sequence.next(),
+      scope: "pointer",
+      reason: "detach",
+    });
   }
 
   isHeld(pointerId: PointerId, button: PointerButton): boolean {
@@ -201,16 +181,6 @@ export class PointerBrowserAdapter {
       kind: "pointer-cancel",
       sequence: this.#sequence.next(),
       pointerId,
-    });
-  }
-
-  #reset(reason: PhysicalInputResetReason): void {
-    this.#heldButtons.clear();
-    this.#sink({
-      kind: "reset",
-      sequence: this.#sequence.next(),
-      scope: "pointer",
-      reason,
     });
   }
 }

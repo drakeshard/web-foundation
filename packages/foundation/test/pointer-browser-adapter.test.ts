@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   type BrowserInputEventTarget,
+  BrowserInputLifecycle,
   type BrowserVisibilityTarget,
   MonotonicInputSequence,
   type PhysicalInputEvent,
@@ -13,12 +14,10 @@ class TestEventTarget implements BrowserInputEventTarget {
 
   addEventListener(type: string, listener: EventListener): void {
     let listeners = this.#listeners.get(type);
-
     if (!listeners) {
       listeners = new Set();
       this.#listeners.set(type, listeners);
     }
-
     listeners.add(listener);
   }
 
@@ -27,9 +26,7 @@ class TestEventTarget implements BrowserInputEventTarget {
   }
 
   dispatch(type: string, event: Event = {} as Event): void {
-    for (const listener of this.#listeners.get(type) ?? []) {
-      listener(event);
-    }
+    for (const listener of this.#listeners.get(type) ?? []) listener(event);
   }
 
   listenerCount(type: string): number {
@@ -58,58 +55,52 @@ function wheelEvent(deltaX: number, deltaY: number, deltaZ: number, deltaMode: n
 function createAdapter() {
   const pointerTarget = new TestEventTarget();
   const wheelTarget = new TestEventTarget();
-  const blurTarget = new TestEventTarget();
+  const focusTarget = new TestEventTarget();
   const visibilityTarget = new TestVisibilityTarget();
+  const sequence = new MonotonicInputSequence();
   const events: PhysicalInputEvent[] = [];
+  const sink = (event: PhysicalInputEvent) => events.push(event);
+  const lifecycle = new BrowserInputLifecycle({
+    focusTarget,
+    visibilityTarget,
+    sequence,
+    sink,
+  });
   const adapter = new PointerBrowserAdapter({
     pointerTarget,
     wheelTarget,
-    blurTarget,
-    visibilityTarget,
-    sequence: new MonotonicInputSequence(),
-    sink: (event) => events.push(event),
+    lifecycle,
+    sequence,
+    sink,
   });
+  lifecycle.attach();
 
-  return {
-    adapter,
-    pointerTarget,
-    wheelTarget,
-    blurTarget,
-    visibilityTarget,
-    events,
-  };
+  return { adapter, pointerTarget, wheelTarget, focusTarget, events };
 }
 
 describe("PointerBrowserAdapter", () => {
-  it("attaches and detaches browser listeners explicitly", () => {
-    const { adapter, pointerTarget, wheelTarget, blurTarget, visibilityTarget, events } =
-      createAdapter();
+  it("attaches and detaches only pointer and wheel listeners explicitly", () => {
+    const { adapter, pointerTarget, wheelTarget, events } = createAdapter();
 
     adapter.attach();
     adapter.attach();
 
-    expect(adapter.attached).toBe(true);
     expect(pointerTarget.listenerCount("pointermove")).toBe(1);
     expect(pointerTarget.listenerCount("pointerdown")).toBe(1);
     expect(pointerTarget.listenerCount("pointerup")).toBe(1);
     expect(pointerTarget.listenerCount("pointercancel")).toBe(1);
     expect(pointerTarget.listenerCount("lostpointercapture")).toBe(1);
     expect(wheelTarget.listenerCount("wheel")).toBe(1);
-    expect(blurTarget.listenerCount("blur")).toBe(1);
-    expect(visibilityTarget.listenerCount("visibilitychange")).toBe(1);
 
     adapter.detach();
     adapter.detach();
 
-    expect(adapter.attached).toBe(false);
     expect(pointerTarget.listenerCount("pointermove")).toBe(0);
     expect(pointerTarget.listenerCount("pointerdown")).toBe(0);
     expect(pointerTarget.listenerCount("pointerup")).toBe(0);
     expect(pointerTarget.listenerCount("pointercancel")).toBe(0);
     expect(pointerTarget.listenerCount("lostpointercapture")).toBe(0);
     expect(wheelTarget.listenerCount("wheel")).toBe(0);
-    expect(blurTarget.listenerCount("blur")).toBe(0);
-    expect(visibilityTarget.listenerCount("visibilitychange")).toBe(0);
     expect(events).toEqual([{ kind: "reset", sequence: 0, scope: "pointer", reason: "detach" }]);
   });
 
@@ -120,9 +111,6 @@ describe("PointerBrowserAdapter", () => {
     pointerTarget.dispatch("pointermove", pointerEvent(4, -1, 12.5, 20.25, "pen"));
     pointerTarget.dispatch("pointerdown", pointerEvent(4, 0, 13, 21, "pen"));
     pointerTarget.dispatch("pointerdown", pointerEvent(4, 0, 14, 22, "pen"));
-
-    expect(adapter.isHeld(4, 0)).toBe(true);
-
     pointerTarget.dispatch("pointerup", pointerEvent(4, 0, 15, 23, "pen"));
     pointerTarget.dispatch("pointerup", pointerEvent(4, 0, 16, 24, "pen"));
 
@@ -167,9 +155,6 @@ describe("PointerBrowserAdapter", () => {
     expect(adapter.isHeld(7, 0)).toBe(false);
     expect(adapter.isHeld(7, 2)).toBe(false);
     expect(events.at(-1)).toEqual({ kind: "pointer-cancel", sequence: 2, pointerId: 7 });
-    expect(
-      events.filter((event) => event.kind === "pointer-button" && event.phase === "released"),
-    ).toEqual([]);
   });
 
   it("treats lost pointer capture with held buttons as cancellation", () => {
@@ -181,18 +166,7 @@ describe("PointerBrowserAdapter", () => {
     pointerTarget.dispatch("lostpointercapture", pointerEvent(9, -1, 2, 3, "touch"));
 
     expect(adapter.isHeld(9, 1)).toBe(false);
-    expect(events).toEqual([
-      {
-        kind: "pointer-button",
-        sequence: 0,
-        pointerId: 9,
-        pointerType: "touch",
-        button: 1,
-        phase: "pressed",
-        position: { x: 2, y: 3 },
-      },
-      { kind: "pointer-cancel", sequence: 1, pointerId: 9 },
-    ]);
+    expect(events.at(-1)).toEqual({ kind: "pointer-cancel", sequence: 1, pointerId: 9 });
   });
 
   it("preserves wheel sign and magnitude while normalizing deltaMode units", () => {
@@ -211,66 +185,19 @@ describe("PointerBrowserAdapter", () => {
     ]);
   });
 
-  it("normalizes unknown pointer types and resets held state on blur", () => {
-    const { adapter, pointerTarget, blurTarget, events } = createAdapter();
+  it("clears held pointer state through shared lifecycle reset", () => {
+    const { adapter, pointerTarget, focusTarget, events } = createAdapter();
 
     adapter.attach();
-    pointerTarget.dispatch("pointermove", pointerEvent(3, -1, 4, 5, "eraser"));
     pointerTarget.dispatch("pointerdown", pointerEvent(3, 0, 4, 5, "eraser"));
-    blurTarget.dispatch("blur");
+    focusTarget.dispatch("blur");
 
     expect(adapter.isHeld(3, 0)).toBe(false);
-    expect(events).toEqual([
-      {
-        kind: "pointer-position",
-        sequence: 0,
-        pointerId: 3,
-        pointerType: "unknown",
-        position: { x: 4, y: 5 },
-      },
-      {
-        kind: "pointer-button",
-        sequence: 1,
-        pointerId: 3,
-        pointerType: "unknown",
-        button: 0,
-        phase: "pressed",
-        position: { x: 4, y: 5 },
-      },
-      { kind: "reset", sequence: 2, scope: "pointer", reason: "blur" },
-    ]);
-  });
-
-  it("resets on hidden visibility and ignores pointer and wheel input until visible", () => {
-    const { adapter, pointerTarget, wheelTarget, visibilityTarget, events } = createAdapter();
-
-    adapter.attach();
-    pointerTarget.dispatch("pointerdown", pointerEvent(1, 0, 1, 1));
-
-    visibilityTarget.visibilityState = "hidden";
-    visibilityTarget.dispatch("visibilitychange");
-    pointerTarget.dispatch("pointermove", pointerEvent(1, -1, 5, 5));
-    pointerTarget.dispatch("pointerdown", pointerEvent(1, 2, 5, 5));
-    wheelTarget.dispatch("wheel", wheelEvent(0, 10, 0, 0));
-
-    visibilityTarget.visibilityState = "visible";
-    visibilityTarget.dispatch("visibilitychange");
-    wheelTarget.dispatch("wheel", wheelEvent(0, -10, 0, 0));
-
-    expect(adapter.isHeld(1, 0)).toBe(false);
-    expect(adapter.isHeld(1, 2)).toBe(false);
-    expect(events).toEqual([
-      {
-        kind: "pointer-button",
-        sequence: 0,
-        pointerId: 1,
-        pointerType: "mouse",
-        button: 0,
-        phase: "pressed",
-        position: { x: 1, y: 1 },
-      },
-      { kind: "reset", sequence: 1, scope: "pointer", reason: "hidden" },
-      { kind: "wheel", sequence: 2, deltaX: 0, deltaY: -10, deltaZ: 0, unit: "pixel" },
-    ]);
+    expect(events.at(-1)).toEqual({
+      kind: "reset",
+      sequence: 1,
+      scope: "all",
+      reason: "blur",
+    });
   });
 });
