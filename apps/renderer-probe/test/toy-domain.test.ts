@@ -153,10 +153,7 @@ function commandsForTick(tick: number): readonly ToyDomainCommand[] {
     case 6:
       return [{ type: "set-marker", position: { x: 2, y: 5 } }];
     case 7:
-      return [
-        { type: "move", dx: 0, dy: -1 },
-        { type: "randomize-marker" },
-      ];
+      return [{ type: "move", dx: 0, dy: -1 }, { type: "randomize-marker" }];
     default:
       return [];
   }
