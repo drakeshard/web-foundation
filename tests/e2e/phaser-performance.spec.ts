@@ -27,7 +27,8 @@ test("records Phaser toy-scenario Chromium performance observations", async ({ p
       await new Promise<void>((resolve) => {
         requestAnimationFrame((now) => {
           const frameState = JSON.parse(
-            document.querySelector<HTMLElement>("[data-testid='frame-state']")?.textContent ?? "null",
+            document.querySelector<HTMLElement>("[data-testid='frame-state']")?.textContent ??
+              "null",
           ) as FrameState | null;
 
           samples.push({
@@ -48,7 +49,8 @@ test("records Phaser toy-scenario Chromium performance observations", async ({ p
     const canvas = document.querySelector<HTMLCanvasElement>("#renderer-probe canvas");
 
     return {
-      scenario: "idle 8x8 toy domain; Phaser canvas + Preact UI + debug view; 120 requestAnimationFrame samples",
+      scenario:
+        "idle 8x8 toy domain; Phaser canvas + Preact UI + debug view; 120 requestAnimationFrame samples",
       sampleCount: samples.length,
       userAgent: navigator.userAgent,
       viewport: { width: innerWidth, height: innerHeight },
