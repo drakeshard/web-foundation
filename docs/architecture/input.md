@@ -111,4 +111,10 @@ One logical action may have multiple physical bindings. Its logical held state i
 Pointer identity is retained while a pointer button is active so multiple simultaneous pointers cannot release one another's state. Pointer cancellation and scoped reset records invalidate matching active sources without fabricating logical released transitions. Replacing the binding configuration also invalidates current resolver state without synthetic action edges; a fresh physical edge is required under the new configuration.
 
 The resolver exposes normalized active-source state so later generic input-context resolution can deterministically recompute ownership without reading DOM state or browser event objects.
+## Input contexts
 
+S02-05 defines contexts as opaque game-owned string identifiers plus explicit numeric priority and action rules. Foundation does not define Gameplay, TargetSelection, Inventory, Modal, Chat, DebugConsole, or any other context as built-in behavior; those names are examples that applications may choose to configure.
+
+Contexts are activated and deactivated explicitly. Active contexts are resolved in descending numeric priority, with declaration order as the deterministic tie-breaker. For a logical action, every matching active context receives ownership in that order until a matching rule marked consuming is reached. Consumption defaults to true. A non-consuming rule allows delivery to continue to lower-priority matching contexts.
+
+Context activation and deactivation change current ownership immediately but do not synthesize logical pressed or released edges. Logical edge creation remains owned by action mapping and physical input changes. Later tick handoff may combine current action held state with current context ownership so a context transition can change which context sees a held action without inventing browser input.
