@@ -118,3 +118,12 @@ S02-05 defines contexts as opaque game-owned string identifiers plus explicit nu
 Contexts are activated and deactivated explicitly. Active contexts are resolved in descending numeric priority, with declaration order as the deterministic tie-breaker. For a logical action, every matching active context receives ownership in that order until a matching rule marked consuming is reached. Consumption defaults to true. A non-consuming rule allows delivery to continue to lower-priority matching contexts.
 
 Context activation and deactivation change current ownership immediately but do not synthesize logical pressed or released edges. Logical edge creation remains owned by action mapping and physical input changes. Later tick handoff may combine current action held state with current context ownership so a context transition can change which context sees a held action without inventing browser input.
+## Tick input handoff
+
+S02-06 introduces a simulation-facing tick handoff. Normalized physical records may arrive asynchronously, but simulation code consumes only deterministic tick snapshots. Physical records are required to arrive in strictly increasing `InputSequence` order. Action mapping updates immediately at the input boundary, while context ownership is sampled when the simulation consumes the next tick; context changes therefore affect the next tick without creating hidden asynchronous simulation updates.
+
+A tick snapshot contains three coordinated views: contextual action states, ordered contextual action transitions, and ordered generic commands. Action state exposes final held state plus one-tick `pressed` and `released` flags. Pressed and released may both be true when both edges occurred between ticks. The ordered transition list preserves every routed edge in physical sequence and mapping order so callers do not lose edge ordering when boolean flags are aggregated.
+
+Held action state is recomputed from current action mapping and current context ownership at every tick. It persists across ticks without repeating edge flags and disappears immediately after cancellation/reset invalidates its physical sources. Cancellation/reset do not fabricate release transitions.
+
+Generic `InputCommand` values are delivered in ascending originating `InputSequence`; commands sharing a sequence retain enqueue order. Commands and transitions are drained after one tick, while held action state remains until changed or invalidated. The handoff owns no render loop and is consumed once for each executable step returned by `FixedStepDriver`.
