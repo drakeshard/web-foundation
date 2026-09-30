@@ -12,7 +12,7 @@ This ledger records the dependency set approved for the Web Foundation workspace
 | `@playwright/test` 1.63.0 | Development | Real-browser smoke and browser-integration tests | Apache-2.0 | None | Medium | Required for Chromium/Firefox/WebKit automation |
 | `@biomejs/biome` 2.5.14 | Development | Formatting and static lint checks | MIT / Apache-2.0 | None | Medium | Consolidates formatting and linting with a small tool surface |
 | `idb` 8.0.3 | Runtime (browser storage boundary) | Promise-based IndexedDB wrapper for durable save records | ISC | ~1.19 kB brotli per upstream package documentation; zero runtime dependencies | Low-Medium | Avoids duplicating IndexedDB request/transaction/error plumbing while keeping the wrapper internal to the browser adapter |
-| `phaser` 4.2.1 | Runtime (renderer-probe app only) | Concrete 2D renderer used to pressure-test Foundation boundaries through a real browser presentation stack | MIT | Large renderer/game-framework bundle in the private probe app only; not shipped by `@drakeshard/foundation` | Medium | Sprint 05 requires a real Phaser consumer; dependency remains app-local and has one runtime dependency (`eventemitter3` 5.0.4) |
+| `phaser` 4.2.1 | Runtime (renderer-probe app only) | Concrete 2D renderer used to pressure-test Foundation boundaries through a real browser presentation stack | MIT | Large renderer/game-framework bundle in the private probe app only; not shipped by `@drakeshard/foundation` | Medium | Sprint 05 requires a real Phaser consumer; dependency remains app-local and has one runtime dependency (`eventemitter3` 5.0.4) |\n| `preact` 10.29.8 | Runtime (renderer-probe app only) | Small component runtime for the Sprint 05 UI bridge pressure test | MIT | Small UI runtime isolated to the private probe app; no Foundation package impact | Low | Provides the concrete UI consumer required by S05-06 without creating a shared UI package |\n| `@preact/signals` 2.11.2 | Runtime (renderer-probe app only) | UI-facing derived/transient signal state for the Preact probe UI | MIT | Small app-local state layer; one runtime dependency (`@preact/signals-core` 1.14.4) plus peer Preact | Low | Exercises the intended view-model/signal boundary while keeping simulation authority outside signals |
 
 ## Runtime dependencies
 
@@ -31,6 +31,16 @@ Maintenance/replacement review: Phaser 4.2.1 is the current stable release at ad
 Transitive dependency review: Phaser 4.2.1 declares one runtime dependency, `eventemitter3` ^5.0.4, resolved here as 5.0.4 (MIT). Neither package requires an install script or native binary for this probe.
 
 Security/runtime review: Phaser executes entirely in the browser presentation layer for this fixture. It does not add network access, persistence authority, or gameplay-state ownership. Normal Dependency Review remains required for additions and upgrades.
+
+## Preact renderer-probe UI dependencies
+
+`preact` 10.29.8 and `@preact/signals` 2.11.2 are approved only for `apps/renderer-probe`. They exist to pressure-test the explicit UI bridge required by S05-06 and are not Foundation dependencies, exports, or a shared UI framework decision.
+
+Maintenance/replacement review: both packages are actively maintained in the Preact ecosystem. The integration is isolated behind app-local UI code, so another UI renderer or state mechanism can replace them without changing Foundation contracts or authoritative toy-domain state.
+
+Transitive dependency review: Preact has no required runtime dependencies. `@preact/signals` depends on `@preact/signals-core` ^1.14.4, resolved here as 1.14.4 (MIT), and peers on Preact. These packages require no install scripts or native binaries.
+
+Security/runtime review: the UI bridge renders local derived/transient state and emits app-local intentions. It receives no persistence, network, timing, RNG, or gameplay-state authority. Normal Dependency Review remains required for additions and upgrades.
 
 ## Review requirements
 
