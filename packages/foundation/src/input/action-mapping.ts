@@ -46,9 +46,7 @@ export interface ActivePointerButtonActionSource {
   readonly button: PointerButton;
 }
 
-export type ActiveActionSourceIdentity =
-  | ActiveKeyActionSource
-  | ActivePointerButtonActionSource;
+export type ActiveActionSourceIdentity = ActiveKeyActionSource | ActivePointerButtonActionSource;
 
 export interface ActiveActionSource {
   readonly source: ActiveActionSourceIdentity;
@@ -262,7 +260,10 @@ export class ActionBindingResolver {
     for (const mapping of this.#bindings) {
       if (mapping.binding.kind !== "pointer-button") continue;
       if (mapping.binding.button !== button) continue;
-      if (mapping.binding.pointerType !== undefined && mapping.binding.pointerType !== pointerType) {
+      if (
+        mapping.binding.pointerType !== undefined &&
+        mapping.binding.pointerType !== pointerType
+      ) {
         continue;
       }
       if (seen.has(mapping.action)) continue;
