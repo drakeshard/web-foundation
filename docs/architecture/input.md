@@ -49,7 +49,7 @@ Foundation does not convert between those units, invent a scale factor, or inver
 
 Pointer cancellation or lost pointer interaction clears held buttons for the affected pointer and emits a pointer-cancel record. Cancellation is invalidation, not user intent, so it does not fabricate released edges.
 
-Window blur, hidden-document visibility, and adapter detach clear applicable physical held state and emit a scoped reset record. Reset is invalidation, not gameplay intent; it must not fabricate logical release commands or other game actions.
+Window blur, hidden-document visibility, and adapter detach clear applicable physical held state and emit a scoped reset record. The reset scope is explicitly `keyboard`, `pointer`, or `all`, so adapter-local cleanup cannot accidentally invalidate unrelated physical state. Reset is invalidation, not gameplay intent; it must not fabricate logical release commands or other game actions.
 
 Resume or re-attach starts from cleared physical state. Input accumulated while hidden or detached is not replayed.
 
