@@ -2,8 +2,8 @@ import { describe, expect, it } from "vitest";
 
 import {
   ActionBindingResolver,
-  InputContextRouter,
   type InputCommand,
+  InputContextRouter,
   TickInputHandoff,
 } from "../src/input/index.ts";
 import { FixedStepDriver } from "../src/time/index.ts";
@@ -18,10 +18,7 @@ function createHandoff() {
     {
       id: "gameplay",
       priority: 0,
-      actions: [
-        { action: "action.primary" },
-        { action: "action.secondary" },
-      ],
+      actions: [{ action: "action.primary" }, { action: "action.secondary" }],
     },
     {
       id: "modal",
