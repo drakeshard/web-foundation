@@ -9,9 +9,24 @@ import {
 import {
   planPlayCanvasPresentationSync,
   projectToyStateToPlayCanvas,
+  projectToyTerrainToPlayCanvas,
 } from "../src/presentation/playcanvas-probe.ts";
 
 describe("PlayCanvas presentation projection", () => {
+  it("projects low, ramp, and high terrain with tops at domain-owned elevation", () => {
+    const terrain = projectToyTerrainToPlayCanvas(createToyDomainState());
+    const low = terrain.find((cell) => cell.point.x === 2 && cell.point.y === 3);
+    const ramp = terrain.find((cell) => cell.point.x === 3 && cell.point.y === 3);
+    const high = terrain.find((cell) => cell.point.x === 4 && cell.point.y === 3);
+
+    expect(low?.elevation).toBe(0);
+    expect(ramp?.elevation).toBe(0.5);
+    expect(high?.elevation).toBe(1);
+    expect((low?.position.y ?? 0) + (low?.scale.y ?? 0) / 2).toBeCloseTo(0);
+    expect((ramp?.position.y ?? 0) + (ramp?.scale.y ?? 0) / 2).toBeCloseTo(0.5);
+    expect((high?.position.y ?? 0) + (high?.scale.y ?? 0) / 2).toBeCloseTo(1);
+  });
+
   it("maps renderer-neutral elevation into disposable 3D view data", () => {
     const state = createToyDomainState();
 
