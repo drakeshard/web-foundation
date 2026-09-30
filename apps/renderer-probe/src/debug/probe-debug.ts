@@ -19,9 +19,7 @@ export interface ProbeDebugView {
   publishPersistenceResult(result: PersistenceResult<unknown>): void;
 }
 
-export function projectProbeFrameObservation(
-  frame: ProbeSimulationFrame,
-): ProbeFrameObservation {
+export function projectProbeFrameObservation(frame: ProbeSimulationFrame): ProbeFrameObservation {
   return {
     steps: frame.steps,
     alpha: frame.alpha,
