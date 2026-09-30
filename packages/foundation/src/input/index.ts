@@ -31,3 +31,7 @@ export {
   KeyboardBrowserAdapter,
   type KeyboardBrowserAdapterOptions,
 } from "./keyboard-browser-adapter.js";
+export {
+  PointerBrowserAdapter,
+  type PointerBrowserAdapterOptions,
+} from "./pointer-browser-adapter.js";
