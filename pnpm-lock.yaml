@@ -190,6 +190,9 @@ importers:
       phaser:
         specifier: 4.2.1
         version: 4.2.1
+      playcanvas:
+        specifier: 2.22.6
+        version: 2.22.6
       preact:
         specifier: 10.29.8
         version: 10.29.8
@@ -574,6 +577,12 @@ packages:
   '@preact/signals-core@1.14.4':
     resolution: {integrity: sha512-HNB6HYeYKhQbJ1aKl+YRjrS4+QWHLKX6qKoUsfS/m0vqzsVaEBiZiaKbG/e+NKk2ch5ALQr/ihWaMHxiCuuWHA==}
 
+  '@types/webxr@0.5.24':
+    resolution: {integrity: sha512-h8fgEd/DpoS9CBrjEQXR+dIDraopAEfu4wYVNY2tEPwk60stPWhvZMf4Foo5FakuQ7HFZoa8WceaWFervK2Ovg==}
+
+  '@webgpu/types@0.1.74':
+    resolution: {integrity: sha512-lgiI4hbuLcI9unnm2cL/tvCaQU45dp0xcLWJh5uB/9MBGvIA4F8XIk7nSiBeg+K4xWGYwgZKn80LmERI5CxoTA==}
+
   '@preact/signals@2.11.2':
     resolution: {integrity: sha512-rVTRTt/T0HIRgbugwS5FigbfF/kfdEFYFtiqxa+lbpqTajepqnR0firuAS2iNdHyejWB7Yc9p9QePkVNBtTAwg==}
     peerDependencies:
@@ -584,6 +593,10 @@ packages:
 
   phaser@4.2.1:
     resolution: {integrity: sha512-WUNwCPJpdjvZiuT6SgCfYVW8Qw/3j0jJ4ws7P2QkhFLFu74sbGuyHJcbFueGkY/AYO4Pi47bNQXn1OCJeLX//w==}
+
+  playcanvas@2.22.6:
+    resolution: {integrity: sha512-h5yBfE3jfGYWVEsRp8E3BqcPvpG14wwZUpQiJt+/ePsASaPHbfhtdFbABu5igUTN2k37QBQvfg7H1aCEnw/OFQ==}
+    engines: {node: '>=18.3.0'}
 
   preact@10.29.8:
     resolution: {integrity: sha512-ej2aVZ+vZ8WO7tvlQWRM9N63A0KzF9q4mWJfDUHgYaIofWY9hu74QdnQrjoPMmZi2/nZ5gN0bJCQF49xQqx09Q==}
@@ -1022,6 +1035,10 @@ snapshots:
 
   '@preact/signals-core@1.14.4': {}
 
+  '@types/webxr@0.5.24': {}
+
+  '@webgpu/types@0.1.74': {}
+
   '@preact/signals@2.11.2(preact@10.29.8)':
     dependencies:
       '@preact/signals-core': 1.14.4
@@ -1032,6 +1049,11 @@ snapshots:
   phaser@4.2.1:
     dependencies:
       eventemitter3: 5.0.4
+
+  playcanvas@2.22.6:
+    dependencies:
+      '@types/webxr': 0.5.24
+      '@webgpu/types': 0.1.74
 
   preact@10.29.8: {}
 
