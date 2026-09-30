@@ -22,7 +22,8 @@
     }
 
     #probe-ui section,
-    #probe-ui div {
+    #probe-ui div,
+    .probe-controls {
       display: flex;
       gap: 0.5rem;
       align-items: center;
@@ -36,6 +37,12 @@
     <div id="renderer-probe"></div>
     <output data-testid="renderer-probe-status">booting</output>
     <div id="probe-ui"></div>
+    <section class="probe-controls" aria-label="Persistence controls">
+      <button type="button" data-testid="save-probe">save</button>
+      <button type="button" data-testid="load-probe">load</button>
+      <button type="button" data-testid="seed-corrupt-save">seed corrupt save</button>
+      <output data-testid="persistence-state">idle</output>
+    </section>
     <section>
       <pre data-testid="input-contexts"></pre>
       <pre data-testid="domain-state"></pre>
