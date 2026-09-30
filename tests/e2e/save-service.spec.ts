@@ -10,43 +10,50 @@ test.beforeEach(async ({ page }) => {
 
 test("save envelope round-trips through real IndexedDB and survives reload", async ({ page }) => {
   await page.getByTestId("save-service-save").click();
-  await expect(page.getByTestId("save-service-result")).toHaveText(JSON.stringify({ ok: true }));
+  await expectResult(page, { ok: true });
 
   await page.getByTestId("save-service-inspect").click();
-  expect(await readResult(page)).toEqual({
-    ok: true,
-    value: {
-      gameId: "browser-game",
-      saveFormatVersion: 3,
-      gameVersion: "1.0.0",
-      contentVersion: "base",
-      createdAt: "2026-09-30T12:00:00.000Z",
-      updatedAt: "2026-09-30T12:00:00.000Z",
-      payload: { hp: 12, party: ["mage", "guard"] },
-    },
-  });
+  await expect
+    .poll(() => readResult(page))
+    .toEqual({
+      ok: true,
+      value: {
+        gameId: "browser-game",
+        saveFormatVersion: 3,
+        gameVersion: "1.0.0",
+        contentVersion: "base",
+        createdAt: "2026-09-30T12:00:00.000Z",
+        updatedAt: "2026-09-30T12:00:00.000Z",
+        payload: { hp: 12, party: ["mage", "guard"] },
+      },
+    });
 
   await page.reload();
   await page.getByTestId("save-service-load").click();
-  expect(await readResult(page)).toEqual({
-    ok: true,
-    value: { hp: 12, party: ["mage", "guard"] },
-  });
+  await expect
+    .poll(() => readResult(page))
+    .toEqual({
+      ok: true,
+      value: { hp: 12, party: ["mage", "guard"] },
+    });
 });
 
 test("real browser load applies a multi-step migration without replacing the source", async ({
   page,
 }) => {
   await page.getByTestId("save-service-seed-legacy").click();
-  await page.getByTestId("save-service-load").click();
+  await expectResult(page, { ok: true });
 
-  expect(await readResult(page)).toEqual({
-    ok: true,
-    value: { hp: 10, mana: 5, armor: 2 },
-  });
+  await page.getByTestId("save-service-load").click();
+  await expect
+    .poll(() => readResult(page))
+    .toEqual({
+      ok: true,
+      value: { hp: 10, mana: 5, armor: 2 },
+    });
 
   await page.getByTestId("save-service-inspect").click();
-  expect(await readResult(page)).toMatchObject({
+  await expect.poll(() => readResult(page)).toMatchObject({
     ok: true,
     value: {
       saveFormatVersion: 1,
@@ -57,15 +64,19 @@ test("real browser load applies a multi-step migration without replacing the sou
 
 test("corrupt and unsupported future saves produce structured failures", async ({ page }) => {
   await page.getByTestId("save-service-seed-corrupt").click();
+  await expectResult(page, { ok: true });
+
   await page.getByTestId("save-service-load").click();
-  expect(await readResult(page)).toMatchObject({
+  await expect.poll(() => readResult(page)).toMatchObject({
     ok: false,
     error: { kind: "corrupt-data", operation: "decode" },
   });
 
   await page.getByTestId("save-service-seed-future").click();
+  await expectResult(page, { ok: true });
+
   await page.getByTestId("save-service-load").click();
-  expect(await readResult(page)).toMatchObject({
+  await expect.poll(() => readResult(page)).toMatchObject({
     ok: false,
     error: { kind: "unsupported-version", operation: "migrate" },
   });
@@ -73,9 +84,10 @@ test("corrupt and unsupported future saves produce structured failures", async (
 
 test("failed migration leaves the browser source save unchanged", async ({ page }) => {
   await page.getByTestId("save-service-seed-legacy").click();
-  await page.getByTestId("save-service-load-failing").click();
+  await expectResult(page, { ok: true });
 
-  expect(await readResult(page)).toMatchObject({
+  await page.getByTestId("save-service-load-failing").click();
+  await expect.poll(() => readResult(page)).toMatchObject({
     ok: false,
     error: {
       kind: "migration-failed",
@@ -85,7 +97,7 @@ test("failed migration leaves the browser source save unchanged", async ({ page 
   });
 
   await page.getByTestId("save-service-inspect").click();
-  expect(await readResult(page)).toMatchObject({
+  await expect.poll(() => readResult(page)).toMatchObject({
     ok: true,
     value: {
       saveFormatVersion: 1,
@@ -94,8 +106,13 @@ test("failed migration leaves the browser source save unchanged", async ({ page 
   });
 });
 
+async function expectResult(page: Page, expected: unknown): Promise<void> {
+  await expect.poll(() => readResult(page)).toEqual(expected);
+}
+
 async function readResult(page: Page): Promise<unknown> {
-  return JSON.parse((await page.getByTestId("save-service-result").textContent()) ?? "null");
+  const text = (await page.getByTestId("save-service-result").textContent()) ?? "";
+  return text === "" ? null : JSON.parse(text);
 }
 
 async function deleteDatabase(page: Page, name: string): Promise<void> {
