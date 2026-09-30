@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { createToyDomainState } from "../src/domain/index.ts";
 import {
-  pickToyWorldFromRay,
   type PlayCanvasWorldRay,
+  pickToyWorldFromRay,
 } from "../src/presentation/playcanvas-interaction.ts";
 
 describe("PlayCanvas tactical pointer interaction", () => {
