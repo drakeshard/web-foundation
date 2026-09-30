@@ -1,5 +1,7 @@
-import type { ToyDomainCommand } from "./domain/index.js";
+import type { ToyDomainCommand, ToyDomainState } from "./domain/index.js";
+import { restoreToyDomain } from "./domain/index.js";
 import { createProbeInputController, type ProbeInputController } from "./input/probe-input.js";
+import { createProbePersistence } from "./persistence/probe-persistence.js";
 import { createPhaserProbe } from "./presentation/phaser-probe.js";
 import { clientPositionToToyPoint } from "./presentation/screen-to-world.js";
 import { createProbeSimulation, type ProbeSimulationFrame } from "./simulation/probe-simulation.js";
@@ -9,17 +11,13 @@ let input: ProbeInputController | undefined;
 let ui: ProbeUiBridge | undefined;
 let pendingUiCommands: ToyDomainCommand[] = [];
 
-const simulation = createProbeSimulation({
-  consumeCommands: () => {
-    const commands = [...(input?.consumeDomainCommands() ?? []), ...pendingUiCommands];
-    pendingUiCommands = [];
-    return commands;
-  },
-});
+const persistence = createProbePersistence();
+let simulation = createSimulation();
 
 const parent = getRequiredElement<HTMLElement>("#renderer-probe");
 const uiParent = getRequiredElement<HTMLElement>("#probe-ui");
 const status = getRequiredElement<HTMLOutputElement>("[data-testid='renderer-probe-status']");
+const persistenceState = getRequiredElement<HTMLOutputElement>("[data-testid='persistence-state']");
 const domainState = getRequiredElement<HTMLElement>("[data-testid='domain-state']");
 const inputContexts = getRequiredElement<HTMLElement>("[data-testid='input-contexts']");
 const frameState = getRequiredElement<HTMLElement>("[data-testid='frame-state']");
@@ -60,6 +58,64 @@ createPhaserProbe({
     renderDebugState();
   },
 });
+
+getRequiredElement<HTMLButtonElement>("[data-testid='save-probe']").addEventListener(
+  "click",
+  async () => {
+    const result = await persistence.save(simulation.state);
+    persistenceState.value = JSON.stringify(result.ok ? { ok: true, value: "saved" } : result);
+  },
+);
+
+getRequiredElement<HTMLButtonElement>("[data-testid='load-probe']").addEventListener(
+  "click",
+  async () => {
+    const result = await persistence.load();
+
+    if (!result.ok) {
+      persistenceState.value = JSON.stringify(result);
+      return;
+    }
+
+    if (result.value === null) {
+      persistenceState.value = JSON.stringify({ ok: true, value: "empty" });
+      return;
+    }
+
+    pendingUiCommands = [];
+    input?.consumeDomainCommands();
+    simulation = createSimulation(restoreToyDomain(result.value));
+
+    if (document.visibilityState === "hidden") {
+      simulation.pause();
+    }
+
+    ui?.publishDomainState(simulation.state);
+    renderDebugState();
+    persistenceState.value = JSON.stringify({ ok: true, value: "loaded" });
+  },
+);
+
+getRequiredElement<HTMLButtonElement>("[data-testid='seed-corrupt-save']").addEventListener(
+  "click",
+  async () => {
+    const result = await persistence.seedCorruptSave();
+    persistenceState.value = JSON.stringify(
+      result.ok ? { ok: true, value: "corrupt-seeded" } : result,
+    );
+  },
+);
+
+function createSimulation(initialState?: ToyDomainState) {
+  return createProbeSimulation({
+    ...(initialState ? { initialState } : {}),
+    consumeCommands: () => {
+      const commands = [...(input?.consumeDomainCommands() ?? []), ...pendingUiCommands];
+      pendingUiCommands = [];
+      return commands;
+    },
+  });
+}
 
 function handleUiIntent(intent: ProbeUiIntent): void {
   switch (intent.type) {
