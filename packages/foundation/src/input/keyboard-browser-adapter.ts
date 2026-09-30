@@ -1,10 +1,6 @@
 import type { BrowserInputEventTarget } from "./browser-event-target.js";
 import type { BrowserInputLifecycle } from "./browser-input-lifecycle.js";
-import type {
-  InputSequenceSource,
-  PhysicalInputSink,
-  PhysicalKeyCode,
-} from "./contracts.js";
+import type { InputSequenceSource, PhysicalInputSink, PhysicalKeyCode } from "./contracts.js";
 
 export interface KeyboardBrowserAdapterOptions {
   readonly keyboardTarget: BrowserInputEventTarget;
