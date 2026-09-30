@@ -13,9 +13,20 @@ test("PlayCanvas renderer probe boots from the shared toy domain", async ({ page
 
   await expect(page.getByTestId("playcanvas-domain-state")).toContainText('"id":"probe"');
   await expect(page.getByTestId("playcanvas-input-contexts")).toHaveText('["playcanvas-gameplay"]');
+  await expect(page.getByTestId("playcanvas-presentation-sync")).toHaveText(
+    '{"created":2,"updated":0,"destroyed":0,"viewIds":["probe:probe","marker"]}',
+  );
+
+  await page.getByTestId("playcanvas-sync").click();
+  await expect(page.getByTestId("playcanvas-presentation-sync")).toHaveText(
+    '{"created":0,"updated":2,"destroyed":0,"viewIds":["probe:probe","marker"]}',
+  );
 
   await page.getByTestId("playcanvas-rebuild").click();
   await expect(page.getByTestId("playcanvas-rebuild-count")).toHaveText("1");
+  await expect(page.getByTestId("playcanvas-presentation-sync")).toHaveText(
+    '{"created":2,"updated":0,"destroyed":0,"viewIds":["probe:probe","marker"]}',
+  );
   await expect(canvas).toHaveCount(1);
 });
 
