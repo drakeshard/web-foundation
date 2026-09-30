@@ -1,7 +1,4 @@
-import type {
-  ActionBindingResolver,
-  LogicalActionTransition,
-} from "./action-mapping.js";
+import type { ActionBindingResolver, LogicalActionTransition } from "./action-mapping.js";
 import type {
   InputCommand,
   InputSequence,
@@ -18,10 +15,7 @@ export interface ContextualLogicalActionState extends LogicalActionState {
   readonly context: InputContextId;
 }
 
-export interface TickInputSnapshot<
-  TCommandId extends string = string,
-  TPayload = undefined,
-> {
+export interface TickInputSnapshot<TCommandId extends string = string, TPayload = undefined> {
   readonly actions: readonly ContextualLogicalActionState[];
   readonly transitions: readonly ContextualActionTransition[];
   readonly commands: readonly InputCommand<TCommandId, TPayload>[];
@@ -45,10 +39,7 @@ interface MutableContextualActionState {
   released: boolean;
 }
 
-export class TickInputHandoff<
-  TCommandId extends string = string,
-  TPayload = undefined,
-> {
+export class TickInputHandoff<TCommandId extends string = string, TPayload = undefined> {
   readonly #actions: ActionBindingResolver;
   readonly #contexts: InputContextRouter;
   readonly #pendingTransitions: LogicalActionTransition[] = [];
