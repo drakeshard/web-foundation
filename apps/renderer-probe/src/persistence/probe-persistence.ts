@@ -132,17 +132,19 @@ function decodePoint(
 ): { readonly x: number; readonly y: number } | null {
   const { x, y } = value;
   if (
+    typeof x !== "number" ||
+    typeof y !== "number" ||
     !Number.isSafeInteger(x) ||
     !Number.isSafeInteger(y) ||
-    (x as number) < 0 ||
-    (x as number) >= width ||
-    (y as number) < 0 ||
-    (y as number) >= height
+    x < 0 ||
+    x >= width ||
+    y < 0 ||
+    y >= height
   ) {
     return null;
   }
 
-  return { x: x as number, y: y as number };
+  return { x, y };
 }
 
 function isRecord(value: JsonValue | undefined): value is Record<string, JsonValue> {
