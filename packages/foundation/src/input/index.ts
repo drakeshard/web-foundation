@@ -14,6 +14,11 @@ export type {
   BrowserInputEventTarget,
   BrowserVisibilityTarget,
 } from "./browser-event-target.js";
+export {
+  BrowserInputLifecycle,
+  type BrowserInputLifecycleOptions,
+  type BrowserInputResetListener,
+} from "./browser-input-lifecycle.js";
 export type {
   DigitalInputPhase,
   InputCommand,
