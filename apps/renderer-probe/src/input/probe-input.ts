@@ -88,11 +88,7 @@ export function createProbeInputController(
   const sink = (event: PhysicalInputEvent): void => {
     handoff.ingest(event);
 
-    if (
-      event.kind === "pointer-button" &&
-      event.button === 0 &&
-      event.phase === "pressed"
-    ) {
+    if (event.kind === "pointer-button" && event.button === 0 && event.phase === "pressed") {
       handoff.enqueueCommand({
         id: "probe.pointer-position",
         sequence: event.sequence,
@@ -148,8 +144,7 @@ export function createProbeInputController(
 
         const delivered = snapshot.commands.find(
           (command) =>
-            command.id === "probe.pointer-position" &&
-            command.sequence === transition.sequence,
+            command.id === "probe.pointer-position" && command.sequence === transition.sequence,
         );
         if (!delivered) continue;
 
