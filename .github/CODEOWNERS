@@ -1,0 +1,6 @@
+* @draglide
+
+docs/architecture/ @draglide
+docs/policies/ @draglide
+.github/ @draglide
+packages/foundation/ @draglide
