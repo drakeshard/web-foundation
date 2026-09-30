@@ -1,5 +1,5 @@
-import { describe, expect, it } from "vitest";
 import type { JsonValue } from "@drakeshard/foundation/storage";
+import { describe, expect, it } from "vitest";
 import { decodeToyDomainSnapshot } from "../src/persistence/probe-persistence.ts";
 
 describe("probe persistence payload validation", () => {
