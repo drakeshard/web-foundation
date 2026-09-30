@@ -7,11 +7,15 @@ const authoritativeState = createToyDomainState();
 const parent = getRequiredElement<HTMLElement>("#playcanvas-probe");
 const status = getRequiredElement<HTMLOutputElement>("[data-testid='playcanvas-probe-status']");
 const domainState = getRequiredElement<HTMLElement>("[data-testid='playcanvas-domain-state']");
+const syncButton = getRequiredElement<HTMLButtonElement>("[data-testid='playcanvas-sync']");
 const rebuildButton = getRequiredElement<HTMLButtonElement>("[data-testid='playcanvas-rebuild']");
 const rebuildCount = getRequiredElement<HTMLOutputElement>(
   "[data-testid='playcanvas-rebuild-count']",
 );
 const cameraState = getRequiredElement<HTMLElement>("[data-testid='playcanvas-camera-state']");
+const presentationSync = getRequiredElement<HTMLElement>(
+  "[data-testid='playcanvas-presentation-sync']",
+);
 const pointerResult = getRequiredElement<HTMLElement>("[data-testid='playcanvas-pointer-result']");
 const selectionIntent = getRequiredElement<HTMLElement>(
   "[data-testid='playcanvas-selection-intent']",
@@ -29,6 +33,9 @@ const probe = createPlayCanvasProbe({
   readState: () => authoritativeState,
   onCameraChanged: (state) => {
     cameraState.textContent = JSON.stringify(state);
+  },
+  onPresentationSynchronized: (result) => {
+    presentationSync.textContent = JSON.stringify(result);
   },
 });
 
@@ -52,6 +59,10 @@ const selectionInput = createPlayCanvasSelectionInput({
 
 inputContexts.textContent = JSON.stringify(selectionInput.activeContexts());
 status.value = "playcanvas-probe-ready";
+
+syncButton.addEventListener("click", () => {
+  probe.syncPresentation(authoritativeState);
+});
 
 rebuildButton.addEventListener("click", () => {
   probe.rebuildPresentation(authoritativeState);
