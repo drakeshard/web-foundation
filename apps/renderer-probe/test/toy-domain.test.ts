@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 import {
   advanceToyDomain,
   createToyDomainState,
+  getToyElevation,
   restoreToyDomain,
   snapshotToyDomain,
   type ToyDomainCommand,
@@ -11,6 +12,13 @@ import {
 } from "../src/domain/index.ts";
 
 describe("renderer-probe toy domain", () => {
+  it("owns deterministic low, ramp, and high elevation metadata", () => {
+    expect(getToyElevation({ x: 1, y: 7 })).toBe(0);
+    expect(getToyElevation({ x: 3, y: 2 })).toBe(0.5);
+    expect(getToyElevation({ x: 5, y: 0 })).toBe(1);
+    expect(getToyElevation({ x: 3.5, y: 4 })).toBe(0.75);
+  });
+
   it("applies fixture-local commands in order without mutating the input state", () => {
     const initial = createToyDomainState();
     const initialSnapshot = snapshotToyDomain(initial);
