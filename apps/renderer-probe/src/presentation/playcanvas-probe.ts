@@ -171,7 +171,6 @@ export function planPlayCanvasPresentationSync(
   return operations;
 }
 
-
 export function projectToyTerrainToPlayCanvas(
   state: ToyDomainState,
 ): readonly PlayCanvasTerrainCell[] {
