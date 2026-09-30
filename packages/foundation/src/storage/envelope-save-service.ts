@@ -14,10 +14,10 @@ import {
   createSaveEnvelope,
   deserializeSaveEnvelope,
   type GameId,
-  serializeSaveEnvelope,
   type SaveTimestamp,
+  serializeSaveEnvelope,
 } from "./save-envelope.js";
-import { SaveMigrationRegistry } from "./save-migrations.js";
+import type { SaveMigrationRegistry } from "./save-migrations.js";
 
 export interface EnvelopeSaveServiceOptions {
   readonly storage: SaveStorage;
