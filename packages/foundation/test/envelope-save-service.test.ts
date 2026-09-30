@@ -5,8 +5,8 @@ import {
   EnvelopeSaveService,
   type JsonValue,
   type PersistenceResult,
-  type SaveStorage,
   SaveMigrationRegistry,
+  type SaveStorage,
 } from "../src/storage/index.ts";
 
 class MemorySaveStorage implements SaveStorage {
