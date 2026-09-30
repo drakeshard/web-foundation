@@ -1,7 +1,6 @@
+import { DeterministicRng, RNG_ALGORITHM_ID } from "@drakeshard/foundation/random";
+import { FixedStepDriver } from "@drakeshard/foundation/time";
 import { describe, expect, it } from "vitest";
-
-import { DeterministicRng, RNG_ALGORITHM_ID } from "../../foundation/src/random/index.ts";
-import { FixedStepDriver } from "../../foundation/src/time/index.ts";
 import { ManualClock } from "../src/clock/index.ts";
 
 interface SimulationState {
