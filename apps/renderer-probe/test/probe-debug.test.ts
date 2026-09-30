@@ -1,5 +1,5 @@
-import { describe, expect, it } from "vitest";
 import type { PersistenceResult } from "@drakeshard/foundation/storage";
+import { describe, expect, it } from "vitest";
 import {
   projectPersistenceFailure,
   projectProbeFrameObservation,
