@@ -10,10 +10,7 @@ const contexts: readonly InputContextDefinition[] = [
   {
     id: "Gameplay",
     priority: 0,
-    actions: [
-      { action: "action.primary" },
-      { action: "action.shared" },
-    ],
+    actions: [{ action: "action.primary" }, { action: "action.shared" }],
   },
   {
     id: "TargetSelection",
