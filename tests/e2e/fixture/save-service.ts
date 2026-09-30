@@ -123,11 +123,12 @@ getRequiredElement<HTMLButtonElement>("[data-testid='save-service-seed-future']"
   },
 );
 
-getRequiredElement<HTMLButtonElement>(
-  "[data-testid='save-service-load-failing']",
-).addEventListener("click", async () => {
-  show(await failingService.load("slot"));
-});
+getRequiredElement<HTMLButtonElement>("[data-testid='save-service-load-failing']").addEventListener(
+  "click",
+  async () => {
+    show(await failingService.load("slot"));
+  },
+);
 
 function show(value: unknown): void {
   result.textContent = JSON.stringify(value);
