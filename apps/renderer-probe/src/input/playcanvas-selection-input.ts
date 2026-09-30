@@ -5,10 +5,7 @@ import {
   type PhysicalInputEvent,
   type ScreenPosition,
 } from "@drakeshard/foundation/input";
-import {
-  BrowserInputLifecycle,
-  PointerBrowserAdapter,
-} from "@drakeshard/foundation/input/browser";
+import { BrowserInputLifecycle, PointerBrowserAdapter } from "@drakeshard/foundation/input/browser";
 
 const SELECT_ACTION = "playcanvas.select-world";
 const GAMEPLAY_CONTEXT = "playcanvas-gameplay";
