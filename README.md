@@ -34,6 +34,7 @@ See:
 - `docs/guides/v0.1-usage.md`
 - `docs/release/versioning.md`
 - `docs/release/distribution.md`
+- `docs/release/rc-validation.md`
 - `docs/release/first-game-integration.md`
 - `docs/release/v0.1.md`
 - `CHANGELOG.md`
