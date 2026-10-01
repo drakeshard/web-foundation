@@ -83,7 +83,6 @@ test("PlayCanvas reuses the app-local UI bridge without renderer-owned gameplay 
   await expect(summary).toContainText("tick 1");
 });
 
-
 test("PlayCanvas save reload load restores domain state and presentation", async ({ page }) => {
   await page.goto("http://127.0.0.1:4174/playcanvas.html");
   await expect(page.getByTestId("playcanvas-probe-status")).toHaveText("playcanvas-probe-ready");
