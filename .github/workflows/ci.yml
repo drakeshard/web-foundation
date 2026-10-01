@@ -44,6 +44,9 @@ jobs:
       - name: Unit tests
         run: pnpm test
 
+      - name: Release version consistency
+        run: pnpm test:release-version
+
       - name: Build
         run: pnpm build
 
