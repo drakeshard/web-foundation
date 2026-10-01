@@ -10,7 +10,9 @@ const temp = fs.mkdtempSync(path.join(os.tmpdir(), "drakeshard-release-candidate
 const packDir = path.join(temp, "artifacts");
 const consumerDir = path.join(temp, "consumer");
 const pnpm = process.platform === "win32" ? "pnpm.cmd" : "pnpm";
-const publicationVersion = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8")).version;
+const publicationVersion = JSON.parse(
+  fs.readFileSync(path.join(root, "package.json"), "utf8"),
+).version;
 
 fs.mkdirSync(packDir, { recursive: true });
 fs.mkdirSync(consumerDir, { recursive: true });
