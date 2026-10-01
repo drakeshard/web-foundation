@@ -5,21 +5,21 @@
 S07-06 expands Web Foundation browser coverage without turning the full Chromium suite into a
 three-engine matrix.
 
-Chromium remains the primary fast browser suite and continues to execute every Playwright test.
-Firefox and WebKit run the existing focused browser tests that exercise the compatibility risks most
-likely to differ by engine:
+Chromium remains the primary fast browser suite. Firefox and WebKit run one focused compatibility
+fixture that exercises the browser-facing risks most likely to differ by engine:
 
-- `input.spec.ts` for keyboard, pointer, wheel, lifecycle reset, mapping, and deterministic tick
-  handoff;
-- `save-service.spec.ts` for IndexedDB save/load, reload, migrations, and structured failures;
-- `phaser-probe.spec.ts` for lightweight Phaser Canvas startup from renderer-neutral ToyDomain
-  state.
+- keyboard input through the browser adapter, action mapping, and deterministic tick handoff;
+- IndexedDB-backed save/load across a page reload;
+- lightweight Phaser Canvas startup from renderer-neutral ToyDomain state.
+
+The compatibility fixture is intentionally isolated from the Chromium suite because Chromium
+already exercises the deeper source tests for those flows.
 
 ## CI matrix
 
 The required `Quality` job remains Chromium-focused so the established fast signal is unchanged.
-A separate `Browser Compatibility` job installs Playwright Firefox and WebKit and runs only those
-focused fixtures in the two compatibility projects.
+A separate `Browser Compatibility` job installs Playwright Firefox and WebKit and runs only
+`tests/e2e/browser-compatibility.spec.ts` in those two projects.
 
 This intentionally avoids multiplying the full renderer/persistence/lifecycle/performance matrix
 across every browser engine. Cross-renderer semantics remain proven by the primary Chromium suite;
@@ -33,6 +33,9 @@ startup.
   Linux CI would add substantial runtime and flakiness without proving a new Foundation contract.
 - Safari support is represented by Playwright WebKit on Linux, not by a native macOS Safari process.
   This is useful engine coverage but not a substitute for production-device validation.
+- Pointer cancellation is not used as the Firefox/WebKit compatibility gate because synthetic
+  pointer-capture/cancel behavior differs between Playwright engines. The complete pointer contract,
+  including pointercancel, remains covered by the primary Chromium suite.
 - Performance observations remain Chromium-only. Hosted-runner timing is descriptive evidence and is
   not portable enough to use as a cross-browser regression threshold.
 - If a Firefox/WebKit-specific failure or quirk is found, record it as a targeted issue with browser
