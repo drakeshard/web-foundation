@@ -12,7 +12,10 @@ import {
   createPlayCanvasProbe,
   projectToyStateToPlayCanvas,
 } from "./presentation/playcanvas-probe.js";
-import { runCrossRendererScenario } from "./scenario/cross-renderer-scenario.js";
+import {
+  CROSS_RENDERER_FRAME_SCHEDULES,
+  runCrossRendererScenario,
+} from "./scenario/cross-renderer-scenario.js";
 import { createProbeUiBridge, type ProbeUiBridge, type ProbeUiIntent } from "./ui/probe-ui.js";
 
 const ELEVATION_DEMO_COMMANDS: readonly ToyDomainCommand[] = [
@@ -117,15 +120,19 @@ rebuildButton.addEventListener("click", () => {
 getRequiredElement<HTMLButtonElement>(
   "[data-testid='playcanvas-run-cross-renderer-scenario']",
 ).addEventListener("click", () => {
-  const result = runCrossRendererScenario();
+  const result = runCrossRendererScenario({
+    frameDeltasMs: CROSS_RENDERER_FRAME_SCHEDULES.coarse,
+  });
   crossRendererScenarioResult.textContent = JSON.stringify({
     renderer: "playcanvas",
+    cadence: "coarse",
     scenarioId: result.scenarioId,
     seed: result.seed,
     tickCount: result.tickCount,
     finalDomain: result.finalDomain,
     random: result.random,
     checksum: result.checksum,
+    trace: result.trace,
     presentation: projectToyStateToPlayCanvas(result.finalState, 1),
   });
 });

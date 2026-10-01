@@ -6,7 +6,10 @@ import { createProbePersistence } from "./persistence/probe-persistence.js";
 import { createPhaserProbe } from "./presentation/phaser-probe.js";
 import { clientPositionToToyPoint } from "./presentation/screen-to-world.js";
 import { projectToyPresentation } from "./presentation/toy-presentation.js";
-import { runCrossRendererScenario } from "./scenario/cross-renderer-scenario.js";
+import {
+  CROSS_RENDERER_FRAME_SCHEDULES,
+  runCrossRendererScenario,
+} from "./scenario/cross-renderer-scenario.js";
 import { createProbeSimulation, type ProbeSimulationFrame } from "./simulation/probe-simulation.js";
 import { createProbeUiBridge, type ProbeUiBridge, type ProbeUiIntent } from "./ui/probe-ui.js";
 
@@ -73,15 +76,19 @@ createPhaserProbe({
 getRequiredElement<HTMLButtonElement>(
   "[data-testid='run-cross-renderer-scenario']",
 ).addEventListener("click", () => {
-  const result = runCrossRendererScenario();
+  const result = runCrossRendererScenario({
+    frameDeltasMs: CROSS_RENDERER_FRAME_SCHEDULES.fine,
+  });
   crossRendererScenarioResult.textContent = JSON.stringify({
     renderer: "phaser",
+    cadence: "fine",
     scenarioId: result.scenarioId,
     seed: result.seed,
     tickCount: result.tickCount,
     finalDomain: result.finalDomain,
     random: result.random,
     checksum: result.checksum,
+    trace: result.trace,
     presentation: projectToyPresentation(result.finalState, 1),
   });
 });
