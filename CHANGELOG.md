@@ -2,6 +2,20 @@
 
 All notable Web Foundation release changes are recorded here.
 
+## 0.1.2 — npm package-content repair
+
+### Fixed
+
+- Repair the npm package-content path after a real external consumer found that `@drakeshard/foundation@0.1.1` was published with export metadata but without its `dist/` tree.
+- Add reusable validation for registry-installed package shape, including concrete `types` and `import` export targets.
+- Add a regression test for the exact missing-`dist` failure mode.
+- Run installed-package-shape regression checks in normal CI and the trusted publication workflow.
+- Remove hard-coded publication-candidate version checks so release validation follows the lockstep repository version.
+
+### Compatibility
+
+This is a packaging/distribution repair only. The approved public API/export baseline, deterministic RNG identity, persistence contracts, and runtime behavior are unchanged.
+
 ## 0.1.1 — npm publication preparation
 
 ### Changed
