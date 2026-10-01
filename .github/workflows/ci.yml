@@ -52,3 +52,31 @@ jobs:
 
       - name: Browser smoke
         run: pnpm test:e2e
+
+  browser-compatibility:
+    name: Browser Compatibility
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Setup Node
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version-file: .node-version
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build
+        run: pnpm build
+
+      - name: Install Firefox and WebKit
+        run: pnpm exec playwright install --with-deps firefox webkit
+
+      - name: Focused compatibility coverage
+        run: pnpm test:e2e:compat
