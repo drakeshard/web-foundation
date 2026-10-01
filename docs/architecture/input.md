@@ -142,3 +142,27 @@ S02-09 separates renderer-neutral input APIs from browser integration APIs at th
 
 Browser code may normalize into the core input contracts. Core deterministic input and simulation-facing code must not depend on the browser subpath. Raw DOM events remain confined to browser adapters and never enter action/context/tick contracts.
 
+
+
+## S07-03 cross-renderer input pressure test
+
+Sprint 07 reuses the same app-local `ProbeInputController` in the Phaser and PlayCanvas probes. The
+controller composes the admitted Foundation keyboard/pointer browser adapters, shared monotonic input
+sequence, action mapping, input contexts, and `TickInputHandoff`, then maps the resulting logical
+state into the same ToyDomain command shapes.
+
+Renderer-local coordinate conversion remains outside Foundation and outside the ToyDomain. Phaser
+converts viewport pointer coordinates through its 2D canvas/world mapping callback. PlayCanvas
+converts the same normalized `ScreenPosition` through its camera ray/terrain interaction callback.
+Only the resulting plain `ToyPoint` is allowed into the shared app-local command mapping; a
+renderer-local miss or occlusion returns no domain command.
+
+The PlayCanvas probe exposes an explicit `apply input tick` control solely as a deterministic probe
+affordance. It lets browser tests consume the same tick handoff without tying authoritative domain
+updates to PlayCanvas render-frame cadence. This is not a production scheduling API and does not add a
+Foundation renderer adapter.
+
+Cross-renderer Chromium coverage verifies equivalent keyboard mapping, identical gameplay/modal
+context ownership, renderer-local pointer conversion converging on the same `set-marker` command and
+domain result, and blur/reset invalidation preventing stale held movement in both probes. No renderer
+objects or transient presentation coordinates enter Foundation input or ToyDomain contracts.

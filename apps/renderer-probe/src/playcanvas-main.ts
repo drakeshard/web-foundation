@@ -6,7 +6,10 @@ import {
   restoreToyDomain,
   type ToyDomainCommand,
 } from "./domain/index.js";
-import { createPlayCanvasSelectionInput } from "./input/playcanvas-selection-input.js";
+import {
+  createProbeInputController,
+  type ProbeInputController,
+} from "./input/probe-input.js";
 import { createProbePersistence } from "./persistence/probe-persistence.js";
 import {
   createPlayCanvasProbe,
@@ -28,7 +31,9 @@ const ELEVATION_DEMO_COMMANDS: readonly ToyDomainCommand[] = [
 let authoritativeState = createToyDomainState();
 const persistence = createProbePersistence();
 const elevationDemoRandom = new DeterministicRng(0x5_06_05);
+const inputRandom = new DeterministicRng(0x7_03_01);
 let elevationDemoStep = 0;
+let input: ProbeInputController | undefined;
 let ui: ProbeUiBridge | undefined;
 
 const parent = getRequiredElement<HTMLElement>("#playcanvas-probe");
@@ -55,6 +60,9 @@ const selectionIntent = getRequiredElement<HTMLElement>(
   "[data-testid='playcanvas-selection-intent']",
 );
 const inputContexts = getRequiredElement<HTMLElement>("[data-testid='playcanvas-input-contexts']");
+const inputCommandHistory = getRequiredElement<HTMLElement>(
+  "[data-testid='playcanvas-input-command-history']",
+);
 const uiIntent = getRequiredElement<HTMLElement>("[data-testid='playcanvas-ui-intent']");
 const persistenceState = getRequiredElement<HTMLOutputElement>(
   "[data-testid='playcanvas-persistence-state']",
@@ -69,6 +77,9 @@ pointerResult.textContent = JSON.stringify(null);
 selectionIntent.textContent = JSON.stringify(null);
 uiIntent.textContent = JSON.stringify(null);
 
+const consumedInputCommands: ToyDomainCommand[][] = [];
+inputCommandHistory.textContent = JSON.stringify(consumedInputCommands);
+
 let rebuilds = 0;
 
 const probe = createPlayCanvasProbe({
@@ -82,22 +93,14 @@ const probe = createPlayCanvasProbe({
   },
 });
 
-const selectionInput = createPlayCanvasSelectionInput({
+input = createProbeInputController({
   pointerTarget: probe.canvas,
-  onSelectionRequest: (request) => {
-    const result = probe.resolvePointerInteraction(request.position, authoritativeState);
+  toWorldPoint: (position) => {
+    const result = probe.resolvePointerInteraction(position, authoritativeState);
     pointerResult.textContent = JSON.stringify(result);
-
-    const intent: ToyDomainCommand | null =
-      result.kind === "intersection"
-        ? {
-            type: "set-marker",
-            position: result.point,
-          }
-        : null;
-
-    selectionIntent.textContent = JSON.stringify(intent);
+    return result.kind === "intersection" ? result.point : null;
   },
+  onCommandsConsumed: recordConsumedInputCommands,
 });
 
 ui = createProbeUiBridge({
@@ -106,7 +109,7 @@ ui = createProbeUiBridge({
   onIntent: handleUiIntent,
 });
 
-inputContexts.textContent = JSON.stringify(selectionInput.activeContexts());
+inputContexts.textContent = JSON.stringify(input.activeContexts());
 status.value = "playcanvas-probe-ready";
 
 syncButton.addEventListener("click", () => {
@@ -116,6 +119,17 @@ syncButton.addEventListener("click", () => {
 rebuildButton.addEventListener("click", () => {
   rebuildPresentation();
 });
+
+getRequiredElement<HTMLButtonElement>("[data-testid='playcanvas-input-tick']").addEventListener(
+  "click",
+  () => {
+    const commands = input?.consumeDomainCommands() ?? [];
+    if (commands.length === 0) return;
+
+    authoritativeState = advanceToyDomain(authoritativeState, commands, inputRandom).state;
+    publishAuthoritativeState();
+  },
+);
 
 getRequiredElement<HTMLButtonElement>(
   "[data-testid='playcanvas-run-cross-renderer-scenario']",
@@ -185,7 +199,7 @@ elevationDemoButton.addEventListener("click", () => {
 window.addEventListener(
   "pagehide",
   () => {
-    selectionInput.destroy();
+    input?.destroy();
     ui?.destroy();
     probe.destroy();
   },
@@ -195,9 +209,9 @@ window.addEventListener(
 function handleUiIntent(intent: ProbeUiIntent): void {
   switch (intent.type) {
     case "set-modal-active":
-      selectionInput.setModalActive(intent.active);
+      input?.setModalActive(intent.active);
       ui?.setModalActive(intent.active);
-      inputContexts.textContent = JSON.stringify(selectionInput.activeContexts());
+      inputContexts.textContent = JSON.stringify(input?.activeContexts() ?? []);
       return;
     case "randomize-marker":
       uiIntent.textContent = JSON.stringify({
@@ -205,6 +219,16 @@ function handleUiIntent(intent: ProbeUiIntent): void {
       } satisfies ToyDomainCommand);
       return;
   }
+}
+
+function recordConsumedInputCommands(commands: readonly ToyDomainCommand[]): void {
+  if (commands.length === 0) return;
+
+  consumedInputCommands.push([...commands]);
+  inputCommandHistory.textContent = JSON.stringify(consumedInputCommands);
+
+  const selection = commands.find((command) => command.type === "set-marker");
+  if (selection) selectionIntent.textContent = JSON.stringify(selection);
 }
 
 function rebuildPresentation(): void {

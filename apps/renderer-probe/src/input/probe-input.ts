@@ -41,7 +41,8 @@ export interface ProbeInputController {
 
 export interface ProbeInputControllerOptions {
   readonly pointerTarget: HTMLElement;
-  readonly toWorldPoint: (position: ScreenPosition) => ToyPoint;
+  readonly toWorldPoint: (position: ScreenPosition) => ToyPoint | null;
+  readonly onCommandsConsumed?: (commands: readonly ToyDomainCommand[]) => void;
 }
 
 export function createProbeInputController(
@@ -159,12 +160,16 @@ export function createProbeInputController(
         );
         if (!delivered) continue;
 
+        const position = options.toWorldPoint(delivered.payload.position);
+        if (!position) continue;
+
         commands.push({
           type: "set-marker",
-          position: options.toWorldPoint(delivered.payload.position),
+          position,
         });
       }
 
+      options.onCommandsConsumed?.(commands);
       return commands;
     },
 
