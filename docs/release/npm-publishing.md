@@ -9,7 +9,7 @@ Released packages:
 - `@drakeshard/foundation@0.1.1`;
 - `@drakeshard/testing@0.1.1`.
 
-The original `v0.1.0` GitHub Release tarballs remain immutable release history and fallback evidence. They are no longer the preferred installation path.
+The original `v0.1.0` GitHub Release tarballs remain immutable release history and fallback evidence. The first npm publication is intentionally `0.1.1`: Sprint 09 added npm/publication metadata and Apache-2.0 licensing after the immutable `v0.1.0` release, so those changed package contents were not republished under `0.1.0`. This historical bootstrap mismatch is intentional and is not a precedent for future release/tag drift.
 
 ## Consumer installation
 
@@ -27,14 +27,16 @@ Future npm publication is driven by `.github/workflows/npm-publish.yml`.
 The workflow runs only when a GitHub Release is published and:
 
 1. checks out that release tag;
-2. requires the release tag version to match the workspace, Foundation, and Testing package versions;
-3. installs from the committed lockfile;
-4. runs the non-browser publication-quality gates;
-5. packs the reviewed package directories;
-6. publishes the exact packed tarballs to npm;
-7. skips a package/version that already exists rather than attempting to overwrite an immutable npm version.
+2. runs the reusable release-version validator before dependency installation or any publish command;
+3. requires a strict `vX.Y.Z` semver release tag to match the root workspace, Foundation, and Testing versions exactly;
+4. verifies the checked-out `HEAD`, release tag commit, and GitHub release-event `GITHUB_SHA` identify the same commit;
+5. installs from the committed lockfile;
+6. runs the non-browser publication-quality gates;
+7. packs the reviewed package directories;
+8. publishes the exact packed tarballs to npm;
+9. skips a package/version that already exists rather than attempting to overwrite an immutable npm version.
 
-There is no branch-triggered or generic manual publish path in the workflow.
+There is no branch-triggered or generic manual publish path in the workflow. Normal CI also runs the same validator without a release tag so package-version drift is rejected before release creation.
 
 ## npm trusted-publisher configuration
 

@@ -26,7 +26,9 @@ The package version identifies the shipped package/API release. It does **not** 
 
 The package version is not persisted inside `SaveEnvelope` and does not drive `SaveMigrationRegistry`.
 
-The immutable `v0.1.0` GitHub Release remains the original package-tarball release record. Sprint 09 introduces public npm distribution as an additional owner-defined completion requirement. Because npm publication requires package metadata and licensing changes that were not present in the `v0.1.0` artifacts, the npm publication candidate is `0.1.1` rather than silently publishing different package contents under the existing `0.1.0` version. This is a distribution/metadata-only patch; it does not change the approved runtime API or compatibility-sensitive contracts.
+The immutable `v0.1.0` GitHub Release remains the original package-tarball release record. Sprint 09 introduced public npm distribution as an additional owner-defined completion requirement. Because npm publication required package metadata and licensing changes that were not present in the `v0.1.0` artifacts, the first npm publication is intentionally `0.1.1` rather than silently publishing different package contents under the existing `0.1.0` version. This is a distribution/metadata-only patch; it does not change the approved runtime API or compatibility-sensitive contracts.
+
+That bootstrap history is a one-time intentional historical state. For future releases, the root workspace, `@drakeshard/foundation`, and `@drakeshard/testing` remain lockstep; a GitHub Release tag must be strict semver in `vX.Y.Z` form and exactly match that version; and the npm publication workflow verifies that the checked-out commit is the tagged release commit before publishing.
 
 ## Deterministic RNG compatibility
 
