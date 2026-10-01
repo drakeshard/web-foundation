@@ -4,7 +4,7 @@
 
 Sprint 09 supersedes the original S08-05 external-consumption decision for normal consumers.
 
-The original `v0.1.0` GitHub Release tarballs remain immutable release history and fallback evidence. Public npm registry publication is now the primary external distribution mechanism. `@drakeshard/foundation@0.1.1` and `@drakeshard/testing@0.1.1` have been published and successfully installed by package name in a clean external consumer.
+The original `v0.1.0` GitHub Release tarballs remain immutable release history and fallback evidence. Public npm registry publication is now the primary external distribution mechanism. The manually bootstrapped `0.1.1` versions remain immutable registry history, but a real external consumer later proved that `@drakeshard/foundation@0.1.1` is unusable because its published artifact is missing `dist/`. Corrective Issue #186 prepares lockstep `0.1.2` as the first registry release that must pass installed-package-shape, runtime-consumer, integrity, trusted-publishing, and provenance verification.
 
 ## Decision
 

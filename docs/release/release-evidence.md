@@ -4,9 +4,9 @@
 
 Sprint 10 release hardening is complete when the repository automation and controlled project records are reconciled. No dummy package version is published solely to manufacture provenance evidence.
 
-The initial npm packages, `@drakeshard/foundation@0.1.1` and `@drakeshard/testing@0.1.1`, were published before the trusted-publisher workflow was configured. They remain valid bootstrap releases, but they are not evidence of the automated OIDC publication path.
+The initial npm packages, `@drakeshard/foundation@0.1.1` and `@drakeshard/testing@0.1.1`, were published before the trusted-publisher workflow was configured. They remain immutable bootstrap history, but Foundation 0.1.1 is not a usable consumer artifact because the registry package is missing its `dist/` tree.
 
-The first real release published after the Sprint 10 workflow is merged must exercise the automated provenance checks below. Successful evidence is attached to that GitHub Release by the publication workflow.
+Phase 4 consumer evidence opened corrective Issue #186. The genuine lockstep 0.1.2 repair release is the first release that must exercise the complete automated provenance checks below. Successful evidence is attached to that GitHub Release by the publication workflow.
 
 ## Durable release evidence
 
@@ -27,9 +27,10 @@ Before either package is published, the release workflow requires:
 3. checked-out `HEAD`, the tag commit, and the GitHub release-event commit to identify the same source commit;
 4. frozen-lockfile dependency installation;
 5. formatting/lint/architecture checks, typecheck, and unit tests;
-6. the public API/export-surface baseline;
-7. clean package-consumer validation;
-8. exact packed release-candidate consumer validation.
+6. the installed-package-shape regression covering the missing-`dist/` failure mode;
+7. the public API/export-surface baseline;
+8. clean package-consumer validation;
+9. exact packed release-candidate consumer validation.
 
 These are source and reviewed-artifact guarantees. They do not prove that npm accepted or served the publication.
 
@@ -49,7 +50,7 @@ The evidence generator additionally requires the GitHub Actions OIDC request env
 
 After npm publication or immutable-version reuse:
 
-1. the registry propagation/clean-consumer smoke installs the exact release version by package name and imports every approved public runtime subpath;
+1. the registry propagation/clean-consumer smoke installs the exact release version by package name, requires the installed `dist/` tree and every approved concrete export target, and imports every approved public runtime subpath;
 2. registry `dist.integrity` (SHA-512) and `dist.shasum` (SHA-1) must match the exact reviewed tarball bytes produced earlier in the job;
 3. the report records a SHA-256 digest of each reviewed tarball for repository/release review;
 4. npm registry signature verification is run against the installed release packages;
@@ -77,4 +78,4 @@ Sprint 10 adds process controls only. It introduces no runtime API, renderer ada
 
 After S10-01 through S10-04 are merged and controlled documentation is reconciled, Web Foundation returns to production-consumer-driven evolution. Future implementation work requires real production evidence and the shared-code admission rule.
 
-The first subsequent real release must retain its generated release-evidence assets as the concrete proof that the automated trusted-publishing/provenance path succeeded. If that release fails provenance verification, the release process is defective and must be repaired before claiming the release hardening control is operational.
+The 0.1.2 packaging repair is the first subsequent real release and must retain its generated release-evidence assets as the concrete proof that the automated trusted-publishing/provenance path and corrected registry package shape succeeded. If that release fails package-shape, integrity, registry consumption, or provenance verification, Issue #186 remains open and the release process must be repaired before the control is considered operational.

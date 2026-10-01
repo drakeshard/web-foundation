@@ -10,6 +10,9 @@ const temp = fs.mkdtempSync(path.join(os.tmpdir(), "drakeshard-release-candidate
 const packDir = path.join(temp, "artifacts");
 const consumerDir = path.join(temp, "consumer");
 const pnpm = process.platform === "win32" ? "pnpm.cmd" : "pnpm";
+const publicationVersion = JSON.parse(
+  fs.readFileSync(path.join(root, "package.json"), "utf8"),
+).version;
 
 fs.mkdirSync(packDir, { recursive: true });
 fs.mkdirSync(consumerDir, { recursive: true });
@@ -78,13 +81,13 @@ try {
   assertInstalledPackageShape(
     path.join(consumerDir, "node_modules/@drakeshard/foundation"),
     "@drakeshard/foundation",
-    "0.1.1",
+    publicationVersion,
     ["./input", "./input/browser", "./random", "./time", "./storage", "./storage/browser"],
   );
   assertInstalledPackageShape(
     path.join(consumerDir, "node_modules/@drakeshard/testing"),
     "@drakeshard/testing",
-    "0.1.1",
+    publicationVersion,
     ["./clock"],
   );
 

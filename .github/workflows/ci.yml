@@ -50,6 +50,9 @@ jobs:
       - name: Release evidence tooling
         run: pnpm test:release-evidence
 
+      - name: Installed package shape regression
+        run: pnpm test:npm-package-shape
+
       - name: Build
         run: pnpm build
 
