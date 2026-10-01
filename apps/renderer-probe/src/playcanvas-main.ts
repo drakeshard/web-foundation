@@ -8,7 +8,11 @@ import {
 } from "./domain/index.js";
 import { createPlayCanvasSelectionInput } from "./input/playcanvas-selection-input.js";
 import { createProbePersistence } from "./persistence/probe-persistence.js";
-import { createPlayCanvasProbe } from "./presentation/playcanvas-probe.js";
+import {
+  createPlayCanvasProbe,
+  projectToyStateToPlayCanvas,
+} from "./presentation/playcanvas-probe.js";
+import { runCrossRendererScenario } from "./scenario/cross-renderer-scenario.js";
 import { createProbeUiBridge, type ProbeUiBridge, type ProbeUiIntent } from "./ui/probe-ui.js";
 
 const ELEVATION_DEMO_COMMANDS: readonly ToyDomainCommand[] = [
@@ -51,6 +55,9 @@ const inputContexts = getRequiredElement<HTMLElement>("[data-testid='playcanvas-
 const uiIntent = getRequiredElement<HTMLElement>("[data-testid='playcanvas-ui-intent']");
 const persistenceState = getRequiredElement<HTMLOutputElement>(
   "[data-testid='playcanvas-persistence-state']",
+);
+const crossRendererScenarioResult = getRequiredElement<HTMLElement>(
+  "[data-testid='playcanvas-cross-renderer-scenario-result']",
 );
 
 renderDomainState();
@@ -105,6 +112,22 @@ syncButton.addEventListener("click", () => {
 
 rebuildButton.addEventListener("click", () => {
   rebuildPresentation();
+});
+
+getRequiredElement<HTMLButtonElement>(
+  "[data-testid='playcanvas-run-cross-renderer-scenario']",
+).addEventListener("click", () => {
+  const result = runCrossRendererScenario();
+  crossRendererScenarioResult.textContent = JSON.stringify({
+    renderer: "playcanvas",
+    scenarioId: result.scenarioId,
+    seed: result.seed,
+    tickCount: result.tickCount,
+    finalDomain: result.finalDomain,
+    random: result.random,
+    checksum: result.checksum,
+    presentation: projectToyStateToPlayCanvas(result.finalState, 1),
+  });
 });
 
 getRequiredElement<HTMLButtonElement>("[data-testid='playcanvas-save']").addEventListener(
