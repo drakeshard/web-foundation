@@ -27,16 +27,31 @@ test("detects long-lived npm publish token environment", () => {
 });
 
 test("accepts clean npm signature audit results", () => {
-  assert.doesNotThrow(() => validateAuditResult({ invalid: [], missing: [] }));
+  assert.doesNotThrow(() =>
+    validateAuditResult(
+      {
+        invalid: [],
+        missing: [],
+        verified: [
+          {
+            name: "@drakeshard/foundation",
+            version: "1.2.3",
+            attestations: { provenance: {} },
+          },
+        ],
+      },
+      [{ name: "@drakeshard/foundation", version: "1.2.3" }],
+    ),
+  );
 });
 
 test("rejects invalid or missing npm signature audit results", () => {
   assert.throws(
-    () => validateAuditResult({ invalid: [{ name: "bad" }], missing: [] }),
+    () => validateAuditResult({ invalid: [{ name: "bad" }], missing: [], verified: [] }),
     /invalid signatures/,
   );
   assert.throws(
-    () => validateAuditResult({ invalid: [], missing: [{ name: "missing" }] }),
+    () => validateAuditResult({ invalid: [], missing: [{ name: "missing" }], verified: [] }),
     /missing registry signatures/,
   );
 });
@@ -93,5 +108,16 @@ test("rejects package evidence without provenance metadata", () => {
         },
       }),
     /provenance metadata missing/,
+  );
+});
+
+test("requires verified provenance for each expected release package", () => {
+  assert.throws(
+    () =>
+      validateAuditResult(
+        { invalid: [], missing: [], verified: [] },
+        [{ name: "@drakeshard/foundation", version: "1.2.3" }],
+      ),
+    /verified provenance attestation missing/,
   );
 });
