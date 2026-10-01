@@ -306,10 +306,13 @@ authoritative `ToyDomainState`; it does not read `pc.Entity`, camera, material, 
 other PlayCanvas state as gameplay truth.
 
 UI controls continue to emit app-local `ProbeUiIntent` values. The PlayCanvas orchestration layer
-maps modal intent into the existing Foundation input-context router and maps marker randomization
-into the existing fixture-local `ToyDomainCommand` before publishing the resulting authoritative
-state back to UI and presentation. Preact signals remain transient UI state and derived view state,
-not simulation state.
+maps modal intent into the existing Foundation input-context router and translates marker
+randomization into the existing fixture-local `ToyDomainCommand` intention. The PlayCanvas page
+records that command as plain app-local intent rather than applying it asynchronously; authoritative
+state changes demonstrated by the elevation path are then republished to both UI and presentation.
+This preserves the S06-03 rule that renderer/UI events do not bypass deterministic tick-oriented
+domain orchestration. Preact signals remain transient UI state and derived view state, not simulation
+state.
 
 The renderer-specific coupling observed in S06-06 is limited to application composition: choosing
 the PlayCanvas page mount point, updating PlayCanvas input-context debug output, and requesting
