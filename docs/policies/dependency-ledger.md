@@ -75,3 +75,18 @@ boundaries after both renderer probes and the cross-renderer pressure test.
 
 The detailed public-surface and extraction evidence is recorded in
 `docs/architecture/sprint-07-v01-surface-review.md`.
+
+
+## S08-05 v0.1 distribution review
+
+The v0.1 external distribution mechanism is versioned package tarballs attached to the tagged GitHub Release.
+
+This decision does not add or alter any runtime dependency. It changes only how a consumer obtains the already-reviewed package artifacts:
+
+- workspace links remain repository-local development wiring;
+- cross-repository consumers pin exact GitHub Release tarball URLs and commit their own lockfiles;
+- npm and GitHub Packages publication are not approved for v0.1;
+- package manifests remain `private: true`;
+- no registry authentication/token dependency is introduced for the current public Foundation repository.
+
+Future movement to a private registry or private Foundation repository requires a separate access/authentication and dependency-policy review.
