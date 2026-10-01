@@ -39,3 +39,21 @@ New dependencies must comply with `docs/policies/dependencies.md`. Dependency ad
 ## Documentation
 
 Changes to controlled behavior must update the authoritative repository document or architecture decision record in the same pull request when practical.
+
+
+## First-production-game integration feedback
+
+Production-game integration feedback must follow `docs/release/first-game-integration.md`.
+
+Before requesting Foundation implementation:
+
+- classify whether the behavior is a Foundation contract defect, consumer-integration problem, game/domain feature, compatibility gap, or shared-code admission candidate;
+- reduce Foundation defects to a sanitized reproduction through the public package API where practical;
+- keep proprietary game content, secrets, and private-access-only evidence out of this public repository;
+- keep renderer-specific integration and game-domain semantics local by default;
+- route RPG/Tactical candidates through game-local incubation or the relevant library track rather than Foundation;
+- treat compatibility-sensitive changes as explicit architecture/version transitions, not ordinary bug fixes.
+
+Use the **Foundation integration feedback** issue form for first-game intake.
+
+“Generic” or “reusable” is not sufficient justification for Foundation ownership.

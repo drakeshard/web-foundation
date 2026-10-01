@@ -1,0 +1,132 @@
+name: Foundation integration feedback
+description: Report first-production-game integration defects, compatibility gaps, or admission candidates.
+title: "[integration] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this form for Web Foundation integration feedback that can be discussed safely in this public repository.
+        Do not include proprietary game content, secrets, private URLs, or inaccessible logs. Game-specific RPG/Tactical/domain work should remain in the game or relevant library track.
+
+  - type: input
+    id: version
+    attributes:
+      label: Foundation version / release candidate
+      description: Provide the exact release version, release-asset version, or commit SHA.
+      placeholder: "0.1.0 or commit SHA"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Intake category
+      options:
+        - Foundation defect
+        - Consumer integration gap
+        - Compatibility-sensitive request
+        - Shared-code admission candidate
+        - Documentation clarification
+    validations:
+      required: true
+
+  - type: input
+    id: subpath
+    attributes:
+      label: Package subpath
+      description: Name the narrowest public package entry point involved.
+      placeholder: "@drakeshard/foundation/input/browser"
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Browser/runtime/toolchain details relevant to the reproduction.
+      placeholder: "Browser + version, OS/device class if relevant, Node/pnpm for build issues"
+    validations:
+      required: true
+
+  - type: textarea
+    id: observed
+    attributes:
+      label: Observed behavior
+      description: Describe what happens through the public Foundation boundary.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior and contract
+      description: State what you expected and which documented contract supports that expectation.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Minimal sanitized reproduction
+      description: Reduce the issue to the public Foundation API where practical. Do not paste proprietary game code or content.
+      placeholder: "Steps or minimal code using only shareable data"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: title_independent
+    attributes:
+      label: Reproduces without title-specific domain content?
+      options:
+        - "Yes"
+        - "No"
+        - "Not yet isolated"
+    validations:
+      required: true
+
+  - type: textarea
+    id: impact
+    attributes:
+      label: Production impact
+      description: Explain severity, blocked workflow, compatibility risk, or operational cost.
+    validations:
+      required: true
+
+  - type: textarea
+    id: admission
+    attributes:
+      label: Shared-code admission evidence
+      description: |
+        Required for API expansion/extraction requests. Include current consumer, concrete problem,
+        local alternative, shared benefit, runtime/dependency impact, narrowest viable API, boundary impact,
+        and evidence/test plan. "Generic/reusable" alone is insufficient.
+      placeholder: "Write N/A for a reproducible defect that does not expand the API."
+    validations:
+      required: true
+
+  - type: textarea
+    id: compatibility
+    attributes:
+      label: Compatibility impact
+      description: |
+        If the request changes RNG, timing, input, package exports, persistence/save format, or another
+        accepted contract, identify the affected compatibility dimension and migration/transition needs.
+      placeholder: "None, or describe the compatibility dimension and transition."
+    validations:
+      required: true
+
+  - type: input
+    id: game_issue
+    attributes:
+      label: Shareable consumer issue reference
+      description: Optional. Link only if the reference is safe and accessible to Foundation maintainers.
+
+  - type: checkboxes
+    id: boundaries
+    attributes:
+      label: Boundary confirmation
+      options:
+        - label: I have not included secrets, proprietary game content, or private-access-only evidence in this public issue.
+          required: true
+        - label: I checked whether this belongs to game/presentation/RPG/Tactical ownership before requesting Foundation work.
+          required: true
