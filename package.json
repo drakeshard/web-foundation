@@ -15,7 +15,8 @@
     "test:e2e": "playwright test --project=chromium",
     "test:e2e:compat": "playwright test --project=firefox-compat --project=webkit-compat",
     "build": "tsc -b && pnpm --filter @drakeshard/renderer-probe-app build",
-    "verify": "pnpm check && pnpm typecheck && pnpm test && pnpm build && pnpm test:e2e"
+    "verify": "pnpm check && pnpm typecheck && pnpm test && pnpm build && pnpm test:consumer && pnpm test:e2e",
+    "test:consumer": "node scripts/validate-package-exports.mjs"
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.14",
