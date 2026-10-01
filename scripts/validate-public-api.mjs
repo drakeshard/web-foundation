@@ -25,9 +25,7 @@ export function comparePublicApiSnapshots(expected, actual) {
     const actualPackage = actual?.packages?.[packageKey];
 
     if (!expectedPackage || !actualPackage) {
-      differences.push(
-        `${packageKey}: package baseline ${expectedPackage ? "removed" : "added"}`,
-      );
+      differences.push(`${packageKey}: package baseline ${expectedPackage ? "removed" : "added"}`);
       continue;
     }
 
