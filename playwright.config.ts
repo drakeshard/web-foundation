@@ -15,6 +15,16 @@ export default defineConfig({
       name: "chromium",
       use: { ...devices["Desktop Chrome"] },
     },
+    {
+      name: "firefox-compat",
+      testMatch: /browser-compatibility\.spec\.ts/,
+      use: { ...devices["Desktop Firefox"] },
+    },
+    {
+      name: "webkit-compat",
+      testMatch: /browser-compatibility\.spec\.ts/,
+      use: { ...devices["Desktop Safari"] },
+    },
   ],
   webServer: [
     {
