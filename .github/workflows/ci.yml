@@ -47,6 +47,9 @@ jobs:
       - name: Build
         run: pnpm build
 
+      - name: Public package consumer validation
+        run: pnpm test:consumer
+
       - name: Install Chromium
         run: pnpm exec playwright install --with-deps chromium
 
