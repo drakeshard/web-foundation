@@ -44,9 +44,9 @@ test("records PlayCanvas toy-scenario Chromium performance observations", async 
     const presentationSyncElement = document.querySelector<HTMLElement>(
       "[data-testid='playcanvas-presentation-sync']",
     );
-    const presentationSync = JSON.parse(presentationSyncElement?.textContent ?? "null") as
-      | PresentationSync
-      | null;
+    const presentationSync = JSON.parse(
+      presentationSyncElement?.textContent ?? "null",
+    ) as PresentationSync | null;
 
     if (!canvas || !advance || !domainState || !presentationSyncElement || !presentationSync) {
       throw new Error("PlayCanvas performance probe state is unavailable");
