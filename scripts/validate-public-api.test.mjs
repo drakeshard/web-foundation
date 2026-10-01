@@ -3,7 +3,10 @@ import test from "node:test";
 
 import { comparePublicApiSnapshots } from "./validate-public-api.mjs";
 
-function snapshot({ exports = { "./time": { types: "./dist/time/index.d.ts", import: "./dist/time/index.js" } }, symbols = ["FixedStepDriver"] } = {}) {
+function snapshot({
+  exports = { "./time": { types: "./dist/time/index.d.ts", import: "./dist/time/index.js" } },
+  symbols = ["FixedStepDriver"],
+} = {}) {
   return {
     schemaVersion: 1,
     packages: {
