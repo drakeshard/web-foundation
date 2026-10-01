@@ -61,12 +61,12 @@ try {
 
   run(
     pnpm,
-    ["add", "--offline", "--save-exact", path.join(packDir, foundationTarball)],
+    ["add", "--prefer-offline", "--save-exact", path.join(packDir, foundationTarball)],
     consumerDir,
   );
   run(
     pnpm,
-    ["add", "--offline", "--save-dev", "--save-exact", path.join(packDir, testingTarball)],
+    ["add", "--prefer-offline", "--save-dev", "--save-exact", path.join(packDir, testingTarball)],
     consumerDir,
   );
 
