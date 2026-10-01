@@ -1,0 +1,82 @@
+# Changelog
+
+All notable Web Foundation release changes are recorded here.
+
+## 0.1.0 — release candidate
+
+### Added
+
+- `@drakeshard/foundation/time`
+  - caller-driven `FixedStepDriver`;
+  - bounded catch-up, frame-delta clamping, interpolation alpha, dropped-step/overrun reporting;
+  - explicit reset semantics for pause/background-resume handling.
+
+- `@drakeshard/foundation/random`
+  - deterministic `xoshiro128starstar-v1` RNG;
+  - `nextUint32()`, `nextFloat01()`, snapshot, and exact state restoration;
+  - golden-vector compatibility tests.
+
+- `@drakeshard/foundation/input`
+  - normalized renderer-neutral physical input contracts;
+  - deterministic `InputSequence` ordering;
+  - action binding resolution;
+  - prioritized input contexts;
+  - tick-consumable action state, transitions, and generic command handoff.
+
+- `@drakeshard/foundation/input/browser`
+  - keyboard and Pointer Events adapters;
+  - centralized blur/focus/visibility lifecycle reset handling;
+  - renderer-neutral browser input normalization.
+
+- `@drakeshard/foundation/storage`
+  - settings/save contracts and structured persistence outcomes;
+  - `SaveEnvelope`;
+  - sequential save migrations;
+  - non-destructive load-time migration behavior;
+  - explicit save-format/game/content version boundaries.
+
+- `@drakeshard/foundation/storage/browser`
+  - localStorage-backed settings;
+  - IndexedDB-backed save storage using `idb` 8.0.3.
+
+- `@drakeshard/testing/clock`
+  - `ManualClock` for explicit test-controlled time.
+
+- Renderer-pressure-test applications and browser coverage using Phaser and PlayCanvas to verify that Foundation contracts remain renderer-neutral.
+
+### Changed
+
+- Finalized the v0.1 package surface to explicit subpath exports only.
+- Added clean consumer-style package import/type validation in CI.
+- Added focused Firefox and WebKit compatibility coverage alongside the full Chromium suite.
+- Added v0.1 usage/integration documentation and compatibility/version records.
+- Recorded measured renderer-probe performance baselines and stable regression gates without introducing production frame-rate guarantees.
+
+### Removed
+
+- Removed the unused `FoundationVersion` persistence alias before v0.1 because Foundation package version is release metadata, not a save migration key.
+- Removed obsolete empty root source indexes/placeholders so no unused root package artifact is emitted.
+
+### Compatibility-sensitive contracts
+
+- RNG algorithm identity: `xoshiro128starstar-v1`.
+- Save migration key: `saveFormatVersion`.
+- `contentVersion` and `gameVersion` remain opaque application-owned metadata.
+- `dataSchemaVersion` remains application-owned terminology with no Foundation runtime type in v0.1.
+- `protocolVersion` is deferred because v0.1 contains no networking protocol.
+
+### Explicitly not included
+
+- renderer adapter packages;
+- shared UI;
+- schema/decoder framework;
+- generic diagnostics/event-buffer framework;
+- ECS;
+- physics;
+- navigation;
+- networking/rollback;
+- AI framework;
+- RPG or Tactical domain systems;
+- public package-registry publication.
+
+The initial distribution mechanism and final tag/release are intentionally deferred to Sprint 08 release issues.
