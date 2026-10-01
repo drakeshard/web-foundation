@@ -33,6 +33,8 @@ See:
 
 - `docs/guides/v0.1-usage.md`
 - `docs/release/versioning.md`
+- `docs/release/v0.1.md`
+- `CHANGELOG.md`
 - `docs/architecture/overview.md`
 - `docs/policies/dependencies.md`
 - `CONTRIBUTING.md`
