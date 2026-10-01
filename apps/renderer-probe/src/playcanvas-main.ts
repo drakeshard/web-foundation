@@ -3,9 +3,11 @@ import {
   advanceToyDomain,
   createToyDomainState,
   getToyElevation,
+  restoreToyDomain,
   type ToyDomainCommand,
 } from "./domain/index.js";
 import { createPlayCanvasSelectionInput } from "./input/playcanvas-selection-input.js";
+import { createProbePersistence } from "./persistence/probe-persistence.js";
 import { createPlayCanvasProbe } from "./presentation/playcanvas-probe.js";
 import { createProbeUiBridge, type ProbeUiBridge, type ProbeUiIntent } from "./ui/probe-ui.js";
 
@@ -17,6 +19,7 @@ const ELEVATION_DEMO_COMMANDS: readonly ToyDomainCommand[] = [
 ];
 
 let authoritativeState = createToyDomainState();
+const persistence = createProbePersistence();
 const elevationDemoRandom = new DeterministicRng(0x5_06_05);
 let elevationDemoStep = 0;
 let ui: ProbeUiBridge | undefined;
@@ -46,6 +49,9 @@ const selectionIntent = getRequiredElement<HTMLElement>(
 );
 const inputContexts = getRequiredElement<HTMLElement>("[data-testid='playcanvas-input-contexts']");
 const uiIntent = getRequiredElement<HTMLElement>("[data-testid='playcanvas-ui-intent']");
+const persistenceState = getRequiredElement<HTMLOutputElement>(
+  "[data-testid='playcanvas-persistence-state']",
+);
 
 renderDomainState();
 renderElevationDemoState();
@@ -98,10 +104,41 @@ syncButton.addEventListener("click", () => {
 });
 
 rebuildButton.addEventListener("click", () => {
-  probe.rebuildPresentation(authoritativeState);
-  rebuilds += 1;
-  rebuildCount.value = String(rebuilds);
+  rebuildPresentation();
 });
+
+getRequiredElement<HTMLButtonElement>("[data-testid='playcanvas-save']").addEventListener(
+  "click",
+  async () => {
+    const result = await persistence.save(authoritativeState);
+    persistenceState.value = JSON.stringify(result.ok ? { ok: true, value: "saved" } : result);
+  },
+);
+
+getRequiredElement<HTMLButtonElement>("[data-testid='playcanvas-load']").addEventListener(
+  "click",
+  async () => {
+    const result = await persistence.load();
+
+    if (!result.ok) {
+      persistenceState.value = JSON.stringify(result);
+      return;
+    }
+
+    if (result.value === null) {
+      persistenceState.value = JSON.stringify({ ok: true, value: "empty" });
+      return;
+    }
+
+    authoritativeState = restoreToyDomain(result.value);
+    elevationDemoStep = 0;
+    renderDomainState();
+    renderElevationDemoState();
+    ui?.publishDomainState(authoritativeState);
+    rebuildPresentation();
+    persistenceState.value = JSON.stringify({ ok: true, value: "loaded" });
+  },
+);
 
 elevationDemoButton.addEventListener("click", () => {
   const command = ELEVATION_DEMO_COMMANDS[elevationDemoStep % ELEVATION_DEMO_COMMANDS.length];
@@ -138,6 +175,12 @@ function handleUiIntent(intent: ProbeUiIntent): void {
       } satisfies ToyDomainCommand);
       return;
   }
+}
+
+function rebuildPresentation(): void {
+  probe.rebuildPresentation(authoritativeState);
+  rebuilds += 1;
+  rebuildCount.value = String(rebuilds);
 }
 
 function publishAuthoritativeState(): void {

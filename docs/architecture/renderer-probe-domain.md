@@ -318,3 +318,20 @@ The renderer-specific coupling observed in S06-06 is limited to application comp
 the PlayCanvas page mount point, updating PlayCanvas input-context debug output, and requesting
 presentation synchronization after an authoritative state change. None of those concerns requires a
 shared UI package, Foundation UI API, renderer adapter, or renderer-aware view-model contract.
+
+
+## PlayCanvas persistence restore
+
+S06-07 reuses the same app-local `createProbePersistence` integration already exercised by the
+Phaser probe. Saves contain only the existing plain `ToyDomainSnapshot` inside Foundation's
+`SaveEnvelope` and IndexedDB storage contracts; PlayCanvas entities, components, transforms,
+materials, camera state, UI signals, and renderer lifecycle state are not serialized.
+
+After a successful load, application orchestration restores authoritative state with
+`restoreToyDomain(snapshot)`, republishes that state to the app-local UI bridge, and destroys and
+rebuilds disposable PlayCanvas presentation entities from the restored domain state. The renderer
+is therefore recreated from gameplay truth rather than used as a recovery source.
+
+Chromium coverage exercises save, full page reload, load, restored domain/elevation/UI projection,
+and PlayCanvas presentation recreation. S06-07 introduces no new Foundation persistence API,
+renderer-aware save format, PlayCanvas serialization contract, or save-format version change.
