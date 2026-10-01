@@ -22,7 +22,6 @@ const ELEVATION_DEMO_COMMANDS: readonly ToyDomainCommand[] = [
 
 let authoritativeState = createToyDomainState();
 const elevationDemoRandom = new DeterministicRng(0x5_06_05);
-const uiRandom = new DeterministicRng(0x5_06_06);
 let elevationDemoStep = 0;
 let ui: ProbeUiBridge | undefined;
 
@@ -50,11 +49,13 @@ const selectionIntent = getRequiredElement<HTMLElement>(
   "[data-testid='playcanvas-selection-intent']",
 );
 const inputContexts = getRequiredElement<HTMLElement>("[data-testid='playcanvas-input-contexts']");
+const uiIntent = getRequiredElement<HTMLElement>("[data-testid='playcanvas-ui-intent']");
 
 renderDomainState();
 renderElevationDemoState();
 pointerResult.textContent = JSON.stringify(null);
 selectionIntent.textContent = JSON.stringify(null);
+uiIntent.textContent = JSON.stringify(null);
 
 let rebuilds = 0;
 
@@ -115,9 +116,7 @@ elevationDemoButton.addEventListener("click", () => {
 
   authoritativeState = advanceToyDomain(authoritativeState, [command], elevationDemoRandom).state;
   elevationDemoStep += 1;
-  renderDomainState();
-  renderElevationDemoState();
-  probe.syncPresentation(authoritativeState);
+  publishAuthoritativeState();
 });
 
 window.addEventListener(
@@ -138,12 +137,7 @@ function handleUiIntent(intent: ProbeUiIntent): void {
       inputContexts.textContent = JSON.stringify(selectionInput.activeContexts());
       return;
     case "randomize-marker":
-      authoritativeState = advanceToyDomain(
-        authoritativeState,
-        [{ type: "randomize-marker" }],
-        uiRandom,
-      ).state;
-      publishAuthoritativeState();
+      uiIntent.textContent = JSON.stringify({ type: "randomize-marker" } satisfies ToyDomainCommand);
       return;
   }
 }
