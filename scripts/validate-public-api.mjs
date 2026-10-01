@@ -69,7 +69,7 @@ export function createPublicApiSnapshot(repositoryRoot = root) {
 
   for (const [key, packageDir] of Object.entries(packageSpecsForRoot(repositoryRoot))) {
     const manifest = readJson(path.join(packageDir, "package.json"));
-    const exportMap = normalizeExportMap(manifest.exports ?? {});
+    const exportMap = manifest.exports ?? {};
     const symbols = {};
 
     for (const [subpath, entry] of Object.entries(exportMap)) {
@@ -163,21 +163,8 @@ function readExportedSymbols(declarationPath) {
     .sort();
 }
 
-function normalizeExportMap(exportsField) {
-  const normalized = {};
-  for (const subpath of Object.keys(exportsField).sort()) {
-    const entry = exportsField[subpath];
-    assert(entry && typeof entry === "object" && !Array.isArray(entry), `${subpath}: invalid export entry`);
-    normalized[subpath] = {};
-    for (const condition of ["types", "import"]) {
-      if (entry[condition] !== undefined) normalized[subpath][condition] = entry[condition];
-    }
-  }
-  return normalized;
-}
-
 function collectObjectDiff(differences, label, expected, actual) {
-  if (stableStringify(expected) !== stableStringify(actual)) {
+  if (JSON.stringify(expected) !== JSON.stringify(actual)) {
     differences.push(
       `${label} changed from ${JSON.stringify(expected)} to ${JSON.stringify(actual)}`,
     );
@@ -210,7 +197,7 @@ function stableStringify(value) {
 }
 
 function sortRecursively(value) {
-  if (Array.isArray(value)) return [...value].sort();
+  if (Array.isArray(value)) return value.map(sortRecursively);
   if (!value || typeof value !== "object") return value;
   return Object.fromEntries(
     Object.entries(value)
