@@ -26,7 +26,7 @@ The package version identifies the shipped package/API release. It does **not** 
 
 The package version is not persisted inside `SaveEnvelope` and does not drive `SaveMigrationRegistry`.
 
-S08-08 / #92 owns the formal v0.1 tag/release after release-candidate validation. S08-05 / #89 owns how that version is distributed. Until those issues complete, the manifests remain `private: true` and no registry/publication promise is made.
+S08-08 / #92 owns the formal v0.1 tag/release after release-candidate validation. S08-05 / #89 selects versioned package tarballs attached to that GitHub Release as the v0.1 cross-repository distribution mechanism. The manifests remain `private: true`; no npm or GitHub Packages registry publication is part of v0.1.
 
 ## Deterministic RNG compatibility
 
