@@ -47,6 +47,9 @@ jobs:
       - name: Release version consistency
         run: pnpm test:release-version
 
+      - name: Release evidence tooling
+        run: pnpm test:release-evidence
+
       - name: Build
         run: pnpm build
 
