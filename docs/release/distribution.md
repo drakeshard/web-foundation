@@ -177,11 +177,11 @@ If organizational policy later requires signed/attested packages, registry prove
 
 For the original v0.1.0 GitHub Release, no dedicated publishing workflow was required.
 
-Sprint 09 changes the forward release policy: after the initial npm package creation, future npm releases must use a controlled GitHub Actions trusted-publishing/OIDC path with provenance and least-privilege release permissions.
+Sprint 09 changes the forward release policy: after the initial npm package creation, future npm releases must use a controlled GitHub Actions trusted-publishing/OIDC path with provenance. Sprint 10 adds durable release evidence: the workflow needs `contents: write` only to attach provenance/integrity reports to the already-published GitHub Release, while npm authentication remains OIDC-based with no long-lived npm token.
 
 S08-07 will validate repeatable pack/consumer commands. S08-08 may execute the small number of release packing/upload steps manually or through existing GitHub release tooling. A dedicated automated publication pipeline should be introduced only if repeated releases or additional consumers make the operational benefit concrete.
 
-The earlier S08-05 no-follow-up conclusion is superseded by Sprint 09 issues #169–#175.
+The earlier S08-05 no-follow-up conclusion is superseded by Sprint 09 issues #169–#175 and the Sprint 10 hardening record in `docs/release/release-evidence.md`.
 
 ## Dependency-policy impact
 
