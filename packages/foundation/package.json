@@ -1,7 +1,6 @@
 {
   "name": "@drakeshard/foundation",
-  "version": "0.1.0",
-  "private": true,
+  "version": "0.1.1",
   "type": "module",
   "exports": {
     "./input": {
@@ -39,5 +38,27 @@
   "dependencies": {
     "idb": "8.0.3"
   },
-  "sideEffects": false
+  "sideEffects": false,
+  "description": "Renderer-neutral browser-game infrastructure for deterministic timing, input, randomness, and persistence.",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/drakeshard/web-foundation.git",
+    "directory": "packages/foundation"
+  },
+  "homepage": "https://github.com/drakeshard/web-foundation#readme",
+  "bugs": {
+    "url": "https://github.com/drakeshard/web-foundation/issues"
+  },
+  "keywords": [
+    "game-development",
+    "browser-games",
+    "deterministic",
+    "input",
+    "persistence",
+    "typescript"
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
 }
