@@ -135,3 +135,32 @@ Game-id mismatch is also treated as corrupt/incompatible input for the configure
 
 Timestamp creation remains caller-controlled through the service's `now` function. Persistence remains application orchestration rather than fixed-step simulation work.
 
+
+
+## S07-04 cross-renderer persistence pressure test
+
+Sprint 07 verifies the admitted persistence and data-boundary surface against both live renderer
+probes without adding generic validation or diagnostics APIs.
+
+The renderer-probe app keeps one app-local `ProbePersistence` composition over
+`EnvelopeSaveService` and `IndexedDbSaveStorage`. Phaser and PlayCanvas therefore use the same
+game id, save-format version, game/content metadata, migration registry, structured
+`PersistenceResult` failures, and renderer-neutral ToyDomain payload shape. Probe evidence inspects
+the serialized envelope through the existing Foundation envelope decoder and confirms that no Phaser
+or PlayCanvas objects enter save payloads.
+
+The probe fixture now uses save-format version 2 and retains a fixture-only 1 -> 2 identity migration
+so browser coverage exercises the real sequential migration path. Loading the legacy version proves
+the S03-07 non-committing rule: both probes receive the same migrated ToyDomain snapshot while the
+stored source envelope remains version 1 until an explicit save occurs.
+
+ToyDomain payload validation remains application-local in `decodeToyDomainSnapshot`. A
+Foundation-valid current envelope containing an invalid ToyDomain position is accepted by the
+generic envelope service and then rejected before domain restoration with the app-local
+`corrupt-data/decode` result. No shared `Decoder<T>` or schema package is introduced.
+
+Both pages also reuse the app-owned persistence-failure projection that exposes only stable
+`kind`/`operation` observations. Cross-renderer Chromium coverage compares corrupt raw data,
+newer unsupported save formats, and application-invalid payloads while confirming failed loads do
+not replace authoritative domain state. PlayCanvas does not fabricate a FixedStepDriver frame
+observation merely for symmetry; no generic diagnostics registry or event buffer is added.

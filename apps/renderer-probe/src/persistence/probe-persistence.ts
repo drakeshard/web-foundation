@@ -1,8 +1,12 @@
 import {
+  createSaveEnvelope,
+  deserializeSaveEnvelope,
   EnvelopeSaveService,
   type JsonValue,
   type PersistenceResult,
   SaveMigrationRegistry,
+  type SaveEnvelope,
+  serializeSaveEnvelope,
 } from "@drakeshard/foundation/storage";
 import { IndexedDbSaveStorage } from "@drakeshard/foundation/storage/browser";
 import {
@@ -13,12 +17,28 @@ import {
 } from "../domain/index.js";
 
 const PROBE_SAVE_SLOT = "probe";
-const PROBE_SAVE_FORMAT_VERSION = 1;
+const PROBE_SAVE_FORMAT_VERSION = 2;
+const PROBE_LEGACY_SAVE_FORMAT_VERSION = 1;
+const PROBE_GAME_ID = "drakeshard-renderer-probe";
+const PROBE_GAME_VERSION = "0.1.0";
+const PROBE_CONTENT_VERSION = "toy-domain-v1";
+const FIXTURE_TIMESTAMP = "2026-01-01T00:00:00.000Z";
+
+const LEGACY_FIXTURE_SNAPSHOT: ToyDomainSnapshot = {
+  tick: 7,
+  world: { width: 8, height: 8 },
+  probe: { id: TOY_PROBE_ID, position: { x: 4, y: 2 } },
+  marker: { position: { x: 6, y: 5 } },
+};
 
 export interface ProbePersistence {
   save(state: ToyDomainState): Promise<PersistenceResult<void>>;
   load(): Promise<PersistenceResult<ToyDomainSnapshot | null>>;
+  inspect(): Promise<PersistenceResult<SaveEnvelope<JsonValue> | null>>;
+  seedLegacySave(): Promise<PersistenceResult<void>>;
   seedCorruptSave(): Promise<PersistenceResult<void>>;
+  seedUnsupportedSave(): Promise<PersistenceResult<void>>;
+  seedInvalidPayloadSave(): Promise<PersistenceResult<void>>;
 }
 
 export function createProbePersistence(
@@ -27,11 +47,19 @@ export function createProbePersistence(
   const storage = new IndexedDbSaveStorage({ databaseName });
   const service = new EnvelopeSaveService<JsonValue>({
     storage,
-    gameId: "drakeshard-renderer-probe",
+    gameId: PROBE_GAME_ID,
     saveFormatVersion: PROBE_SAVE_FORMAT_VERSION,
-    gameVersion: "0.1.0",
-    contentVersion: "toy-domain-v1",
-    migrations: new SaveMigrationRegistry([]),
+    gameVersion: PROBE_GAME_VERSION,
+    contentVersion: PROBE_CONTENT_VERSION,
+    migrations: new SaveMigrationRegistry([
+      {
+        sourceVersion: PROBE_LEGACY_SAVE_FORMAT_VERSION,
+        targetVersion: PROBE_SAVE_FORMAT_VERSION,
+        migrate(payload) {
+          return { ok: true, value: payload };
+        },
+      },
+    ]),
     now: () => new Date().toISOString(),
   });
 
@@ -53,8 +81,42 @@ export function createProbePersistence(
       return decodeToyDomainSnapshot(loaded.value);
     },
 
+    async inspect(): Promise<PersistenceResult<SaveEnvelope<JsonValue> | null>> {
+      const stored = await storage.read(PROBE_SAVE_SLOT);
+      if (!stored.ok || stored.value === null) {
+        return stored;
+      }
+
+      return deserializeSaveEnvelope(stored.value);
+    },
+
+    seedLegacySave(): Promise<PersistenceResult<void>> {
+      return writeFixtureEnvelope(
+        storage,
+        PROBE_LEGACY_SAVE_FORMAT_VERSION,
+        snapshotToJson(LEGACY_FIXTURE_SNAPSHOT),
+      );
+    },
+
     seedCorruptSave(): Promise<PersistenceResult<void>> {
       return storage.write(PROBE_SAVE_SLOT, "{broken");
+    },
+
+    seedUnsupportedSave(): Promise<PersistenceResult<void>> {
+      return writeFixtureEnvelope(
+        storage,
+        PROBE_SAVE_FORMAT_VERSION + 1,
+        snapshotToJson(LEGACY_FIXTURE_SNAPSHOT),
+      );
+    },
+
+    seedInvalidPayloadSave(): Promise<PersistenceResult<void>> {
+      return writeFixtureEnvelope(storage, PROBE_SAVE_FORMAT_VERSION, {
+        tick: 3,
+        world: { width: 8, height: 8 },
+        probe: { id: TOY_PROBE_ID, position: { x: 99, y: 2 } },
+        marker: { position: { x: 1, y: 1 } },
+      });
     },
   };
 }
@@ -102,6 +164,34 @@ export function decodeToyDomainSnapshot(value: JsonValue): PersistenceResult<Toy
       },
     },
   };
+}
+
+async function writeFixtureEnvelope(
+  storage: IndexedDbSaveStorage,
+  saveFormatVersion: number,
+  payload: JsonValue,
+): Promise<PersistenceResult<void>> {
+  const envelope = createSaveEnvelope(
+    {
+      gameId: PROBE_GAME_ID,
+      saveFormatVersion,
+      gameVersion: PROBE_GAME_VERSION,
+      contentVersion: PROBE_CONTENT_VERSION,
+      createdAt: FIXTURE_TIMESTAMP,
+      updatedAt: FIXTURE_TIMESTAMP,
+    },
+    payload,
+  );
+  if (!envelope.ok) {
+    return envelope;
+  }
+
+  const serialized = serializeSaveEnvelope(envelope.value);
+  if (!serialized.ok) {
+    return serialized;
+  }
+
+  return storage.write(PROBE_SAVE_SLOT, serialized.value);
 }
 
 function snapshotToJson(snapshot: ToyDomainSnapshot): JsonValue {

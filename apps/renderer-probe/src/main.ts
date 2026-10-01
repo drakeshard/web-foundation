@@ -25,6 +25,10 @@ const uiParent = getRequiredElement<HTMLElement>("#probe-ui");
 const debugParent = getRequiredElement<HTMLElement>("#probe-debug");
 const status = getRequiredElement<HTMLOutputElement>("[data-testid='renderer-probe-status']");
 const persistenceState = getRequiredElement<HTMLOutputElement>("[data-testid='persistence-state']");
+const persistenceEnvelope = getRequiredElement<HTMLElement>("[data-testid='persistence-envelope']");
+const loadedDomainSnapshot = getRequiredElement<HTMLElement>(
+  "[data-testid='loaded-domain-snapshot']",
+);
 const domainState = getRequiredElement<HTMLElement>("[data-testid='domain-state']");
 const inputContexts = getRequiredElement<HTMLElement>("[data-testid='input-contexts']");
 const frameState = getRequiredElement<HTMLElement>("[data-testid='frame-state']");
@@ -105,6 +109,7 @@ getRequiredElement<HTMLButtonElement>("[data-testid='save-probe']").addEventList
     const result = await persistence.save(simulation.state);
     debug.publishPersistenceResult(result);
     persistenceState.value = JSON.stringify(result.ok ? { ok: true, value: "saved" } : result);
+    await renderPersistenceEnvelope();
   },
 );
 
@@ -113,6 +118,7 @@ getRequiredElement<HTMLButtonElement>("[data-testid='load-probe']").addEventList
   async () => {
     const result = await persistence.load();
     debug.publishPersistenceResult(result);
+    await renderPersistenceEnvelope();
 
     if (!result.ok) {
       persistenceState.value = JSON.stringify(result);
@@ -124,6 +130,7 @@ getRequiredElement<HTMLButtonElement>("[data-testid='load-probe']").addEventList
       return;
     }
 
+    loadedDomainSnapshot.textContent = JSON.stringify(result.value);
     pendingUiCommands = [];
     input?.consumeDomainCommands();
     simulation = createSimulation(restoreToyDomain(result.value));
@@ -146,8 +153,49 @@ getRequiredElement<HTMLButtonElement>("[data-testid='seed-corrupt-save']").addEv
     persistenceState.value = JSON.stringify(
       result.ok ? { ok: true, value: "corrupt-seeded" } : result,
     );
+    await renderPersistenceEnvelope();
   },
 );
+
+getRequiredElement<HTMLButtonElement>("[data-testid='seed-legacy-save']").addEventListener(
+  "click",
+  async () => {
+    const result = await persistence.seedLegacySave();
+    debug.publishPersistenceResult(result);
+    persistenceState.value = JSON.stringify(
+      result.ok ? { ok: true, value: "legacy-seeded" } : result,
+    );
+    await renderPersistenceEnvelope();
+  },
+);
+
+getRequiredElement<HTMLButtonElement>("[data-testid='seed-unsupported-save']").addEventListener(
+  "click",
+  async () => {
+    const result = await persistence.seedUnsupportedSave();
+    debug.publishPersistenceResult(result);
+    persistenceState.value = JSON.stringify(
+      result.ok ? { ok: true, value: "unsupported-seeded" } : result,
+    );
+    await renderPersistenceEnvelope();
+  },
+);
+
+getRequiredElement<HTMLButtonElement>("[data-testid='seed-invalid-payload-save']").addEventListener(
+  "click",
+  async () => {
+    const result = await persistence.seedInvalidPayloadSave();
+    debug.publishPersistenceResult(result);
+    persistenceState.value = JSON.stringify(
+      result.ok ? { ok: true, value: "invalid-payload-seeded" } : result,
+    );
+    await renderPersistenceEnvelope();
+  },
+);
+
+async function renderPersistenceEnvelope(): Promise<void> {
+  persistenceEnvelope.textContent = JSON.stringify(await persistence.inspect());
+}
 
 function createSimulation(initialState?: ToyDomainState) {
   return createProbeSimulation({

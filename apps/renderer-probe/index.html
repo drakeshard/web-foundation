@@ -41,7 +41,12 @@
       <button type="button" data-testid="save-probe">save</button>
       <button type="button" data-testid="load-probe">load</button>
       <button type="button" data-testid="seed-corrupt-save">seed corrupt save</button>
+      <button type="button" data-testid="seed-legacy-save">seed legacy save</button>
+      <button type="button" data-testid="seed-unsupported-save">seed unsupported save</button>
+      <button type="button" data-testid="seed-invalid-payload-save">seed invalid payload save</button>
       <output data-testid="persistence-state">idle</output>
+      <pre data-testid="persistence-envelope">null</pre>
+      <pre data-testid="loaded-domain-snapshot">null</pre>
     </section>
     <section class="probe-controls" aria-label="Cross-renderer scenario">
       <button type="button" data-testid="run-cross-renderer-scenario">run cross-renderer scenario</button>

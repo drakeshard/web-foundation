@@ -1,4 +1,5 @@
 import { DeterministicRng } from "@drakeshard/foundation/random";
+import { createProbeDebugView } from "./debug/probe-debug.js";
 import {
   advanceToyDomain,
   createToyDomainState,
@@ -35,6 +36,7 @@ let ui: ProbeUiBridge | undefined;
 
 const parent = getRequiredElement<HTMLElement>("#playcanvas-probe");
 const uiParent = getRequiredElement<HTMLElement>("#playcanvas-ui");
+const debugParent = getRequiredElement<HTMLElement>("#playcanvas-debug");
 const status = getRequiredElement<HTMLOutputElement>("[data-testid='playcanvas-probe-status']");
 const domainState = getRequiredElement<HTMLElement>("[data-testid='playcanvas-domain-state']");
 const syncButton = getRequiredElement<HTMLButtonElement>("[data-testid='playcanvas-sync']");
@@ -64,6 +66,12 @@ const uiIntent = getRequiredElement<HTMLElement>("[data-testid='playcanvas-ui-in
 const persistenceState = getRequiredElement<HTMLOutputElement>(
   "[data-testid='playcanvas-persistence-state']",
 );
+const persistenceEnvelope = getRequiredElement<HTMLElement>(
+  "[data-testid='playcanvas-persistence-envelope']",
+);
+const loadedDomainSnapshot = getRequiredElement<HTMLElement>(
+  "[data-testid='playcanvas-loaded-domain-snapshot']",
+);
 const crossRendererScenarioResult = getRequiredElement<HTMLElement>(
   "[data-testid='playcanvas-cross-renderer-scenario-result']",
 );
@@ -76,6 +84,7 @@ uiIntent.textContent = JSON.stringify(null);
 
 const consumedInputCommands: ToyDomainCommand[][] = [];
 inputCommandHistory.textContent = JSON.stringify(consumedInputCommands);
+const debug = createProbeDebugView(debugParent);
 
 let rebuilds = 0;
 
@@ -152,7 +161,9 @@ getRequiredElement<HTMLButtonElement>("[data-testid='playcanvas-save']").addEven
   "click",
   async () => {
     const result = await persistence.save(authoritativeState);
+    debug.publishPersistenceResult(result);
     persistenceState.value = JSON.stringify(result.ok ? { ok: true, value: "saved" } : result);
+    await renderPersistenceEnvelope();
   },
 );
 
@@ -160,6 +171,8 @@ getRequiredElement<HTMLButtonElement>("[data-testid='playcanvas-load']").addEven
   "click",
   async () => {
     const result = await persistence.load();
+    debug.publishPersistenceResult(result);
+    await renderPersistenceEnvelope();
 
     if (!result.ok) {
       persistenceState.value = JSON.stringify(result);
@@ -171,6 +184,7 @@ getRequiredElement<HTMLButtonElement>("[data-testid='playcanvas-load']").addEven
       return;
     }
 
+    loadedDomainSnapshot.textContent = JSON.stringify(result.value);
     authoritativeState = restoreToyDomain(result.value);
     elevationDemoStep = 0;
     renderDomainState();
@@ -180,6 +194,52 @@ getRequiredElement<HTMLButtonElement>("[data-testid='playcanvas-load']").addEven
     persistenceState.value = JSON.stringify({ ok: true, value: "loaded" });
   },
 );
+
+getRequiredElement<HTMLButtonElement>("[data-testid='playcanvas-seed-corrupt-save']").addEventListener(
+  "click",
+  async () => {
+    const result = await persistence.seedCorruptSave();
+    debug.publishPersistenceResult(result);
+    persistenceState.value = JSON.stringify(
+      result.ok ? { ok: true, value: "corrupt-seeded" } : result,
+    );
+    await renderPersistenceEnvelope();
+  },
+);
+
+getRequiredElement<HTMLButtonElement>("[data-testid='playcanvas-seed-legacy-save']").addEventListener(
+  "click",
+  async () => {
+    const result = await persistence.seedLegacySave();
+    debug.publishPersistenceResult(result);
+    persistenceState.value = JSON.stringify(
+      result.ok ? { ok: true, value: "legacy-seeded" } : result,
+    );
+    await renderPersistenceEnvelope();
+  },
+);
+
+getRequiredElement<HTMLButtonElement>(
+  "[data-testid='playcanvas-seed-unsupported-save']",
+).addEventListener("click", async () => {
+  const result = await persistence.seedUnsupportedSave();
+  debug.publishPersistenceResult(result);
+  persistenceState.value = JSON.stringify(
+    result.ok ? { ok: true, value: "unsupported-seeded" } : result,
+  );
+  await renderPersistenceEnvelope();
+});
+
+getRequiredElement<HTMLButtonElement>(
+  "[data-testid='playcanvas-seed-invalid-payload-save']",
+).addEventListener("click", async () => {
+  const result = await persistence.seedInvalidPayloadSave();
+  debug.publishPersistenceResult(result);
+  persistenceState.value = JSON.stringify(
+    result.ok ? { ok: true, value: "invalid-payload-seeded" } : result,
+  );
+  await renderPersistenceEnvelope();
+});
 
 elevationDemoButton.addEventListener("click", () => {
   const command = ELEVATION_DEMO_COMMANDS[elevationDemoStep % ELEVATION_DEMO_COMMANDS.length];
@@ -226,6 +286,10 @@ function recordConsumedInputCommands(commands: readonly ToyDomainCommand[]): voi
 
   const selection = commands.find((command) => command.type === "set-marker");
   if (selection) selectionIntent.textContent = JSON.stringify(selection);
+}
+
+async function renderPersistenceEnvelope(): Promise<void> {
+  persistenceEnvelope.textContent = JSON.stringify(await persistence.inspect());
 }
 
 function rebuildPresentation(): void {
