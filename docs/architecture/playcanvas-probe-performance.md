@@ -48,9 +48,20 @@ GitHub-hosted Ubuntu runner image. Runtime-specific browser and WebGL strings ar
 
 ## Initial observation
 
-Pending the first S06-08 PR Chromium run. Before issue closure, replace this paragraph with the
-actual logged observation from that run and keep its scope limited to the scenario and environment
-above.
+PR CI run 36807437534 produced the first S06-08 observation on 2026-10-01:
+
+- 120 frame samples: mean 61.267 ms, p95 100 ms, max 100.1 ms;
+- 32 synchronous elevation interactions: mean 0.041 ms, p95 0.2 ms, max 0.3 ms;
+- viewport 1280 x 720, device-pixel ratio 1, canvas 640 x 480;
+- Playwright Chromium user agent reported Chrome 153.0.8010.12 using the Desktop Chrome device
+  profile;
+- WebGL version `WebGL 2.0 (OpenGL ES 3.0 Chromium)`;
+- WebGL vendor `WebKit`, renderer `WebKit WebGL`, shading language
+  `WebGL GLSL ES 3.00 (OpenGL ES GLSL ES 3.0 Chromium)`.
+
+The GitHub Actions host is Ubuntu, while the Playwright Desktop Chrome device profile exposes a
+Windows-style browser user agent. The generic WebGL renderer string and relatively large frame
+deltas reflect this headless CI environment and are not evidence of production GPU performance.
 
 ## Interpretation boundary
 
