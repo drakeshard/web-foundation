@@ -6,22 +6,24 @@ S07-06 expands Web Foundation browser coverage without turning the full Chromium
 three-engine matrix.
 
 Chromium remains the primary fast browser suite and continues to execute every Playwright test.
-Firefox and WebKit run a focused compatibility project that exercises the browser-facing risks most
+Firefox and WebKit run the existing focused browser tests that exercise the compatibility risks most
 likely to differ by engine:
 
-- keyboard input through the browser adapter, action mapping, and deterministic tick handoff;
-- IndexedDB-backed save/load across a page reload;
-- lightweight Phaser Canvas startup from renderer-neutral ToyDomain state.
+- `input.spec.ts` for keyboard, pointer, wheel, lifecycle reset, mapping, and deterministic tick
+  handoff;
+- `save-service.spec.ts` for IndexedDB save/load, reload, migrations, and structured failures;
+- `phaser-probe.spec.ts` for lightweight Phaser Canvas startup from renderer-neutral ToyDomain
+  state.
 
 ## CI matrix
 
 The required `Quality` job remains Chromium-focused so the established fast signal is unchanged.
-A separate `Browser Compatibility` job installs Playwright Firefox and WebKit and runs only
-`tests/e2e/browser-compatibility.spec.ts` in those two projects.
+A separate `Browser Compatibility` job installs Playwright Firefox and WebKit and runs only those
+focused fixtures in the two compatibility projects.
 
 This intentionally avoids multiplying the full renderer/persistence/lifecycle/performance matrix
 across every browser engine. Cross-renderer semantics remain proven by the primary Chromium suite;
-Firefox/WebKit are compatibility pressure tests for browser boundaries and a lightweight renderer
+Firefox/WebKit are compatibility pressure tests for browser boundaries and lightweight renderer
 startup.
 
 ## Known limitations
