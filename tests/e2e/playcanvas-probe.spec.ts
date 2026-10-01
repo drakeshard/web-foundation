@@ -73,14 +73,10 @@ test("PlayCanvas reuses the app-local UI bridge without renderer-owned gameplay 
 
   await page.getByTestId("deactivate-modal").click();
   await expect(page.getByTestId("ui-modal-state")).toHaveText("modal inactive");
-  await expect(page.getByTestId("playcanvas-input-contexts")).toHaveText(
-    '["playcanvas-gameplay"]',
-  );
+  await expect(page.getByTestId("playcanvas-input-contexts")).toHaveText('["playcanvas-gameplay"]');
 
   await page.getByTestId("ui-randomize-marker").click();
-  await expect(page.getByTestId("playcanvas-ui-intent")).toHaveText(
-    '{"type":"randomize-marker"}',
-  );
+  await expect(page.getByTestId("playcanvas-ui-intent")).toHaveText('{"type":"randomize-marker"}');
   await expect(page.getByTestId("playcanvas-domain-state")).toContainText('"tick":0');
 
   await page.getByTestId("playcanvas-elevation-demo-advance").click();
