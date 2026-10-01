@@ -98,6 +98,7 @@ test("reload plus persistence restoration yields the same renderer-neutral domai
   await page.keyboard.up("d");
 
   await page.getByTestId("save-probe").click();
+  await expect(page.getByTestId("persistence-state")).toHaveText('{"ok":true,"value":"saved"}');
   const savedEnvelope = await readJson<{
     readonly ok: true;
     readonly value: { readonly payload: DomainState };
@@ -107,12 +108,16 @@ test("reload plus persistence restoration yields the same renderer-neutral domai
   await page.reload();
   await expect(page.getByTestId("renderer-probe-status")).toHaveText("phaser-probe-ready");
   await page.getByTestId("load-probe").click();
+  await expect(page.getByTestId("persistence-state")).toHaveText('{"ok":true,"value":"loaded"}');
   expect(await readDomain(page.getByTestId("loaded-domain-snapshot"))).toEqual(saved);
 
   await openPlayCanvas(page);
   await page.reload();
   await expect(page.getByTestId("playcanvas-probe-status")).toHaveText("playcanvas-probe-ready");
   await page.getByTestId("playcanvas-load").click();
+  await expect(page.getByTestId("playcanvas-persistence-state")).toHaveText(
+    '{"ok":true,"value":"loaded"}',
+  );
   expect(await readDomain(page.getByTestId("playcanvas-loaded-domain-snapshot"))).toEqual(saved);
 });
 
