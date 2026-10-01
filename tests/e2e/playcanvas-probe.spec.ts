@@ -68,7 +68,7 @@ test("PlayCanvas reuses the app-local UI bridge without renderer-owned gameplay 
   await page.getByTestId("activate-modal").click();
   await expect(page.getByTestId("ui-modal-state")).toHaveText("modal active");
   await expect(page.getByTestId("playcanvas-input-contexts")).toHaveText(
-    '["playcanvas-gameplay","playcanvas-modal"]',
+    '["playcanvas-modal","playcanvas-gameplay"]',
   );
 
   await page.getByTestId("deactivate-modal").click();
