@@ -154,8 +154,9 @@ state into the same ToyDomain command shapes.
 Renderer-local coordinate conversion remains outside Foundation and outside the ToyDomain. Phaser
 converts viewport pointer coordinates through its 2D canvas/world mapping callback. PlayCanvas
 converts the same normalized `ScreenPosition` through its camera ray/terrain interaction callback.
-Only the resulting plain `ToyPoint` is allowed into the shared app-local command mapping; a
-renderer-local miss or occlusion returns no domain command.
+Conversion happens at the renderer/pointer boundary while the browser event position is valid. Only
+the resulting plain `ToyPoint` is queued through the app-local tick handoff; raw screen coordinates
+do not survive into tick consumption. A renderer-local miss or occlusion queues no domain command.
 
 The PlayCanvas probe exposes an explicit `apply input tick` control solely as a deterministic probe
 affordance. It lets browser tests consume the same tick handoff without tying authoritative domain
