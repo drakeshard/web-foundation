@@ -20,7 +20,7 @@ const publicSubpaths = [
   "@drakeshard/testing/clock",
 ];
 
-const propagationAttempts = 8;
+const propagationAttempts = 60;
 const installAttempts = 3;
 const retryDelayMs = 5_000;
 const npmViewTimeoutMs = 10_000;

@@ -27,7 +27,6 @@ jobs:
         uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
         with:
           node-version-file: .node-version
-          registry-url: https://registry.npmjs.org
           package-manager-cache: false
 
       - name: Verify release version and tagged commit
@@ -72,12 +71,24 @@ jobs:
           VERSION="${{ github.event.release.tag_name }}"
           VERSION="${VERSION#v}"
 
-          if npm view "@drakeshard/foundation@${VERSION}" version >/dev/null 2>&1; then
+          if npm view "@drakeshard/foundation@${VERSION}" version --registry=https://registry.npmjs.org >/dev/null 2>&1; then
             echo "@drakeshard/foundation@${VERSION} already exists; skipping."
             echo "disposition=already-present" >> "$GITHUB_OUTPUT"
           else
-            npm publish "release-artifacts/drakeshard-foundation-${VERSION}.tgz" --access public
-            echo "disposition=published" >> "$GITHUB_OUTPUT"
+            set +e
+            PUBLISH_OUTPUT="$(npm publish "./release-artifacts/drakeshard-foundation-${VERSION}.tgz" --access public 2>&1)"
+            PUBLISH_STATUS=$?
+            set -e
+            printf '%s\n' "$PUBLISH_OUTPUT"
+
+            if [ "$PUBLISH_STATUS" -eq 0 ]; then
+              echo "disposition=published" >> "$GITHUB_OUTPUT"
+            elif printf '%s\n' "$PUBLISH_OUTPUT" | grep -q 'previously staged version'; then
+              echo "@drakeshard/foundation@${VERSION} is already staged by npm; continuing to bounded registry verification."
+              echo "disposition=already-present" >> "$GITHUB_OUTPUT"
+            else
+              exit "$PUBLISH_STATUS"
+            fi
           fi
 
       - name: Publish Testing
@@ -88,12 +99,24 @@ jobs:
           VERSION="${{ github.event.release.tag_name }}"
           VERSION="${VERSION#v}"
 
-          if npm view "@drakeshard/testing@${VERSION}" version >/dev/null 2>&1; then
+          if npm view "@drakeshard/testing@${VERSION}" version --registry=https://registry.npmjs.org >/dev/null 2>&1; then
             echo "@drakeshard/testing@${VERSION} already exists; skipping."
             echo "disposition=already-present" >> "$GITHUB_OUTPUT"
           else
-            npm publish "release-artifacts/drakeshard-testing-${VERSION}.tgz" --access public
-            echo "disposition=published" >> "$GITHUB_OUTPUT"
+            set +e
+            PUBLISH_OUTPUT="$(npm publish "./release-artifacts/drakeshard-testing-${VERSION}.tgz" --access public 2>&1)"
+            PUBLISH_STATUS=$?
+            set -e
+            printf '%s\n' "$PUBLISH_OUTPUT"
+
+            if [ "$PUBLISH_STATUS" -eq 0 ]; then
+              echo "disposition=published" >> "$GITHUB_OUTPUT"
+            elif printf '%s\n' "$PUBLISH_OUTPUT" | grep -q 'previously staged version'; then
+              echo "@drakeshard/testing@${VERSION} is already staged by npm; continuing to bounded registry verification."
+              echo "disposition=already-present" >> "$GITHUB_OUTPUT"
+            else
+              exit "$PUBLISH_STATUS"
+            fi
           fi
 
       - name: Verify npm registry consumption
