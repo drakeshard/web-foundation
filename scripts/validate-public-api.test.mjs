@@ -54,3 +54,17 @@ test("detects export-map drift", () => {
     /export map changed/,
   );
 });
+
+test("detects conditional export ordering drift", () => {
+  assert.match(
+    comparePublicApiSnapshots(
+      snapshot(),
+      snapshot({
+        exports: {
+          "./time": { import: "./dist/time/index.js", types: "./dist/time/index.d.ts" },
+        },
+      }),
+    ).join("\n"),
+    /export map changed/,
+  );
+});
