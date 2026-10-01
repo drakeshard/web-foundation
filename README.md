@@ -31,6 +31,7 @@ Renderer-specific integration remains application-local until repeated use justi
 
 See:
 
+- `docs/guides/v0.1-usage.md`
 - `docs/architecture/overview.md`
 - `docs/policies/dependencies.md`
 - `CONTRIBUTING.md`
@@ -38,4 +39,4 @@ See:
 
 ## Current phase
 
-v0.1 is in the engineering-baseline phase. Feature implementation begins after the repository passes its Sprint 00 exit criteria, including a committed lockfile, reproducible frozen installs, required CI checks, and repository rule enforcement.
+v0.1 is in Phase 4 — Release and First-Game Handoff. The approved package surface is finalized; current work is usage documentation, compatibility/version records, distribution/release preparation, and first-game handoff.
