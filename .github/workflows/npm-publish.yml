@@ -50,6 +50,7 @@ jobs:
           pnpm typecheck
           pnpm test
           pnpm build
+          pnpm test:public-api
           pnpm test:consumer
           pnpm test:release-candidate
 
