@@ -72,3 +72,32 @@ executes the scenario from each, and compares the domain snapshot, RNG snapshot,
 
 No renderer type enters the scenario or toy-domain contracts, and no Foundation public surface is
 added by S07-01.
+
+
+## S07-02 renderer-independent replay verification
+
+S07-02 treats replay as deterministic re-execution of the canonical scenario inputs. It does not
+introduce a persisted replay format or new Foundation runtime contract.
+
+The fixture now advances the scenario through the existing Foundation `FixedStepDriver` at a 50 ms
+fixed step and records one authoritative checkpoint after each domain tick. Each checkpoint contains
+the zero-based canonical tick index, resulting domain tick, commands consumed for that tick, domain
+snapshot, RNG snapshot, and fixture-local checksum.
+
+The live Phaser page executes the scenario through a fine-grained frame schedule
+(`16/17/17 ms` per fixed tick). The live PlayCanvas page executes the same scenario through a
+coarser `33/17 ms` schedule. Both schedules deliver exactly eight fixed ticks without dropped steps.
+Renderer and cadence labels are presentation/test metadata only and are excluded from authoritative
+comparison.
+
+Replay equivalence requires identical scenario id, seed, tick count, ordered commands, per-tick domain
+snapshots, per-tick RNG snapshots, per-tick checksums, final domain snapshot, final RNG snapshot, and
+final checksum. Repeated execution is checked independently for both live probes.
+
+The comparison helper reports the first differing tick when a trace diverges and includes the expected
+and actual command lists plus checkpoint checksums. This diagnostic remains fixture-local test support;
+it is not a general replay framework or public Foundation API.
+
+Transient Phaser 2D and PlayCanvas 3D presentation coordinates are intentionally not compared as
+authoritative evidence. The browser test requires those presentation projections to be allowed to
+differ while the authoritative replay evidence remains identical.
