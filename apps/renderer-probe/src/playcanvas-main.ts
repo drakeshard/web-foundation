@@ -7,6 +7,11 @@ import {
 } from "./domain/index.js";
 import { createPlayCanvasSelectionInput } from "./input/playcanvas-selection-input.js";
 import { createPlayCanvasProbe } from "./presentation/playcanvas-probe.js";
+import {
+  createProbeUiBridge,
+  type ProbeUiBridge,
+  type ProbeUiIntent,
+} from "./ui/probe-ui.js";
 
 const ELEVATION_DEMO_COMMANDS: readonly ToyDomainCommand[] = [
   { type: "move", dx: -1, dy: 0 },
@@ -17,9 +22,12 @@ const ELEVATION_DEMO_COMMANDS: readonly ToyDomainCommand[] = [
 
 let authoritativeState = createToyDomainState();
 const elevationDemoRandom = new DeterministicRng(0x5_06_05);
+const uiRandom = new DeterministicRng(0x5_06_06);
 let elevationDemoStep = 0;
+let ui: ProbeUiBridge | undefined;
 
 const parent = getRequiredElement<HTMLElement>("#playcanvas-probe");
+const uiParent = getRequiredElement<HTMLElement>("#playcanvas-ui");
 const status = getRequiredElement<HTMLOutputElement>("[data-testid='playcanvas-probe-status']");
 const domainState = getRequiredElement<HTMLElement>("[data-testid='playcanvas-domain-state']");
 const syncButton = getRequiredElement<HTMLButtonElement>("[data-testid='playcanvas-sync']");
@@ -79,6 +87,12 @@ const selectionInput = createPlayCanvasSelectionInput({
   },
 });
 
+ui = createProbeUiBridge({
+  parent: uiParent,
+  initialState: authoritativeState,
+  onIntent: handleUiIntent,
+});
+
 inputContexts.textContent = JSON.stringify(selectionInput.activeContexts());
 status.value = "playcanvas-probe-ready";
 
@@ -110,10 +124,36 @@ window.addEventListener(
   "pagehide",
   () => {
     selectionInput.destroy();
+    ui?.destroy();
     probe.destroy();
   },
   { once: true },
 );
+
+function handleUiIntent(intent: ProbeUiIntent): void {
+  switch (intent.type) {
+    case "set-modal-active":
+      selectionInput.setModalActive(intent.active);
+      ui?.setModalActive(intent.active);
+      inputContexts.textContent = JSON.stringify(selectionInput.activeContexts());
+      return;
+    case "randomize-marker":
+      authoritativeState = advanceToyDomain(
+        authoritativeState,
+        [{ type: "randomize-marker" }],
+        uiRandom,
+      ).state;
+      publishAuthoritativeState();
+      return;
+  }
+}
+
+function publishAuthoritativeState(): void {
+  renderDomainState();
+  renderElevationDemoState();
+  ui?.publishDomainState(authoritativeState);
+  probe.syncPresentation(authoritativeState);
+}
 
 function renderDomainState(): void {
   domainState.textContent = JSON.stringify(authoritativeState);
