@@ -4,6 +4,8 @@ import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
+import { findInstalledPackageShapeViolations } from "./installed-package-shape.mjs";
+
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const registry = "https://registry.npmjs.org";
 const packageVersion = normalizeVersion(process.argv[2]);
@@ -39,8 +41,15 @@ try {
   writeConsumerManifest();
   installRegistryPackages();
 
-  assertInstalledVersion("@drakeshard/foundation", packageVersion);
-  assertInstalledVersion("@drakeshard/testing", packageVersion);
+  assertInstalledPackageShape("@drakeshard/foundation", packageVersion, [
+    "./input",
+    "./input/browser",
+    "./random",
+    "./time",
+    "./storage",
+    "./storage/browser",
+  ]);
+  assertInstalledPackageShape("@drakeshard/testing", packageVersion, ["./clock"]);
 
   fs.writeFileSync(
     path.join(consumerDir, "consumer.mjs"),
@@ -206,20 +215,17 @@ function npmViewVersion(packageName, version) {
   return observed;
 }
 
-function assertInstalledVersion(packageName, expectedVersion) {
-  const manifestPath = path.join(
-    consumerDir,
-    "node_modules",
-    ...packageName.split("/"),
-    "package.json",
-  );
-  assert(fs.existsSync(manifestPath), `${packageName}: installed manifest missing`);
+function assertInstalledPackageShape(packageName, expectedVersion, expectedExports) {
+  const packageDir = path.join(consumerDir, "node_modules", ...packageName.split("/"));
+  const violations = findInstalledPackageShapeViolations(packageDir, {
+    expectedName: packageName,
+    expectedVersion,
+    expectedExports,
+  });
 
-  const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
-  assert(manifest.name === packageName, `${packageName}: installed name mismatch`);
   assert(
-    manifest.version === expectedVersion,
-    `${packageName}: installed version ${manifest.version} does not match ${expectedVersion}`,
+    violations.length === 0,
+    `${packageName}: installed npm package shape is invalid:\n- ${violations.join("\n- ")}`,
   );
 }
 

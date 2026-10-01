@@ -47,7 +47,7 @@ See:
 
 ## Current phase
 
-Sprint 09 — npm Publication and Release Automation is active. `@drakeshard/foundation@0.1.1` and `@drakeshard/testing@0.1.1` are publicly available from npm and validated from a clean external consumer. Remaining Sprint 09 work is trusted-publisher/provenance setup plus final documentation/completion review.
+Phase 4 — First Production Game is active. Sprint 10 release hardening is complete, and corrective Issue #186 is repairing a production-consumer-discovered npm packaging defect: `@drakeshard/foundation@0.1.1` is immutable but unusable because its registry artifact is missing `dist/`. The lockstep 0.1.2 release is the focused repair candidate; no runtime API expansion is part of this work.
 
 
 ## License

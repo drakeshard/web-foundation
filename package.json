@@ -1,7 +1,7 @@
 {
   "name": "@drakeshard/web-foundation-workspace",
   "private": true,
-  "version": "0.1.1",
+  "version": "0.1.2",
   "packageManager": "pnpm@12.8.1",
   "engines": {
     "node": "24.21.0"
@@ -15,10 +15,11 @@
     "test:release-version": "node --test scripts/validate-release-version.test.mjs && node scripts/validate-release-version.mjs",
     "test:public-api": "node --test scripts/validate-public-api.test.mjs && node scripts/validate-public-api.mjs",
     "test:release-evidence": "node --test scripts/create-release-evidence.test.mjs",
+    "test:npm-package-shape": "node --test scripts/installed-package-shape.test.mjs",
     "test:e2e": "playwright test --project=chromium",
     "test:e2e:compat": "playwright test --project=firefox-compat --project=webkit-compat",
     "build": "tsc -b && pnpm --filter @drakeshard/renderer-probe-app build",
-    "verify": "pnpm check && pnpm typecheck && pnpm test && pnpm test:release-version && pnpm test:release-evidence && pnpm build && pnpm test:public-api && pnpm test:consumer && pnpm test:release-candidate && pnpm test:e2e",
+    "verify": "pnpm check && pnpm typecheck && pnpm test && pnpm test:release-version && pnpm test:release-evidence && pnpm test:npm-package-shape && pnpm build && pnpm test:public-api && pnpm test:consumer && pnpm test:release-candidate && pnpm test:e2e",
     "test:consumer": "node scripts/validate-package-exports.mjs",
     "test:release-candidate": "node scripts/validate-release-candidate.mjs"
   },

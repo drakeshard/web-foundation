@@ -49,6 +49,7 @@ jobs:
           pnpm check
           pnpm typecheck
           pnpm test
+          pnpm test:npm-package-shape
           pnpm build
           pnpm test:public-api
           pnpm test:consumer
