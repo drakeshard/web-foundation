@@ -136,7 +136,7 @@ If a future networking boundary is admitted, its protocol compatibility/version 
 
 The approved package subpaths and declaration-level exported symbol names are checked into `docs/release/public-api-baseline.json`.
 
-Normal CI and npm publication run `pnpm test:public-api` after the TypeScript build. The validator compares the current package `exports` maps exactly as authored and resolves every built public declaration entry through the existing TypeScript compiler API to capture all exported public symbol names. Private implementation files and non-exported symbols are therefore outside the baseline.
+Normal CI and npm publication run `pnpm test:public-api` after the TypeScript build. The validator compares the current package `exports` maps exactly as authored and reads the explicit exported names from every TypeScript-built public declaration entrypoint. Public entrypoints must use explicit named exports rather than wildcard exports so the checked surface remains deterministic and reviewable. Private implementation files and non-exported symbols are therefore outside the baseline.
 
 For an intentional approved public API change:
 
