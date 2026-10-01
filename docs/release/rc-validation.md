@@ -46,7 +46,7 @@ It:
 2. requires exactly one tarball for each approved shared package;
 3. prints SHA-256 digests for both generated artifacts;
 4. creates a temporary consumer outside the workspace;
-5. installs the exact local tarballs with pnpm using offline resolution after the repository frozen install;
+5. installs the exact local tarballs with pnpm using prefer-offline resolution; the tarballs are local while declared external dependencies such as `idb` may still require normal registry metadata;
 6. creates and verifies a consumer lockfile;
 7. verifies the installed package names, versions, export maps, and `dist`-only package shape;
 8. rejects leaked `src` files and obsolete root artifacts;
