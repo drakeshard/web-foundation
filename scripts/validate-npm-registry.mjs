@@ -123,9 +123,7 @@ function waitForRegistryPropagation() {
         if (observed !== packageVersion) ready = false;
       } catch (error) {
         ready = false;
-        console.warn(
-          `${packageName}@${packageVersion} is not visible yet: ${formatError(error)}`,
-        );
+        console.warn(`${packageName}@${packageVersion} is not visible yet: ${formatError(error)}`);
       }
     }
 
