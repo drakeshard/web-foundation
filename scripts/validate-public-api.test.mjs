@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { comparePublicApiSnapshots } from "./validate-public-api.mjs";
+import { comparePublicApiSnapshots, readDeclarationExports } from "./validate-public-api.mjs";
 
 function snapshot({
   exports = { "./time": { types: "./dist/time/index.d.ts", import: "./dist/time/index.js" } },
@@ -69,5 +69,21 @@ test("detects conditional export ordering drift", () => {
       }),
     ).join("\n"),
     /export map changed/,
+  );
+});
+
+test("reads explicit declaration exports including type-only and aliases", () => {
+  assert.deepEqual(
+    readDeclarationExports(
+      'export { type Alpha, Bravo, Charlie as PublicCharlie } from "./internal.js";\nexport interface DirectInterface {}\nexport declare class DirectClass {}\n',
+    ),
+    ["Alpha", "Bravo", "DirectClass", "DirectInterface", "PublicCharlie"],
+  );
+});
+
+test("rejects wildcard declaration exports", () => {
+  assert.throws(
+    () => readDeclarationExports('export * from "./internal.js";'),
+    /wildcard exports are unsupported/,
   );
 });
