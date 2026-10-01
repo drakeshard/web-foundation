@@ -11,7 +11,9 @@ interface ScenarioPageResult {
   readonly presentation: readonly unknown[];
 }
 
-test("both live renderer probes execute the same canonical toy-domain scenario", async ({ page }) => {
+test("both live renderer probes execute the same canonical toy-domain scenario", async ({
+  page,
+}) => {
   await page.goto("http://127.0.0.1:4174/");
   await expect(page.getByTestId("renderer-probe-status")).toHaveText("phaser-probe-ready");
   await page.getByTestId("run-cross-renderer-scenario").click();
