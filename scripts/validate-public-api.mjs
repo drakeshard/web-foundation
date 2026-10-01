@@ -7,11 +7,6 @@ const scriptPath = fileURLToPath(import.meta.url);
 const root = path.resolve(path.dirname(scriptPath), "..");
 const baselinePath = path.join(root, "docs", "release", "public-api-baseline.json");
 
-const packageSpecs = {
-  foundation: path.join(root, "packages", "foundation"),
-  testing: path.join(root, "packages", "testing"),
-};
-
 export function comparePublicApiSnapshots(expected, actual) {
   const differences = [];
 
