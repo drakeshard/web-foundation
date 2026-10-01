@@ -46,4 +46,4 @@ See:
 
 ## Current phase
 
-v0.1 is in Phase 4 — Release and First-Game Handoff. The approved package surface is finalized; current work is usage documentation, compatibility/version records, distribution/release preparation, and first-game handoff.
+Phase 4 — First Production Game is active. Web Foundation v0.1.0 is released and validated for cross-repository consumption. Planned pre-v0.1 construction is complete; future Foundation work is driven by production integration defects, compatibility gaps, or shared-infrastructure requirements that pass the project admission rule.
