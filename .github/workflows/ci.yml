@@ -47,6 +47,9 @@ jobs:
       - name: Release version consistency
         run: pnpm test:release-version
 
+      - name: Installed package shape regression
+        run: pnpm test:npm-package-shape
+
       - name: Build
         run: pnpm build
 
