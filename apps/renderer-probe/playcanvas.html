@@ -47,12 +47,17 @@
       display: flex;
       gap: 0.5rem;
     }
+
+    #playcanvas-ui {
+      max-width: 640px;
+    }
   </style>
 </head>
 <body>
   <main>
     <h1>PlayCanvas Renderer Probe</h1>
     <div id="playcanvas-probe"></div>
+    <div id="playcanvas-ui"></div>
     <output data-testid="playcanvas-probe-status">booting</output>
     <p>Right-drag to pan. Use the mouse wheel to zoom. Left-click selects the toy world.</p>
     <div class="probe-data">
@@ -62,6 +67,7 @@
       <pre data-testid="playcanvas-input-contexts"></pre>
       <pre data-testid="playcanvas-pointer-result"></pre>
       <pre data-testid="playcanvas-selection-intent"></pre>
+      <pre data-testid="playcanvas-ui-intent"></pre>
       <pre data-testid="playcanvas-domain-state"></pre>
     </div>
     <div class="probe-actions">

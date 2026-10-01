@@ -55,6 +55,34 @@ test("PlayCanvas elevation demo moves deterministically from low through ramp to
   await expect(page.getByTestId("playcanvas-presentation-sync")).toContainText('"updated":2');
 });
 
+test("PlayCanvas reuses the app-local UI bridge without renderer-owned gameplay truth", async ({
+  page,
+}) => {
+  await page.goto("http://127.0.0.1:4174/playcanvas.html");
+  await expect(page.getByTestId("playcanvas-probe-status")).toHaveText("playcanvas-probe-ready");
+
+  const summary = page.getByTestId("ui-domain-summary");
+  await expect(summary).toHaveText("tick 0 · probe (3, 3) · marker (1, 1)");
+  await expect(page.getByTestId("ui-modal-state")).toHaveText("modal inactive");
+
+  await page.getByTestId("activate-modal").click();
+  await expect(page.getByTestId("ui-modal-state")).toHaveText("modal active");
+  await expect(page.getByTestId("playcanvas-input-contexts")).toHaveText(
+    '["playcanvas-modal","playcanvas-gameplay"]',
+  );
+
+  await page.getByTestId("deactivate-modal").click();
+  await expect(page.getByTestId("ui-modal-state")).toHaveText("modal inactive");
+  await expect(page.getByTestId("playcanvas-input-contexts")).toHaveText('["playcanvas-gameplay"]');
+
+  await page.getByTestId("ui-randomize-marker").click();
+  await expect(page.getByTestId("playcanvas-ui-intent")).toHaveText('{"type":"randomize-marker"}');
+  await expect(page.getByTestId("playcanvas-domain-state")).toContainText('"tick":0');
+
+  await page.getByTestId("playcanvas-elevation-demo-advance").click();
+  await expect(summary).toContainText("tick 1");
+});
+
 test("PlayCanvas camera zoom and pointer selection stay presentation-local", async ({ page }) => {
   await page.goto("http://127.0.0.1:4174/playcanvas.html");
   await expect(page.getByTestId("playcanvas-probe-status")).toHaveText("playcanvas-probe-ready");

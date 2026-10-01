@@ -7,6 +7,7 @@ import {
 } from "./domain/index.js";
 import { createPlayCanvasSelectionInput } from "./input/playcanvas-selection-input.js";
 import { createPlayCanvasProbe } from "./presentation/playcanvas-probe.js";
+import { createProbeUiBridge, type ProbeUiBridge, type ProbeUiIntent } from "./ui/probe-ui.js";
 
 const ELEVATION_DEMO_COMMANDS: readonly ToyDomainCommand[] = [
   { type: "move", dx: -1, dy: 0 },
@@ -18,8 +19,10 @@ const ELEVATION_DEMO_COMMANDS: readonly ToyDomainCommand[] = [
 let authoritativeState = createToyDomainState();
 const elevationDemoRandom = new DeterministicRng(0x5_06_05);
 let elevationDemoStep = 0;
+let ui: ProbeUiBridge | undefined;
 
 const parent = getRequiredElement<HTMLElement>("#playcanvas-probe");
+const uiParent = getRequiredElement<HTMLElement>("#playcanvas-ui");
 const status = getRequiredElement<HTMLOutputElement>("[data-testid='playcanvas-probe-status']");
 const domainState = getRequiredElement<HTMLElement>("[data-testid='playcanvas-domain-state']");
 const syncButton = getRequiredElement<HTMLButtonElement>("[data-testid='playcanvas-sync']");
@@ -42,11 +45,13 @@ const selectionIntent = getRequiredElement<HTMLElement>(
   "[data-testid='playcanvas-selection-intent']",
 );
 const inputContexts = getRequiredElement<HTMLElement>("[data-testid='playcanvas-input-contexts']");
+const uiIntent = getRequiredElement<HTMLElement>("[data-testid='playcanvas-ui-intent']");
 
 renderDomainState();
 renderElevationDemoState();
 pointerResult.textContent = JSON.stringify(null);
 selectionIntent.textContent = JSON.stringify(null);
+uiIntent.textContent = JSON.stringify(null);
 
 let rebuilds = 0;
 
@@ -79,6 +84,12 @@ const selectionInput = createPlayCanvasSelectionInput({
   },
 });
 
+ui = createProbeUiBridge({
+  parent: uiParent,
+  initialState: authoritativeState,
+  onIntent: handleUiIntent,
+});
+
 inputContexts.textContent = JSON.stringify(selectionInput.activeContexts());
 status.value = "playcanvas-probe-ready";
 
@@ -101,19 +112,40 @@ elevationDemoButton.addEventListener("click", () => {
 
   authoritativeState = advanceToyDomain(authoritativeState, [command], elevationDemoRandom).state;
   elevationDemoStep += 1;
-  renderDomainState();
-  renderElevationDemoState();
-  probe.syncPresentation(authoritativeState);
+  publishAuthoritativeState();
 });
 
 window.addEventListener(
   "pagehide",
   () => {
     selectionInput.destroy();
+    ui?.destroy();
     probe.destroy();
   },
   { once: true },
 );
+
+function handleUiIntent(intent: ProbeUiIntent): void {
+  switch (intent.type) {
+    case "set-modal-active":
+      selectionInput.setModalActive(intent.active);
+      ui?.setModalActive(intent.active);
+      inputContexts.textContent = JSON.stringify(selectionInput.activeContexts());
+      return;
+    case "randomize-marker":
+      uiIntent.textContent = JSON.stringify({
+        type: "randomize-marker",
+      } satisfies ToyDomainCommand);
+      return;
+  }
+}
+
+function publishAuthoritativeState(): void {
+  renderDomainState();
+  renderElevationDemoState();
+  ui?.publishDomainState(authoritativeState);
+  probe.syncPresentation(authoritativeState);
+}
 
 function renderDomainState(): void {
   domainState.textContent = JSON.stringify(authoritativeState);
