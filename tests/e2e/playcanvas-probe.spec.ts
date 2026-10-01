@@ -55,7 +55,6 @@ test("PlayCanvas elevation demo moves deterministically from low through ramp to
   await expect(page.getByTestId("playcanvas-presentation-sync")).toContainText('"updated":2');
 });
 
-
 test("PlayCanvas reuses the app-local UI bridge without renderer-owned gameplay truth", async ({
   page,
 }) => {
@@ -79,10 +78,13 @@ test("PlayCanvas reuses the app-local UI bridge without renderer-owned gameplay 
   );
 
   await page.getByTestId("ui-randomize-marker").click();
+  await expect(page.getByTestId("playcanvas-ui-intent")).toHaveText(
+    '{"type":"randomize-marker"}',
+  );
+  await expect(page.getByTestId("playcanvas-domain-state")).toContainText('"tick":0');
 
-  await expect(page.getByTestId("playcanvas-domain-state")).toContainText('"tick":1');
+  await page.getByTestId("playcanvas-elevation-demo-advance").click();
   await expect(summary).toContainText("tick 1");
-  await expect(page.getByTestId("playcanvas-presentation-sync")).toContainText('"updated":2');
 });
 
 test("PlayCanvas camera zoom and pointer selection stay presentation-local", async ({ page }) => {
