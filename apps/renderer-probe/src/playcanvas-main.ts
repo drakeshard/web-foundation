@@ -6,10 +6,7 @@ import {
   restoreToyDomain,
   type ToyDomainCommand,
 } from "./domain/index.js";
-import {
-  createProbeInputController,
-  type ProbeInputController,
-} from "./input/probe-input.js";
+import { createProbeInputController, type ProbeInputController } from "./input/probe-input.js";
 import { createProbePersistence } from "./persistence/probe-persistence.js";
 import {
   createPlayCanvasProbe,
