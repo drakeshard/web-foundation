@@ -259,10 +259,7 @@ function normalizeVersion(value) {
     "usage: validate-npm-registry.mjs <version>",
   );
   const version = value.startsWith("v") ? value.slice(1) : value;
-  assert(
-    /^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/.test(version),
-    `invalid package version: ${value}`,
-  );
+  assert(/^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/.test(version), `invalid package version: ${value}`);
   return version;
 }
 
