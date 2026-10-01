@@ -32,6 +32,7 @@ Renderer-specific integration remains application-local until repeated use justi
 See:
 
 - `docs/guides/v0.1-usage.md`
+- `docs/release/versioning.md`
 - `docs/architecture/overview.md`
 - `docs/policies/dependencies.md`
 - `CONTRIBUTING.md`

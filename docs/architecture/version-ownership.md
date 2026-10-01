@@ -50,9 +50,11 @@ Foundation persists it as metadata but does not interpret application release co
 
 ### Foundation package version
 
-The Foundation package/release version identifies the version of `@drakeshard/foundation` itself.
+The Foundation package/release version identifies the shipped Foundation/testing package release. The v0.1 release-candidate manifests currently use `0.1.0`.
 
-It is not persisted as a substitute for save-format, data-schema, game, or content compatibility versions, and it must not automatically drive save migrations.
+It is not persisted as a substitute for save-format, data-schema, game, content, RNG-algorithm, or future protocol compatibility versions, and it must not automatically drive save migrations.
+
+The complete v0.1 release compatibility record is maintained in `docs/release/versioning.md`.
 
 ## Ownership matrix
 
@@ -63,6 +65,11 @@ It is not persisted as a substitute for save-format, data-schema, game, or conte
 | `saveFormatVersion` | Foundation persistence boundary | Drives sequential save migration |
 | `gameVersion` | Game/application | Opaque metadata in `SaveEnvelope` |
 | Foundation package version | Foundation release process | Package/release compatibility only |
+| `protocolVersion` | Future networking boundary | Deferred in v0.1; no runtime type or compatibility contract exists |
+
+### protocolVersion
+
+`protocolVersion` is reserved terminology for a future admitted network/wire-protocol compatibility boundary. Web Foundation v0.1 has no networking protocol and therefore defines no `ProtocolVersion` runtime type or package/API coupling rule. A future protocol version must be designed from the concrete wire contract rather than inferred from the Foundation package version.
 
 ## Compatibility examples
 
@@ -109,3 +116,4 @@ The save envelope records the new release identifier, but Foundation performs no
 - Foundation does not expose runtime types solely to standardize terminology.
 - Save migrations are keyed only by `saveFormatVersion`.
 - A future API that consumes another version dimension must independently pass the Foundation admission rule.
+- Networking/protocol versioning remains deferred until a concrete admitted networking boundary exists.
