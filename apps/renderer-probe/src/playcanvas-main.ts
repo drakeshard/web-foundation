@@ -195,29 +195,27 @@ getRequiredElement<HTMLButtonElement>("[data-testid='playcanvas-load']").addEven
   },
 );
 
-getRequiredElement<HTMLButtonElement>("[data-testid='playcanvas-seed-corrupt-save']").addEventListener(
-  "click",
-  async () => {
-    const result = await persistence.seedCorruptSave();
-    debug.publishPersistenceResult(result);
-    persistenceState.value = JSON.stringify(
-      result.ok ? { ok: true, value: "corrupt-seeded" } : result,
-    );
-    await renderPersistenceEnvelope();
-  },
-);
+getRequiredElement<HTMLButtonElement>(
+  "[data-testid='playcanvas-seed-corrupt-save']",
+).addEventListener("click", async () => {
+  const result = await persistence.seedCorruptSave();
+  debug.publishPersistenceResult(result);
+  persistenceState.value = JSON.stringify(
+    result.ok ? { ok: true, value: "corrupt-seeded" } : result,
+  );
+  await renderPersistenceEnvelope();
+});
 
-getRequiredElement<HTMLButtonElement>("[data-testid='playcanvas-seed-legacy-save']").addEventListener(
-  "click",
-  async () => {
-    const result = await persistence.seedLegacySave();
-    debug.publishPersistenceResult(result);
-    persistenceState.value = JSON.stringify(
-      result.ok ? { ok: true, value: "legacy-seeded" } : result,
-    );
-    await renderPersistenceEnvelope();
-  },
-);
+getRequiredElement<HTMLButtonElement>(
+  "[data-testid='playcanvas-seed-legacy-save']",
+).addEventListener("click", async () => {
+  const result = await persistence.seedLegacySave();
+  debug.publishPersistenceResult(result);
+  persistenceState.value = JSON.stringify(
+    result.ok ? { ok: true, value: "legacy-seeded" } : result,
+  );
+  await renderPersistenceEnvelope();
+});
 
 getRequiredElement<HTMLButtonElement>(
   "[data-testid='playcanvas-seed-unsupported-save']",
