@@ -1,6 +1,5 @@
 export type {
   ContentVersion,
-  FoundationVersion,
   GameVersion,
   JsonPrimitive,
   JsonValue,
