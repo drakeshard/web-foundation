@@ -37,6 +37,7 @@ test("accepts clean npm signature audit results", () => {
             name: "@drakeshard/foundation",
             version: "1.2.3",
             attestations: { provenance: {} },
+            attestationBundles: [{ predicateType: "https://slsa.dev/provenance/v1" }],
           },
         ],
       },
@@ -51,8 +52,16 @@ test("rejects invalid or missing npm signature audit results", () => {
     /invalid signatures/,
   );
   assert.throws(
-    () => validateAuditResult({ invalid: [], missing: [{ name: "missing" }], verified: [] }),
-    /missing registry signatures/,
+    () =>
+      validateAuditResult(
+        {
+          invalid: [],
+          missing: [{ name: "@drakeshard/foundation", version: "1.2.3" }],
+          verified: [],
+        },
+        [{ name: "@drakeshard/foundation", version: "1.2.3" }],
+      ),
+    /registry signature missing/,
   );
 });
 
@@ -119,5 +128,25 @@ test("requires verified provenance for each expected release package", () => {
         [{ name: "@drakeshard/foundation", version: "1.2.3" }],
       ),
     /verified provenance attestation missing/,
+  );
+});
+
+test("ignores missing signatures on unrelated transitive packages", () => {
+  assert.doesNotThrow(() =>
+    validateAuditResult(
+      {
+        invalid: [],
+        missing: [{ name: "legacy-transitive", version: "0.1.0" }],
+        verified: [
+          {
+            name: "@drakeshard/foundation",
+            version: "1.2.3",
+            attestations: { provenance: {} },
+            attestationBundles: [{ predicateType: "https://slsa.dev/provenance/v1" }],
+          },
+        ],
+      },
+      [{ name: "@drakeshard/foundation", version: "1.2.3" }],
+    ),
   );
 });
