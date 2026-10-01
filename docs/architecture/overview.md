@@ -2,7 +2,7 @@
 
 ## Status
 
-Current architecture baseline for Web Foundation v0.1.
+Current architecture baseline for Web Foundation v0.1. Phase 3 — Renderer Probes completed through the Sprint 07 exit review; release/handoff preparation is authorized after the exit review merges with required CI green.
 
 ## Layering
 
