@@ -85,8 +85,17 @@
     <section class="probe-actions" aria-label="PlayCanvas persistence controls">
       <button type="button" data-testid="playcanvas-save">save</button>
       <button type="button" data-testid="playcanvas-load">load</button>
+      <button type="button" data-testid="playcanvas-seed-corrupt-save">seed corrupt save</button>
+      <button type="button" data-testid="playcanvas-seed-legacy-save">seed legacy save</button>
+      <button type="button" data-testid="playcanvas-seed-unsupported-save">seed unsupported save</button>
+      <button type="button" data-testid="playcanvas-seed-invalid-payload-save">seed invalid payload save</button>
       <output data-testid="playcanvas-persistence-state">idle</output>
     </section>
+    <section class="probe-data" aria-label="PlayCanvas persistence evidence">
+      <pre data-testid="playcanvas-persistence-envelope">null</pre>
+      <pre data-testid="playcanvas-loaded-domain-snapshot">null</pre>
+    </section>
+    <section id="playcanvas-debug" aria-label="PlayCanvas debug observations"></section>
   </main>
   <script type="module" src="/src/playcanvas-main.ts"></script>
 </body>
