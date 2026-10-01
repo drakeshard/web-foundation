@@ -50,6 +50,9 @@ jobs:
       - name: Public package consumer validation
         run: pnpm test:consumer
 
+      - name: Packed release-candidate consumer validation
+        run: pnpm test:release-candidate
+
       - name: Install Chromium
         run: pnpm exec playwright install --with-deps chromium
 
