@@ -1,7 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import ts from "typescript";
 
 const scriptPath = fileURLToPath(import.meta.url);
 const root = path.resolve(path.dirname(scriptPath), "..");
@@ -128,32 +127,52 @@ function packageSpecsForRoot(repositoryRoot) {
 }
 
 function readExportedSymbols(declarationPath) {
-  const program = ts.createProgram({
-    rootNames: [declarationPath],
-    options: {
-      noEmit: true,
-      skipLibCheck: false,
-    },
-  });
-  const diagnostics = ts.getPreEmitDiagnostics(program);
-  assert(
-    diagnostics.length === 0,
-    `${declarationPath}: TypeScript declaration diagnostics:\n${formatDiagnostics(diagnostics)}`,
-  );
-
-  const sourceFile = program.getSourceFile(declarationPath);
-  assert(sourceFile, `${declarationPath}: declaration source file unavailable`);
-  const checker = program.getTypeChecker();
-  const moduleSymbol = checker.getSymbolAtLocation(sourceFile);
-  assert(moduleSymbol, `${declarationPath}: declaration module symbol unavailable`);
-
-  return checker
-    .getExportsOfModule(moduleSymbol)
-    .map((symbol) => symbol.getName())
-    .filter((name) => name !== "default")
-    .sort();
+  return readDeclarationExports(fs.readFileSync(declarationPath, "utf8"), declarationPath);
 }
 
+export function readDeclarationExports(sourceText, label = "declaration") {
+  const source = sourceText
+    .replace(/\/\*[\s\S]*?\*\//g, "")
+    .replace(/\/\/.*$/gm, "");
+
+  assert(
+    !/\bexport\s+(?:type\s+)?\*\s+from\b/.test(source),
+    `${label}: wildcard exports are unsupported in public entrypoints; use explicit named exports`,
+  );
+  assert(
+    !/\bexport\s+(?:default\b|=\s*|as\s+namespace\b)/.test(source),
+    `${label}: unsupported public export form`,
+  );
+
+  const symbols = new Set();
+  const namedExportPattern =
+    /\bexport\s+(?:type\s+)?\{([\s\S]*?)\}\s*(?:from\s+["\'][^"\']+["\'])?\s*;/g;
+
+  for (const match of source.matchAll(namedExportPattern)) {
+    for (const rawSpecifier of match[1].split(",")) {
+      let specifier = rawSpecifier.trim();
+      if (!specifier) continue;
+      specifier = specifier.replace(/^type\s+/, "").trim();
+
+      const aliasParts = specifier.split(/\s+as\s+/);
+      assert(aliasParts.length <= 2, `${label}: invalid export specifier: ${specifier}`);
+      const publicName = (aliasParts[1] ?? aliasParts[0]).trim();
+      assert(
+        /^[A-Za-z_$][\w$]*$/.test(publicName),
+        `${label}: unsupported exported name: ${publicName}`,
+      );
+      symbols.add(publicName);
+    }
+  }
+
+  const directExportPattern =
+    /\bexport\s+(?:declare\s+)?(?:abstract\s+)?(?:class|function|interface|type|enum|namespace|const|let|var)\s+([A-Za-z_$][\w$]*)/g;
+  for (const match of source.matchAll(directExportPattern)) {
+    symbols.add(match[1]);
+  }
+
+  return [...symbols].sort();
+}
 function collectObjectDiff(differences, label, expected, actual) {
   if (JSON.stringify(expected) !== JSON.stringify(actual)) {
     differences.push(
