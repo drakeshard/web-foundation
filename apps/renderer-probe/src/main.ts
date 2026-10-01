@@ -70,9 +70,9 @@ createPhaserProbe({
   },
 });
 
-getRequiredElement<HTMLButtonElement>("[data-testid='run-cross-renderer-scenario']").addEventListener(
-  "click",
-  () => {
+getRequiredElement<HTMLButtonElement>(
+  "[data-testid='run-cross-renderer-scenario']",
+).addEventListener("click", () => {
     const result = runCrossRendererScenario();
     crossRendererScenarioResult.textContent = JSON.stringify({
       renderer: "phaser",
@@ -84,8 +84,7 @@ getRequiredElement<HTMLButtonElement>("[data-testid='run-cross-renderer-scenario
       checksum: result.checksum,
       presentation: projectToyPresentation(result.finalState, 1),
     });
-  },
-);
+  });
 
 getRequiredElement<HTMLButtonElement>("[data-testid='save-probe']").addEventListener(
   "click",
