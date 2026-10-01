@@ -39,8 +39,7 @@ export const CROSS_RENDERER_SCENARIO = {
 export const CROSS_RENDERER_FRAME_SCHEDULES = {
   steady: [50, 50, 50, 50, 50, 50, 50, 50],
   fine: [
-    16, 17, 17, 16, 17, 17, 16, 17, 17, 16, 17, 17, 16, 17, 17, 16, 17, 17, 16, 17, 17,
-    16, 17, 17,
+    16, 17, 17, 16, 17, 17, 16, 17, 17, 16, 17, 17, 16, 17, 17, 16, 17, 17, 16, 17, 17, 16, 17, 17,
   ],
   coarse: [33, 17, 33, 17, 33, 17, 33, 17, 33, 17, 33, 17, 33, 17, 33, 17],
 } as const;
@@ -253,10 +252,7 @@ export function compareCrossRendererScenarioResults(
   return { ok: true };
 }
 
-function checksumScenarioResult(
-  domain: ToyDomainSnapshot,
-  random: DeterministicRngState,
-): string {
+function checksumScenarioResult(domain: ToyDomainSnapshot, random: DeterministicRngState): string {
   const serialized = JSON.stringify({ domain, random });
   let hash = 0x811c_9dc5;
 
