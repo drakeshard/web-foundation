@@ -41,11 +41,14 @@ try {
   writeConsumerManifest();
   installRegistryPackages();
 
-  assertInstalledPackageShape(
-    "@drakeshard/foundation",
-    packageVersion,
-    ["./input", "./input/browser", "./random", "./time", "./storage", "./storage/browser"],
-  );
+  assertInstalledPackageShape("@drakeshard/foundation", packageVersion, [
+    "./input",
+    "./input/browser",
+    "./random",
+    "./time",
+    "./storage",
+    "./storage/browser",
+  ]);
   assertInstalledPackageShape("@drakeshard/testing", packageVersion, ["./clock"]);
 
   fs.writeFileSync(
