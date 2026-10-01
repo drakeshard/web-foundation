@@ -38,5 +38,6 @@
   },
   "dependencies": {
     "idb": "8.0.3"
-  }
+  },
+  "sideEffects": false
 }
