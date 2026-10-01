@@ -39,9 +39,8 @@ test("records PlayCanvas toy-scenario Chromium performance observations", async 
         "null",
     ) as DomainState | null;
     const presentationSync = JSON.parse(
-      document.querySelector<HTMLElement>(
-        "[data-testid='playcanvas-presentation-sync']",
-      )?.textContent ?? "null",
+      document.querySelector<HTMLElement>("[data-testid='playcanvas-presentation-sync']")
+        ?.textContent ?? "null",
     ) as PresentationSync | null;
 
     if (!canvas || !advance || !domainState || !presentationSync) {
