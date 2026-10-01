@@ -34,10 +34,7 @@ function fixture({ includeDist = true } = {}) {
 
   if (includeDist) {
     fs.mkdirSync(path.join(root, "dist", "time"), { recursive: true });
-    fs.writeFileSync(
-      path.join(root, "dist", "time", "index.js"),
-      "export const ok = true;\n",
-    );
+    fs.writeFileSync(path.join(root, "dist", "time", "index.js"), "export const ok = true;\n");
     fs.writeFileSync(
       path.join(root, "dist", "time", "index.d.ts"),
       "export declare const ok: true;\n",
