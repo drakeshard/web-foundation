@@ -66,7 +66,7 @@ export function readRepositoryVersions(repositoryRoot = root) {
 }
 
 export function validateTaggedCommit({ releaseTag, expectedCommit, repositoryRoot = root }) {
-  assert(typeof expectedCommit === "string" && expectedCommit.length > 0, "release commit is required");
+  assert(\n    typeof expectedCommit === "string" && expectedCommit.length > 0,\n    "release commit is required",\n  );
 
   const headCommit = git(["rev-parse", "HEAD"], repositoryRoot);
   const releaseCommit = git(["rev-list", "-n", "1", releaseTag], repositoryRoot);
