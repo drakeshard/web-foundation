@@ -15,15 +15,26 @@ fs.mkdirSync(packDir, { recursive: true });
 fs.mkdirSync(consumerDir, { recursive: true });
 
 try {
-  run(pnpm, ["--dir", path.join(root, "packages/foundation"), "pack", "--pack-destination", packDir], root);
-  run(pnpm, ["--dir", path.join(root, "packages/testing"), "pack", "--pack-destination", packDir], root);
+  run(
+    pnpm,
+    ["--dir", path.join(root, "packages/foundation"), "pack", "--pack-destination", packDir],
+    root,
+  );
+  run(
+    pnpm,
+    ["--dir", path.join(root, "packages/testing"), "pack", "--pack-destination", packDir],
+    root,
+  );
 
   const tarballs = fs
     .readdirSync(packDir)
     .filter((name) => name.endsWith(".tgz"))
     .sort();
 
-  assert(tarballs.length === 2, `expected exactly two release-candidate tarballs, got ${tarballs.length}`);
+  assert(
+    tarballs.length === 2,
+    `expected exactly two release-candidate tarballs, got ${tarballs.length}`,
+  );
 
   const foundationTarball = findArtifact(tarballs, "foundation");
   const testingTarball = findArtifact(tarballs, "testing");
@@ -36,7 +47,7 @@ try {
 
   fs.writeFileSync(
     path.join(consumerDir, "package.json"),
-    JSON.stringify(
+    `${JSON.stringify(
       {
         name: "drakeshard-foundation-release-candidate-consumer",
         private: true,
@@ -45,32 +56,24 @@ try {
       },
       null,
       2,
-    ) + "\n",
+    )}\n`,
   );
 
   run(
     pnpm,
-    [
-      "add",
-      "--offline",
-      "--save-exact",
-      path.join(packDir, foundationTarball),
-    ],
+    ["add", "--offline", "--save-exact", path.join(packDir, foundationTarball)],
     consumerDir,
   );
   run(
     pnpm,
-    [
-      "add",
-      "--offline",
-      "--save-dev",
-      "--save-exact",
-      path.join(packDir, testingTarball),
-    ],
+    ["add", "--offline", "--save-dev", "--save-exact", path.join(packDir, testingTarball)],
     consumerDir,
   );
 
-  assert(fs.existsSync(path.join(consumerDir, "pnpm-lock.yaml")), "consumer lockfile was not created");
+  assert(
+    fs.existsSync(path.join(consumerDir, "pnpm-lock.yaml")),
+    "consumer lockfile was not created",
+  );
 
   assertInstalledPackageShape(
     path.join(consumerDir, "node_modules/@drakeshard/foundation"),
@@ -233,9 +236,18 @@ function assertInstalledPackageShape(packageDir, expectedName, expectedVersion, 
     `${expectedName}: installed export surface mismatch`,
   );
   assert(fs.existsSync(path.join(packageDir, "dist")), `${expectedName}: dist missing`);
-  assert(!fs.existsSync(path.join(packageDir, "src")), `${expectedName}: source files leaked into package`);
-  assert(!fs.existsSync(path.join(packageDir, "dist/index.js")), `${expectedName}: obsolete root runtime artifact leaked`);
-  assert(!fs.existsSync(path.join(packageDir, "dist/index.d.ts")), `${expectedName}: obsolete root type artifact leaked`);
+  assert(
+    !fs.existsSync(path.join(packageDir, "src")),
+    `${expectedName}: source files leaked into package`,
+  );
+  assert(
+    !fs.existsSync(path.join(packageDir, "dist/index.js")),
+    `${expectedName}: obsolete root runtime artifact leaked`,
+  );
+  assert(
+    !fs.existsSync(path.join(packageDir, "dist/index.d.ts")),
+    `${expectedName}: obsolete root type artifact leaked`,
+  );
 }
 
 function assert(condition, message) {
