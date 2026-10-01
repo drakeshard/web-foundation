@@ -1,5 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
 
+const compatibilityTests = /(input|save-service|phaser-probe)\.spec\.ts/;
+
 export default defineConfig({
   testDir: "./tests/e2e",
   fullyParallel: true,
@@ -17,12 +19,12 @@ export default defineConfig({
     },
     {
       name: "firefox-compat",
-      testMatch: /browser-compatibility\.spec\.ts/,
+      testMatch: compatibilityTests,
       use: { ...devices["Desktop Firefox"] },
     },
     {
       name: "webkit-compat",
-      testMatch: /browser-compatibility\.spec\.ts/,
+      testMatch: compatibilityTests,
       use: { ...devices["Desktop Safari"] },
     },
   ],
