@@ -31,6 +31,9 @@ v0.1 defines two shared packages:
 
 Additional packages require demonstrated cross-game need.
 
+The accepted Sprint 07 v0.1 package/subpath surface and final extraction decisions are recorded in
+[Sprint 07 v0.1 Public Surface, Dependency, and Extraction Review](./sprint-07-v01-surface-review.md).
+
 ## Required boundaries
 
 Foundation and game-domain code must not import:
