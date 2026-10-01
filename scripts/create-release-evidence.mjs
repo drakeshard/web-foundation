@@ -33,12 +33,24 @@ export function findPublishTokenEnvironment(env) {
   return names.filter((name) => typeof env[name] === "string" && env[name].length > 0);
 }
 
-export function validateAuditResult(result) {
+export function validateAuditResult(result, expectedPackages = []) {
   assert(result && typeof result === "object", "npm audit signatures returned invalid JSON");
   assert(Array.isArray(result.invalid), "npm audit signatures result is missing invalid[]");
   assert(Array.isArray(result.missing), "npm audit signatures result is missing missing[]");
+  assert(Array.isArray(result.verified), "npm audit signatures result is missing verified[]");
   assert(result.invalid.length === 0, "npm audit signatures reported invalid signatures/attestations");
   assert(result.missing.length === 0, "npm audit signatures reported missing registry signatures");
+
+  for (const expected of expectedPackages) {
+    const verified = result.verified.find(
+      (entry) => entry?.name === expected.name && entry?.version === expected.version,
+    );
+    assert(verified, `${expected.name}@${expected.version}: verified provenance attestation missing`);
+    assert(
+      verified.attestations && typeof verified.attestations === "object",
+      `${expected.name}@${expected.version}: verified attestation metadata missing`,
+    );
+  }
 }
 
 export function createPackageEvidence({
@@ -151,7 +163,10 @@ function main() {
   const auditFileName = "npm-audit-signatures.json";
   const auditPath = path.join(outputDir, auditFileName);
   const auditResult = verifyRegistrySignatures(version, auditPath);
-  validateAuditResult(auditResult);
+  validateAuditResult(
+    auditResult,
+    packages.map((spec) => ({ name: spec.name, version })),
+  );
 
   const repository = process.env.GITHUB_REPOSITORY ?? "drakeshard/web-foundation";
   const serverUrl = process.env.GITHUB_SERVER_URL ?? "https://github.com";
@@ -241,7 +256,7 @@ function verifyRegistrySignatures(version, outputPath) {
 
     const output = execFileSync(
       "npm",
-      ["audit", "signatures", "--json", `--registry=${registry}`],
+      ["audit", "signatures", "--json", "--include-attestations", `--registry=${registry}`],
       {
         cwd: temp,
         encoding: "utf8",
