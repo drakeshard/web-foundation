@@ -83,6 +83,41 @@ test("PlayCanvas reuses the app-local UI bridge without renderer-owned gameplay 
   await expect(summary).toContainText("tick 1");
 });
 
+
+test("PlayCanvas save reload load restores domain state and presentation", async ({ page }) => {
+  await page.goto("http://127.0.0.1:4174/playcanvas.html");
+  await expect(page.getByTestId("playcanvas-probe-status")).toHaveText("playcanvas-probe-ready");
+
+  await page.getByTestId("playcanvas-elevation-demo-advance").click();
+  await expect(page.getByTestId("playcanvas-elevation-demo-state")).toHaveText(
+    '{"tick":1,"position":{"x":2,"y":3},"elevation":0}',
+  );
+
+  await page.getByTestId("playcanvas-save").click();
+  await expect(page.getByTestId("playcanvas-persistence-state")).toHaveText(
+    '{"ok":true,"value":"saved"}',
+  );
+
+  await page.reload();
+  await expect(page.getByTestId("playcanvas-probe-status")).toHaveText("playcanvas-probe-ready");
+  await expect(page.getByTestId("playcanvas-elevation-demo-state")).toHaveText(
+    '{"tick":0,"position":{"x":3,"y":3},"elevation":0.5}',
+  );
+
+  await page.getByTestId("playcanvas-load").click();
+  await expect(page.getByTestId("playcanvas-persistence-state")).toHaveText(
+    '{"ok":true,"value":"loaded"}',
+  );
+  await expect(page.getByTestId("playcanvas-elevation-demo-state")).toHaveText(
+    '{"tick":1,"position":{"x":2,"y":3},"elevation":0}',
+  );
+  await expect(page.getByTestId("ui-domain-summary")).toContainText("tick 1 · probe (2, 3)");
+  await expect(page.getByTestId("playcanvas-presentation-sync")).toHaveText(
+    '{"created":2,"updated":0,"destroyed":0,"viewIds":["probe:probe","marker"]}',
+  );
+  await expect(page.getByTestId("playcanvas-rebuild-count")).toHaveText("1");
+});
+
 test("PlayCanvas camera zoom and pointer selection stay presentation-local", async ({ page }) => {
   await page.goto("http://127.0.0.1:4174/playcanvas.html");
   await expect(page.getByTestId("playcanvas-probe-status")).toHaveText("playcanvas-probe-ready");
