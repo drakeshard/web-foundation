@@ -46,11 +46,12 @@ test("records Phaser toy-scenario Chromium performance observations", async ({ p
 
     const frameDeltas = samples.map((sample) => sample.frameDeltaMs);
     const simulationDurations = samples.map((sample) => sample.simulationDurationMs);
+    const stepsPerFrame = samples.map((sample) => sample.steps);
     const canvas = document.querySelector<HTMLCanvasElement>("#renderer-probe canvas");
 
     return {
       scenario:
-        "idle 8x8 toy domain; Phaser canvas + Preact UI + debug view; 120 requestAnimationFrame samples",
+        "idle 8x8 toy domain; two projected views; Phaser canvas + Preact UI + debug view; 120 requestAnimationFrame samples",
       sampleCount: samples.length,
       userAgent: navigator.userAgent,
       viewport: { width: innerWidth, height: innerHeight },
@@ -58,6 +59,7 @@ test("records Phaser toy-scenario Chromium performance observations", async ({ p
       canvas: canvas ? { width: canvas.width, height: canvas.height } : null,
       frameDeltaMs: summarize(frameDeltas),
       simulationDurationMs: summarize(simulationDurations),
+      simulationStepsPerFrame: summarize(stepsPerFrame),
       simulationSteps: samples.reduce((sum, sample) => sum + sample.steps, 0),
       droppedSteps: samples.reduce((sum, sample) => sum + sample.droppedSteps, 0),
       overrunFrames: samples.filter((sample) => sample.overrun).length,
@@ -86,6 +88,7 @@ test("records Phaser toy-scenario Chromium performance observations", async ({ p
   expect(observation.canvas).toEqual({ width: 320, height: 320 });
   expect(observation.frameDeltaMs.mean).toBeGreaterThanOrEqual(0);
   expect(observation.simulationDurationMs.mean).toBeGreaterThanOrEqual(0);
-  expect(observation.droppedSteps).toBeGreaterThanOrEqual(0);
-  expect(observation.overrunFrames).toBeGreaterThanOrEqual(0);
+  expect(observation.simulationStepsPerFrame.max).toBeLessThanOrEqual(5);
+  expect(observation.droppedSteps).toBe(0);
+  expect(observation.overrunFrames).toBe(0);
 });
