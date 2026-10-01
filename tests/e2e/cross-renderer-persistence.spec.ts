@@ -76,9 +76,16 @@ test("both probes persist the same renderer-neutral SaveEnvelope semantics", asy
   expect(new Date(playCanvasEnvelope.createdAt).toISOString()).toBe(playCanvasEnvelope.createdAt);
 
   expect(Object.keys(phaserEnvelope.payload).sort()).toEqual(["marker", "probe", "tick", "world"]);
-  expect(Object.keys(playCanvasEnvelope.payload).sort()).toEqual(["marker", "probe", "tick", "world"]);
+  expect(Object.keys(playCanvasEnvelope.payload).sort()).toEqual([
+    "marker",
+    "probe",
+    "tick",
+    "world",
+  ]);
   expect(JSON.stringify(phaserEnvelope.payload)).not.toMatch(/phaser|playcanvas|camera|entity/i);
-  expect(JSON.stringify(playCanvasEnvelope.payload)).not.toMatch(/phaser|playcanvas|camera|entity/i);
+  expect(JSON.stringify(playCanvasEnvelope.payload)).not.toMatch(
+    /phaser|playcanvas|camera|entity/i,
+  );
 });
 
 test("legacy save migration produces the same loaded snapshot and leaves the source envelope intact", async ({
