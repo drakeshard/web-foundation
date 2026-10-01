@@ -131,9 +131,7 @@ function readExportedSymbols(declarationPath) {
 }
 
 export function readDeclarationExports(sourceText, label = "declaration") {
-  const source = sourceText
-    .replace(/\/\*[\s\S]*?\*\//g, "")
-    .replace(/\/\/.*$/gm, "");
+  const source = sourceText.replace(/\/\*[\s\S]*?\*\//g, "").replace(/\/\/.*$/gm, "");
 
   assert(
     !/\bexport\s+(?:type\s+)?\*\s+from\b/.test(source),
@@ -146,7 +144,7 @@ export function readDeclarationExports(sourceText, label = "declaration") {
 
   const symbols = new Set();
   const namedExportPattern =
-    /\bexport\s+(?:type\s+)?\{([\s\S]*?)\}\s*(?:from\s+["\'][^"\']+["\'])?\s*;/g;
+    /\bexport\s+(?:type\s+)?\{([\s\S]*?)\}\s*(?:from\s+["'][^"']+["'])?\s*;/g;
 
   for (const match of source.matchAll(namedExportPattern)) {
     for (const rawSpecifier of match[1].split(",")) {
