@@ -7,11 +7,7 @@ import {
 } from "./domain/index.js";
 import { createPlayCanvasSelectionInput } from "./input/playcanvas-selection-input.js";
 import { createPlayCanvasProbe } from "./presentation/playcanvas-probe.js";
-import {
-  createProbeUiBridge,
-  type ProbeUiBridge,
-  type ProbeUiIntent,
-} from "./ui/probe-ui.js";
+import { createProbeUiBridge, type ProbeUiBridge, type ProbeUiIntent } from "./ui/probe-ui.js";
 
 const ELEVATION_DEMO_COMMANDS: readonly ToyDomainCommand[] = [
   { type: "move", dx: -1, dy: 0 },
@@ -137,7 +133,9 @@ function handleUiIntent(intent: ProbeUiIntent): void {
       inputContexts.textContent = JSON.stringify(selectionInput.activeContexts());
       return;
     case "randomize-marker":
-      uiIntent.textContent = JSON.stringify({ type: "randomize-marker" } satisfies ToyDomainCommand);
+      uiIntent.textContent = JSON.stringify({
+        type: "randomize-marker",
+      } satisfies ToyDomainCommand);
       return;
   }
 }
