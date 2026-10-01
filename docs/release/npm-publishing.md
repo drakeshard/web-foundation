@@ -59,7 +59,7 @@ npm trusted publishing requires a supported npm CLI/Node runtime and exchanges t
 
 ## Provenance
 
-Trusted publishing automatically supplies npm provenance for future publications from this public GitHub repository. The initial manually published `0.1.1` packages remain valid registry releases but are the bootstrap publication before trusted-publisher automation was configured.
+Trusted publishing automatically supplies npm provenance for future publications from this public GitHub repository. The initial manually published `0.1.1` versions remain immutable registry history from before trusted-publisher automation was configured. The Foundation 0.1.1 artifact is not a usable consumer release because its published package is missing `dist/`; provenance status does not make a defective artifact valid.
 
 ## Versioning
 
