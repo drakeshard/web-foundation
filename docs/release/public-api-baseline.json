@@ -86,16 +86,8 @@
           "PointerBrowserAdapter",
           "PointerBrowserAdapterOptions"
         ],
-        "./random": [
-          "DeterministicRng",
-          "DeterministicRngState",
-          "RNG_ALGORITHM_ID"
-        ],
-        "./time": [
-          "FixedStepAdvanceResult",
-          "FixedStepConfig",
-          "FixedStepDriver"
-        ],
+        "./random": ["DeterministicRng", "DeterministicRngState", "RNG_ALGORITHM_ID"],
+        "./time": ["FixedStepAdvanceResult", "FixedStepConfig", "FixedStepDriver"],
         "./storage": [
           "ContentVersion",
           "EnvelopeSaveService",
@@ -146,9 +138,7 @@
         }
       },
       "symbols": {
-        "./clock": [
-          "ManualClock"
-        ]
+        "./clock": ["ManualClock"]
       }
     }
   }
