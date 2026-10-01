@@ -59,18 +59,20 @@
     <div id="playcanvas-probe"></div>
     <div id="playcanvas-ui"></div>
     <output data-testid="playcanvas-probe-status">booting</output>
-    <p>Right-drag to pan. Use the mouse wheel to zoom. Left-click selects the toy world.</p>
+    <p>Right-drag to pan. Use the mouse wheel to zoom. Left-click queues a world selection; the probe input-tick control applies queued domain input deterministically.</p>
     <div class="probe-data">
       <pre data-testid="playcanvas-camera-state"></pre>
       <pre data-testid="playcanvas-presentation-sync"></pre>
       <pre data-testid="playcanvas-elevation-demo-state"></pre>
       <pre data-testid="playcanvas-input-contexts"></pre>
+      <pre data-testid="playcanvas-input-command-history">[]</pre>
       <pre data-testid="playcanvas-pointer-result"></pre>
       <pre data-testid="playcanvas-selection-intent"></pre>
       <pre data-testid="playcanvas-ui-intent"></pre>
       <pre data-testid="playcanvas-domain-state"></pre>
     </div>
     <div class="probe-actions">
+      <button type="button" data-testid="playcanvas-input-tick">apply input tick</button>
       <button type="button" data-testid="playcanvas-elevation-demo-advance">advance elevation demo</button>
       <button type="button" data-testid="playcanvas-sync">sync presentation</button>
       <button type="button" data-testid="playcanvas-rebuild">rebuild presentation</button>

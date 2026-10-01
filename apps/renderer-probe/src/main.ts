@@ -28,10 +28,15 @@ const persistenceState = getRequiredElement<HTMLOutputElement>("[data-testid='pe
 const domainState = getRequiredElement<HTMLElement>("[data-testid='domain-state']");
 const inputContexts = getRequiredElement<HTMLElement>("[data-testid='input-contexts']");
 const frameState = getRequiredElement<HTMLElement>("[data-testid='frame-state']");
+const inputCommandHistory = getRequiredElement<HTMLElement>(
+  "[data-testid='input-command-history']",
+);
 const crossRendererScenarioResult = getRequiredElement<HTMLElement>(
   "[data-testid='cross-renderer-scenario-result']",
 );
 const debug = createProbeDebugView(debugParent);
+const consumedInputCommands: ToyDomainCommand[][] = [];
+inputCommandHistory.textContent = JSON.stringify(consumedInputCommands);
 
 ui = createProbeUiBridge({
   parent: uiParent,
@@ -66,6 +71,7 @@ createPhaserProbe({
       pointerTarget: canvas,
       toWorldPoint: (position) =>
         clientPositionToToyPoint(position, canvas, simulation.state.world),
+      onCommandsConsumed: recordConsumedInputCommands,
     });
     status.value = "phaser-probe-ready";
     ui?.publishDomainState(simulation.state);
@@ -152,6 +158,12 @@ function createSimulation(initialState?: ToyDomainState) {
       return commands;
     },
   });
+}
+
+function recordConsumedInputCommands(commands: readonly ToyDomainCommand[]): void {
+  if (commands.length === 0) return;
+  consumedInputCommands.push([...commands]);
+  inputCommandHistory.textContent = JSON.stringify(consumedInputCommands);
 }
 
 function handleUiIntent(intent: ProbeUiIntent): void {

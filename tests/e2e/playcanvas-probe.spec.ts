@@ -12,7 +12,7 @@ test("PlayCanvas renderer probe boots from the shared toy domain", async ({ page
   await expect(canvas).toHaveAttribute("height", "480");
 
   await expect(page.getByTestId("playcanvas-domain-state")).toContainText('"id":"probe"');
-  await expect(page.getByTestId("playcanvas-input-contexts")).toHaveText('["playcanvas-gameplay"]');
+  await expect(page.getByTestId("playcanvas-input-contexts")).toHaveText('["gameplay"]');
   await expect(page.getByTestId("playcanvas-presentation-sync")).toHaveText(
     '{"created":2,"updated":0,"destroyed":0,"viewIds":["probe:probe","marker"]}',
   );
@@ -67,13 +67,11 @@ test("PlayCanvas reuses the app-local UI bridge without renderer-owned gameplay 
 
   await page.getByTestId("activate-modal").click();
   await expect(page.getByTestId("ui-modal-state")).toHaveText("modal active");
-  await expect(page.getByTestId("playcanvas-input-contexts")).toHaveText(
-    '["playcanvas-modal","playcanvas-gameplay"]',
-  );
+  await expect(page.getByTestId("playcanvas-input-contexts")).toHaveText('["modal","gameplay"]');
 
   await page.getByTestId("deactivate-modal").click();
   await expect(page.getByTestId("ui-modal-state")).toHaveText("modal inactive");
-  await expect(page.getByTestId("playcanvas-input-contexts")).toHaveText('["playcanvas-gameplay"]');
+  await expect(page.getByTestId("playcanvas-input-contexts")).toHaveText('["gameplay"]');
 
   await page.getByTestId("ui-randomize-marker").click();
   await expect(page.getByTestId("playcanvas-ui-intent")).toHaveText('{"type":"randomize-marker"}');
@@ -133,6 +131,7 @@ test("PlayCanvas camera zoom and pointer selection stay presentation-local", asy
     .not.toBe(beforeZoom.orthoHeight);
 
   await canvas.click({ position: { x: 320, y: 240 } });
+  await page.getByTestId("playcanvas-input-tick").click();
 
   await expect(page.getByTestId("playcanvas-pointer-result")).toContainText(
     '"kind":"intersection"',
@@ -150,7 +149,7 @@ test("PlayCanvas camera zoom and pointer selection stay presentation-local", asy
   expect(intent.position.y).toBeLessThan(8);
 
   await expect(page.getByTestId("playcanvas-domain-state")).toContainText(
-    '"position":{"x":1,"y":1}',
+    `"position":{"x":${intent.position.x},"y":${intent.position.y}}`,
   );
 });
 
