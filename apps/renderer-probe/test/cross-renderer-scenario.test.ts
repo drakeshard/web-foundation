@@ -7,9 +7,7 @@ import {
 } from "../src/scenario/cross-renderer-scenario.ts";
 
 describe("cross-renderer canonical toy-domain scenario", () => {
-  it(
-    "locks one initial state, seed, command sequence, tick count, and deterministic result",
-    () => {
+  it("locks canonical inputs and deterministic output", () => {
     const result = runCrossRendererScenario();
 
     expect(CROSS_RENDERER_SCENARIO.initialDomain).toEqual({
@@ -33,10 +31,9 @@ describe("cross-renderer canonical toy-domain scenario", () => {
         algorithm: "xoshiro128starstar-v1",
         state: [653116501, 1255092782, 2110617100, 3595439280],
       },
-        checksum: "a016a4a7",
-      });
-    },
-  );
+      checksum: "a016a4a7",
+    });
+  });
 
   it("produces identical deterministic output across repeated executions", () => {
     expect(runCrossRendererScenario()).toEqual(runCrossRendererScenario());
