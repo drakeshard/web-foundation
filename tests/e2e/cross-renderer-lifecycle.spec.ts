@@ -33,7 +33,9 @@ test("visibility reset clears held input and Phaser resume does not continue sta
   await expect(page.getByTestId("frame-state")).toContainText('"overrun":false');
 });
 
-test("visibility reset clears held input before the next PlayCanvas input tick", async ({ page }) => {
+test("visibility reset clears held input before the next PlayCanvas input tick", async ({
+  page,
+}) => {
   await openPlayCanvas(page);
 
   await page.keyboard.down("d");
