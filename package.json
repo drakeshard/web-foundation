@@ -13,10 +13,11 @@
     "typecheck": "tsc -b",
     "test": "vitest run --passWithNoTests",
     "test:release-version": "node --test scripts/validate-release-version.test.mjs && node scripts/validate-release-version.mjs",
+    "test:public-api": "node --test scripts/validate-public-api.test.mjs && node scripts/validate-public-api.mjs",
     "test:e2e": "playwright test --project=chromium",
     "test:e2e:compat": "playwright test --project=firefox-compat --project=webkit-compat",
     "build": "tsc -b && pnpm --filter @drakeshard/renderer-probe-app build",
-    "verify": "pnpm check && pnpm typecheck && pnpm test && pnpm test:release-version && pnpm build && pnpm test:consumer && pnpm test:release-candidate && pnpm test:e2e",
+    "verify": "pnpm check && pnpm typecheck && pnpm test && pnpm test:release-version && pnpm build && pnpm test:public-api && pnpm test:consumer && pnpm test:release-candidate && pnpm test:e2e",
     "test:consumer": "node scripts/validate-package-exports.mjs",
     "test:release-candidate": "node scripts/validate-release-candidate.mjs"
   },
