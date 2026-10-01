@@ -1,7 +1,6 @@
 {
   "name": "@drakeshard/testing",
-  "version": "0.1.0",
-  "private": true,
+  "version": "0.1.1",
   "type": "module",
   "exports": {
     "./clock": {
@@ -19,5 +18,25 @@
   "devDependencies": {
     "@drakeshard/foundation": "workspace:*"
   },
-  "sideEffects": false
+  "sideEffects": false,
+  "description": "Testing support for Drakeshard Web Foundation consumers.",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/drakeshard/web-foundation.git",
+    "directory": "packages/testing"
+  },
+  "homepage": "https://github.com/drakeshard/web-foundation#readme",
+  "bugs": {
+    "url": "https://github.com/drakeshard/web-foundation/issues"
+  },
+  "keywords": [
+    "game-development",
+    "testing",
+    "deterministic",
+    "typescript"
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
 }
