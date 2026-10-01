@@ -9,14 +9,7 @@ const packages = {
   foundation: {
     name: "@drakeshard/foundation",
     dir: path.join(root, "packages/foundation"),
-    exports: [
-      "./input",
-      "./input/browser",
-      "./random",
-      "./time",
-      "./storage",
-      "./storage/browser",
-    ],
+    exports: ["./input", "./input/browser", "./random", "./time", "./storage", "./storage/browser"],
   },
   testing: {
     name: "@drakeshard/testing",
@@ -25,21 +18,22 @@ const packages = {
   },
 };
 
-const forbiddenSharedDependencies = new Set([
-  "phaser",
-  "playcanvas",
-  "preact",
-  "@preact/signals",
-]);
+const forbiddenSharedDependencies = new Set(["phaser", "playcanvas", "preact", "@preact/signals"]);
 
 for (const [key, spec] of Object.entries(packages)) {
   const manifest = JSON.parse(fs.readFileSync(path.join(spec.dir, "package.json"), "utf8"));
 
   assert(manifest.name === spec.name, `${key}: unexpected package name`);
   assert(manifest.version === "0.1.0", `${key}: expected v0.1.0 release-candidate version`);
-  assert(manifest.private === true, `${key}: package must remain private until S08-05 decides distribution`);
+  assert(
+    manifest.private === true,
+    `${key}: package must remain private until S08-05 decides distribution`,
+  );
   assert(manifest.type === "module", `${key}: package must remain ESM`);
-  assert(manifest.sideEffects === false, `${key}: shared package modules must declare no import-time side effects`);
+  assert(
+    manifest.sideEffects === false,
+    `${key}: shared package modules must declare no import-time side effects`,
+  );
   assert(
     JSON.stringify(manifest.files) === JSON.stringify(["dist"]),
     `${key}: only dist should be included in a future package artifact`,
@@ -65,7 +59,12 @@ for (const [key, spec] of Object.entries(packages)) {
     }
   }
 
-  for (const section of ["dependencies", "devDependencies", "peerDependencies", "optionalDependencies"]) {
+  for (const section of [
+    "dependencies",
+    "devDependencies",
+    "peerDependencies",
+    "optionalDependencies",
+  ]) {
     for (const dependency of Object.keys(manifest[section] ?? {})) {
       assert(
         !forbiddenSharedDependencies.has(dependency),
@@ -74,8 +73,14 @@ for (const [key, spec] of Object.entries(packages)) {
     }
   }
 
-  assert(!fs.existsSync(path.join(spec.dir, "dist/index.js")), `${key}: obsolete root runtime artifact exists`);
-  assert(!fs.existsSync(path.join(spec.dir, "dist/index.d.ts")), `${key}: obsolete root type artifact exists`);
+  assert(
+    !fs.existsSync(path.join(spec.dir, "dist/index.js")),
+    `${key}: obsolete root runtime artifact exists`,
+  );
+  assert(
+    !fs.existsSync(path.join(spec.dir, "dist/index.d.ts")),
+    `${key}: obsolete root type artifact exists`,
+  );
 }
 
 const foundationManifest = JSON.parse(
