@@ -4,9 +4,9 @@ import { restoreToyDomain } from "./domain/index.js";
 import { createProbeInputController, type ProbeInputController } from "./input/probe-input.js";
 import { createProbePersistence } from "./persistence/probe-persistence.js";
 import { createPhaserProbe } from "./presentation/phaser-probe.js";
+import { clientPositionToToyPoint } from "./presentation/screen-to-world.js";
 import { projectToyPresentation } from "./presentation/toy-presentation.js";
 import { runCrossRendererScenario } from "./scenario/cross-renderer-scenario.js";
-import { clientPositionToToyPoint } from "./presentation/screen-to-world.js";
 import { createProbeSimulation, type ProbeSimulationFrame } from "./simulation/probe-simulation.js";
 import { createProbeUiBridge, type ProbeUiBridge, type ProbeUiIntent } from "./ui/probe-ui.js";
 
@@ -73,18 +73,18 @@ createPhaserProbe({
 getRequiredElement<HTMLButtonElement>(
   "[data-testid='run-cross-renderer-scenario']",
 ).addEventListener("click", () => {
-    const result = runCrossRendererScenario();
-    crossRendererScenarioResult.textContent = JSON.stringify({
-      renderer: "phaser",
-      scenarioId: result.scenarioId,
-      seed: result.seed,
-      tickCount: result.tickCount,
-      finalDomain: result.finalDomain,
-      random: result.random,
-      checksum: result.checksum,
-      presentation: projectToyPresentation(result.finalState, 1),
-    });
+  const result = runCrossRendererScenario();
+  crossRendererScenarioResult.textContent = JSON.stringify({
+    renderer: "phaser",
+    scenarioId: result.scenarioId,
+    seed: result.seed,
+    tickCount: result.tickCount,
+    finalDomain: result.finalDomain,
+    random: result.random,
+    checksum: result.checksum,
+    presentation: projectToyPresentation(result.finalState, 1),
   });
+});
 
 getRequiredElement<HTMLButtonElement>("[data-testid='save-probe']").addEventListener(
   "click",
