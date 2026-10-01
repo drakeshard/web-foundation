@@ -116,7 +116,7 @@ try {
 
   fs.writeFileSync(
     path.join(temp, "consumer.mjs"),
-    `const specifiers = ${JSON.stringify(runtimeSpecifiers)};\nfor (const specifier of specifiers) {\n  const module = await import(specifier);\n  if (Object.keys(module).length === 0) throw new Error(\\\`empty module: \${specifier}\\\`);\n}\n`,
+    `const specifiers = ${JSON.stringify(runtimeSpecifiers)};\nfor (const specifier of specifiers) {\n  const module = await import(specifier);\n  if (Object.keys(module).length === 0) throw new Error("empty module: " + specifier);\n}\n`,
   );
 
   execFileSync(process.execPath, [path.join(temp, "consumer.mjs")], {
