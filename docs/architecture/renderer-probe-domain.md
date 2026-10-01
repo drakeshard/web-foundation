@@ -296,3 +296,22 @@ S06-05 adds no LOS/high-ground combat rule, navmesh, production terrain authorin
 terrain API, Tactical API, or save-format change. If later work introduces LOS or high-ground
 gameplay semantics, their truth must remain domain-owned rather than inferred from PlayCanvas
 geometry.
+
+
+## PlayCanvas UI bridge reuse
+
+S06-06 reuses the same app-local `ProbeUiBridge` and `ProbeUiDomainView` projection from the
+Phaser probe on the PlayCanvas page. The bridge still receives copied UI-facing values derived from
+authoritative `ToyDomainState`; it does not read `pc.Entity`, camera, material, transform, or
+other PlayCanvas state as gameplay truth.
+
+UI controls continue to emit app-local `ProbeUiIntent` values. The PlayCanvas orchestration layer
+maps modal intent into the existing Foundation input-context router and maps marker randomization
+into the existing fixture-local `ToyDomainCommand` before publishing the resulting authoritative
+state back to UI and presentation. Preact signals remain transient UI state and derived view state,
+not simulation state.
+
+The renderer-specific coupling observed in S06-06 is limited to application composition: choosing
+the PlayCanvas page mount point, updating PlayCanvas input-context debug output, and requesting
+presentation synchronization after an authoritative state change. None of those concerns requires a
+shared UI package, Foundation UI API, renderer adapter, or renderer-aware view-model contract.
