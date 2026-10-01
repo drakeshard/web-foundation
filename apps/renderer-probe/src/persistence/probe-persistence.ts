@@ -83,8 +83,12 @@ export function createProbePersistence(
 
     async inspect(): Promise<PersistenceResult<SaveEnvelope<JsonValue> | null>> {
       const stored = await storage.read(PROBE_SAVE_SLOT);
-      if (!stored.ok || stored.value === null) {
+      if (!stored.ok) {
         return stored;
+      }
+
+      if (stored.value === null) {
+        return { ok: true, value: null };
       }
 
       return deserializeSaveEnvelope(stored.value);
