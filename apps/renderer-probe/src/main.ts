@@ -38,6 +38,9 @@ const inputCommandHistory = getRequiredElement<HTMLElement>(
 const crossRendererScenarioResult = getRequiredElement<HTMLElement>(
   "[data-testid='cross-renderer-scenario-result']",
 );
+const rendererReinitCount = getRequiredElement<HTMLOutputElement>(
+  "[data-testid='renderer-reinit-count']",
+);
 const debug = createProbeDebugView(debugParent);
 const consumedInputCommands: ToyDomainCommand[][] = [];
 inputCommandHistory.textContent = JSON.stringify(consumedInputCommands);
@@ -58,30 +61,22 @@ document.addEventListener("visibilitychange", () => {
   }
 });
 
-createPhaserProbe({
-  parent,
-  readState: () => simulation.state,
-  advanceFrame: (frameDeltaMs) => {
-    const simulationStart = performance.now();
-    const frame = simulation.advanceFrame(frameDeltaMs);
-    const simulationDurationMs = performance.now() - simulationStart;
-    ui?.publishDomainState(frame.state);
-    debug.publishFrame(frame);
-    renderDebugState(frame, simulationDurationMs);
-    return frame;
+let rendererReinitializations = 0;
+let phaserProbe = createRendererProbe();
+
+getRequiredElement<HTMLButtonElement>("[data-testid='renderer-reinit']").addEventListener(
+  "click",
+  () => {
+    input?.destroy();
+    input = undefined;
+    phaserProbe.destroy(true);
+    parent.replaceChildren();
+    status.value = "reinitializing";
+    phaserProbe = createRendererProbe();
+    rendererReinitializations += 1;
+    rendererReinitCount.value = String(rendererReinitializations);
   },
-  onReady: (canvas) => {
-    input = createProbeInputController({
-      pointerTarget: canvas,
-      toWorldPoint: (position) =>
-        clientPositionToToyPoint(position, canvas, simulation.state.world),
-      onCommandsConsumed: recordConsumedInputCommands,
-    });
-    status.value = "phaser-probe-ready";
-    ui?.publishDomainState(simulation.state);
-    renderDebugState();
-  },
-});
+);
 
 getRequiredElement<HTMLButtonElement>(
   "[data-testid='run-cross-renderer-scenario']",
@@ -197,6 +192,34 @@ async function renderPersistenceEnvelope(): Promise<void> {
   persistenceEnvelope.textContent = JSON.stringify(await persistence.inspect());
 }
 
+function createRendererProbe(): ReturnType<typeof createPhaserProbe> {
+  return createPhaserProbe({
+    parent,
+    readState: () => simulation.state,
+    advanceFrame: (frameDeltaMs) => {
+      const simulationStart = performance.now();
+      const frame = simulation.advanceFrame(frameDeltaMs);
+      const simulationDurationMs = performance.now() - simulationStart;
+      ui?.publishDomainState(frame.state);
+      debug.publishFrame(frame);
+      renderDebugState(frame, simulationDurationMs);
+      return frame;
+    },
+    onReady: (canvas) => {
+      input = createProbeInputController({
+        pointerTarget: canvas,
+        toWorldPoint: (position) =>
+          clientPositionToToyPoint(position, canvas, simulation.state.world),
+        onCommandsConsumed: recordConsumedInputCommands,
+      });
+      status.value = "phaser-probe-ready";
+      inputContexts.textContent = JSON.stringify(input.activeContexts());
+      ui?.publishDomainState(simulation.state);
+      renderDebugState();
+    },
+  });
+}
+
 function createSimulation(initialState?: ToyDomainState) {
   return createProbeSimulation({
     ...(initialState ? { initialState } : {}),
@@ -243,6 +266,16 @@ function renderDebugState(frame?: ProbeSimulationFrame, simulationDurationMs?: n
       : null,
   );
 }
+
+window.addEventListener(
+  "pagehide",
+  () => {
+    input?.destroy();
+    ui?.destroy();
+    phaserProbe.destroy(true);
+  },
+  { once: true },
+);
 
 function getRequiredElement<TElement extends Element>(selector: string): TElement {
   const element = document.querySelector<TElement>(selector);

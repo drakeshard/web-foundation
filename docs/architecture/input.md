@@ -167,3 +167,12 @@ Cross-renderer Chromium coverage verifies equivalent keyboard mapping, identical
 context ownership, renderer-local pointer conversion converging on the same `set-marker` command and
 domain result, and blur/reset invalidation preventing stale held movement in both probes. No renderer
 objects or transient presentation coordinates enter Foundation input or ToyDomain contracts.
+
+
+## S07-05 lifecycle pressure evidence
+
+Both live renderer probes reuse BrowserInputLifecycle for blur/visibility invalidation. Browser
+coverage verifies that a held gameplay key is cleared by a hidden visibility transition and does not
+resume as stale movement after visibility returns. Renderer reinitialization detaches the old
+browser adapters and creates fresh adapters against the replacement canvas without changing the
+ToyDomain contract or moving renderer types into domain state.

@@ -47,6 +47,9 @@ const elevationDemoButton = getRequiredElement<HTMLButtonElement>(
 const rebuildCount = getRequiredElement<HTMLOutputElement>(
   "[data-testid='playcanvas-rebuild-count']",
 );
+const rendererReinitCount = getRequiredElement<HTMLOutputElement>(
+  "[data-testid='playcanvas-renderer-reinit-count']",
+);
 const cameraState = getRequiredElement<HTMLElement>("[data-testid='playcanvas-camera-state']");
 const presentationSync = getRequiredElement<HTMLElement>(
   "[data-testid='playcanvas-presentation-sync']",
@@ -88,26 +91,8 @@ const debug = createProbeDebugView(debugParent);
 
 let rebuilds = 0;
 
-const probe = createPlayCanvasProbe({
-  parent,
-  readState: () => authoritativeState,
-  onCameraChanged: (state) => {
-    cameraState.textContent = JSON.stringify(state);
-  },
-  onPresentationSynchronized: (result) => {
-    presentationSync.textContent = JSON.stringify(result);
-  },
-});
-
-input = createProbeInputController({
-  pointerTarget: probe.canvas,
-  toWorldPoint: (position) => {
-    const result = probe.resolvePointerInteraction(position, authoritativeState);
-    pointerResult.textContent = JSON.stringify(result);
-    return result.kind === "intersection" ? result.point : null;
-  },
-  onCommandsConsumed: recordConsumedInputCommands,
-});
+let rendererReinitializations = 0;
+let probe = createRendererProbe();
 
 ui = createProbeUiBridge({
   parent: uiParent,
@@ -115,15 +100,26 @@ ui = createProbeUiBridge({
   onIntent: handleUiIntent,
 });
 
-inputContexts.textContent = JSON.stringify(input.activeContexts());
-status.value = "playcanvas-probe-ready";
-
 syncButton.addEventListener("click", () => {
   probe.syncPresentation(authoritativeState);
 });
 
 rebuildButton.addEventListener("click", () => {
   rebuildPresentation();
+});
+
+getRequiredElement<HTMLButtonElement>(
+  "[data-testid='playcanvas-renderer-reinit']",
+).addEventListener("click", () => {
+  input?.destroy();
+  probe.destroy();
+  status.value = "reinitializing";
+  probe = createRendererProbe();
+  rendererReinitializations += 1;
+  rendererReinitCount.value = String(rendererReinitializations);
+  renderDomainState();
+  renderElevationDemoState();
+  ui?.publishDomainState(authoritativeState);
 });
 
 getRequiredElement<HTMLButtonElement>("[data-testid='playcanvas-input-tick']").addEventListener(
@@ -288,6 +284,33 @@ function recordConsumedInputCommands(commands: readonly ToyDomainCommand[]): voi
 
 async function renderPersistenceEnvelope(): Promise<void> {
   persistenceEnvelope.textContent = JSON.stringify(await persistence.inspect());
+}
+
+function createRendererProbe(): ReturnType<typeof createPlayCanvasProbe> {
+  const created = createPlayCanvasProbe({
+    parent,
+    readState: () => authoritativeState,
+    onCameraChanged: (state) => {
+      cameraState.textContent = JSON.stringify(state);
+    },
+    onPresentationSynchronized: (result) => {
+      presentationSync.textContent = JSON.stringify(result);
+    },
+  });
+
+  input = createProbeInputController({
+    pointerTarget: created.canvas,
+    toWorldPoint: (position) => {
+      const result = created.resolvePointerInteraction(position, authoritativeState);
+      pointerResult.textContent = JSON.stringify(result);
+      return result.kind === "intersection" ? result.point : null;
+    },
+    onCommandsConsumed: recordConsumedInputCommands,
+  });
+
+  inputContexts.textContent = JSON.stringify(input.activeContexts());
+  status.value = "playcanvas-probe-ready";
+  return created;
 }
 
 function rebuildPresentation(): void {
