@@ -16,7 +16,7 @@ import type { ToyDomainCommand, ToyPoint } from "../domain/index.js";
 type ProbeInputCommandId = "probe.pointer-position";
 
 interface ProbePointerPayload {
-  readonly position: ScreenPosition;
+  readonly position: ToyPoint;
 }
 
 const GAMEPLAY_CONTEXT = "gameplay";
@@ -94,10 +94,13 @@ export function createProbeInputController(
     handoff.ingest(event);
 
     if (event.kind === "pointer-button" && event.button === 0 && event.phase === "pressed") {
+      const position = options.toWorldPoint(event.position);
+      if (!position) return;
+
       handoff.enqueueCommand({
         id: "probe.pointer-position",
         sequence: event.sequence,
-        payload: { position: event.position },
+        payload: { position },
       });
     }
   };
@@ -160,12 +163,9 @@ export function createProbeInputController(
         );
         if (!delivered) continue;
 
-        const position = options.toWorldPoint(delivered.payload.position);
-        if (!position) continue;
-
         commands.push({
           type: "set-marker",
-          position,
+          position: delivered.payload.position,
         });
       }
 
