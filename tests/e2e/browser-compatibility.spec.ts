@@ -41,9 +41,7 @@ test("IndexedDB save envelope survives reload", async ({ page }) => {
   await page.reload();
 
   await page.getByTestId("save-service-save").click();
-  await expect
-    .poll(async () => readJson(page, "save-service-result"))
-    .toEqual({ ok: true });
+  await expect.poll(async () => readJson(page, "save-service-result")).toEqual({ ok: true });
 
   await page.reload();
   await page.getByTestId("save-service-load").click();
