@@ -50,6 +50,9 @@ jobs:
       - name: Build
         run: pnpm build
 
+      - name: Public API and export-surface baseline
+        run: pnpm test:public-api
+
       - name: Public package consumer validation
         run: pnpm test:consumer
 

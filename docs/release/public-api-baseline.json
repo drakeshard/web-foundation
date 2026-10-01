@@ -1,0 +1,145 @@
+{
+  "schemaVersion": 1,
+  "packages": {
+    "foundation": {
+      "name": "@drakeshard/foundation",
+      "exports": {
+        "./input": {
+          "types": "./dist/input/index.d.ts",
+          "import": "./dist/input/index.js"
+        },
+        "./input/browser": {
+          "types": "./dist/input/browser/index.d.ts",
+          "import": "./dist/input/browser/index.js"
+        },
+        "./random": {
+          "types": "./dist/random/index.d.ts",
+          "import": "./dist/random/index.js"
+        },
+        "./time": {
+          "types": "./dist/time/index.d.ts",
+          "import": "./dist/time/index.js"
+        },
+        "./storage": {
+          "types": "./dist/storage/index.d.ts",
+          "import": "./dist/storage/index.js"
+        },
+        "./storage/browser": {
+          "types": "./dist/storage/browser/index.d.ts",
+          "import": "./dist/storage/browser/index.js"
+        }
+      },
+      "symbols": {
+        "./input": [
+          "ActionBinding",
+          "ActionBindingResolver",
+          "ActiveActionSource",
+          "ActiveActionSourceIdentity",
+          "ActiveKeyActionSource",
+          "ActivePointerButtonActionSource",
+          "ContextActionOwner",
+          "ContextualActionTransition",
+          "ContextualLogicalActionState",
+          "DigitalInputPhase",
+          "DigitalPhysicalBinding",
+          "InputCommand",
+          "InputContextActionRule",
+          "InputContextDefinition",
+          "InputContextId",
+          "InputContextRouter",
+          "InputSequence",
+          "InputSequenceSource",
+          "KeyPhysicalBinding",
+          "LogicalActionId",
+          "LogicalActionState",
+          "LogicalActionTransition",
+          "MonotonicInputSequence",
+          "PhysicalInputEvent",
+          "PhysicalInputReset",
+          "PhysicalInputResetReason",
+          "PhysicalInputResetScope",
+          "PhysicalInputSink",
+          "PhysicalKeyCode",
+          "PhysicalKeyInput",
+          "PhysicalPointerButtonInput",
+          "PhysicalPointerCancelInput",
+          "PhysicalPointerPositionInput",
+          "PhysicalWheelInput",
+          "PointerButton",
+          "PointerButtonPhysicalBinding",
+          "PointerId",
+          "PointerType",
+          "ScreenPosition",
+          "TickInputHandoff",
+          "TickInputHandoffOptions",
+          "TickInputSnapshot",
+          "WheelUnit"
+        ],
+        "./input/browser": [
+          "BrowserInputEventTarget",
+          "BrowserInputLifecycle",
+          "BrowserInputLifecycleOptions",
+          "BrowserInputResetListener",
+          "BrowserVisibilityTarget",
+          "KeyboardBrowserAdapter",
+          "KeyboardBrowserAdapterOptions",
+          "PointerBrowserAdapter",
+          "PointerBrowserAdapterOptions"
+        ],
+        "./random": ["DeterministicRng", "DeterministicRngState", "RNG_ALGORITHM_ID"],
+        "./time": ["FixedStepAdvanceResult", "FixedStepConfig", "FixedStepDriver"],
+        "./storage": [
+          "ContentVersion",
+          "EnvelopeSaveService",
+          "EnvelopeSaveServiceOptions",
+          "GameId",
+          "GameVersion",
+          "JsonPrimitive",
+          "JsonValue",
+          "PersistenceDiagnostic",
+          "PersistenceFailure",
+          "PersistenceFailureKind",
+          "PersistenceOperation",
+          "PersistenceResult",
+          "SaveEnvelope",
+          "SaveEnvelopeMetadata",
+          "SaveFormatVersion",
+          "SaveMigration",
+          "SaveMigrationRegistry",
+          "SaveMigrationResult",
+          "SaveService",
+          "SaveSlotId",
+          "SaveSlotSummary",
+          "SaveStorage",
+          "SaveTimestamp",
+          "SettingsKey",
+          "SettingsNamespace",
+          "SettingsStorage",
+          "createSaveEnvelope",
+          "deserializeSaveEnvelope",
+          "serializeSaveEnvelope",
+          "validateSaveEnvelope"
+        ],
+        "./storage/browser": [
+          "BrowserKeyValueStorage",
+          "IndexedDbSaveStorage",
+          "IndexedDbSaveStorageOptions",
+          "LocalStorageSettingsStorage",
+          "LocalStorageSettingsStorageOptions"
+        ]
+      }
+    },
+    "testing": {
+      "name": "@drakeshard/testing",
+      "exports": {
+        "./clock": {
+          "types": "./dist/clock/index.d.ts",
+          "import": "./dist/clock/index.js"
+        }
+      },
+      "symbols": {
+        "./clock": ["ManualClock"]
+      }
+    }
+  }
+}
