@@ -67,9 +67,14 @@ The accepted v0.1 browser input contract is defined in [Browser Input Boundary C
 
 ## Renderer integration
 
-Phaser and PlayCanvas integrations remain application-local in v0.1. Shared renderer adapters are considered only after repeated integration code demonstrates stable common semantics.
+Phaser and PlayCanvas integrations remain application-local in v0.1. The completed two-renderer
+comparison found stable authority boundaries but no narrow shared renderer lifecycle contract that
+would reduce maintenance. No renderer adapter package is admitted.
 
-Sprint 05 introduces one application-local renderer-probe toy domain shared by both renderer probes. It remains outside Foundation and is documented in [Renderer-Probe Toy Domain](./renderer-probe-domain.md).
+The application-local renderer-probe toy domain remains outside Foundation and is documented in
+[Renderer-Probe Toy Domain](./renderer-probe-domain.md). The cross-renderer evidence and extraction
+decisions are recorded in
+[Phaser and PlayCanvas Integration Semantics Comparison](./renderer-integration-comparison.md).
 
 ## Extraction criteria
 
