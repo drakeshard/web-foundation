@@ -27,6 +27,9 @@ test("records PlayCanvas toy-scenario Chromium performance observations", async 
     }
 
     interface PresentationSync {
+      readonly created: number;
+      readonly updated: number;
+      readonly destroyed: number;
       readonly viewIds: readonly string[];
     }
 
@@ -38,12 +41,14 @@ test("records PlayCanvas toy-scenario Chromium performance observations", async 
       document.querySelector<HTMLElement>("[data-testid='playcanvas-domain-state']")?.textContent ??
         "null",
     ) as DomainState | null;
-    const presentationSync = JSON.parse(
-      document.querySelector<HTMLElement>("[data-testid='playcanvas-presentation-sync']")
-        ?.textContent ?? "null",
-    ) as PresentationSync | null;
+    const presentationSyncElement = document.querySelector<HTMLElement>(
+      "[data-testid='playcanvas-presentation-sync']",
+    );
+    const presentationSync = JSON.parse(presentationSyncElement?.textContent ?? "null") as
+      | PresentationSync
+      | null;
 
-    if (!canvas || !advance || !domainState || !presentationSync) {
+    if (!canvas || !advance || !domainState || !presentationSyncElement || !presentationSync) {
       throw new Error("PlayCanvas performance probe state is unavailable");
     }
 
@@ -53,11 +58,17 @@ test("records PlayCanvas toy-scenario Chromium performance observations", async 
     }
 
     const interactionDurations: number[] = [];
+    let presentationCreated = 0;
+    let presentationDestroyed = 0;
 
     for (let index = 0; index < 32; index += 1) {
       const startedAt = performance.now();
       advance.click();
       interactionDurations.push(performance.now() - startedAt);
+
+      const sync = JSON.parse(presentationSyncElement.textContent ?? "null") as PresentationSync;
+      presentationCreated += sync.created;
+      presentationDestroyed += sync.destroyed;
     }
 
     const frameDeltas: number[] = [];
@@ -78,13 +89,17 @@ test("records PlayCanvas toy-scenario Chromium performance observations", async 
 
     return {
       scenario:
-        "8x8 toy terrain; tactical orthographic PlayCanvas scene; 32 elevation input-domain-presentation interactions; 120 requestAnimationFrame samples",
+        "8x8 toy terrain; 64 terrain cells + two projected views; tactical orthographic PlayCanvas scene; 32 elevation input-domain-presentation interactions; 120 requestAnimationFrame samples",
       sampleCount: frameDeltas.length,
       interactionCount: interactionDurations.length,
       scene: {
         terrainCellCount,
         presentationViewCount,
         applicationEntityCount: terrainCellCount + presentationViewCount + 4,
+      },
+      presentationChurn: {
+        created: presentationCreated,
+        destroyed: presentationDestroyed,
       },
       userAgent: navigator.userAgent,
       viewport: { width: innerWidth, height: innerHeight },
@@ -126,6 +141,7 @@ test("records PlayCanvas toy-scenario Chromium performance observations", async 
     presentationViewCount: 2,
     applicationEntityCount: 70,
   });
+  expect(observation.presentationChurn).toEqual({ created: 0, destroyed: 0 });
   expect(observation.canvas).toEqual({ width: 640, height: 480 });
   expect(observation.webgl.version).toContain("WebGL 2");
   expect(observation.frameDeltaMs.mean).toBeGreaterThanOrEqual(0);
