@@ -57,16 +57,17 @@ The raw storage backend remains unaware of those responsibilities.
 
 ## Version boundaries
 
-The persistence contract distinguishes four version concepts:
+The persistence contract exposes three version aliases that participate in save metadata or migration:
 
 - `SaveFormatVersion` — numeric compatibility version for the serialized save structure and migration chain;
 - `GameVersion` — game/application release identifier;
-- `ContentVersion` — game content/data compatibility identifier;
-- `FoundationVersion` — Foundation package/release identifier.
+- `ContentVersion` — game content/data compatibility identifier.
+
+The Foundation package/release version is a separate release-process concept, not a persistence runtime type. S07-08 removed the unused `FoundationVersion` alias before v0.1 because no consumer or persistence contract required it.
 
 `SaveFormatVersion` is the only version that determines the Foundation migration path. A future/current game or content version may inform game-owned compatibility policy but must not be silently treated as a save-format migration step.
 
-Foundation version is not a replacement for save-format, game, or content version metadata.
+Foundation package version is not a replacement for save-format, game, or content version metadata.
 
 ## Structured outcomes
 
