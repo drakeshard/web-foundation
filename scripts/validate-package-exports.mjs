@@ -5,6 +5,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const publicationVersion = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8")).version;
 const packages = {
   foundation: {
     name: "@drakeshard/foundation",
@@ -24,7 +25,7 @@ for (const [key, spec] of Object.entries(packages)) {
   const manifest = JSON.parse(fs.readFileSync(path.join(spec.dir, "package.json"), "utf8"));
 
   assert(manifest.name === spec.name, `${key}: unexpected package name`);
-  assert(manifest.version === "0.1.1", `${key}: expected v0.1.1 publication-candidate version`);
+  assert(manifest.version === publicationVersion, `${key}: expected publication-candidate version ${publicationVersion}`);
   assert(manifest.private !== true, `${key}: public package must not be marked private`);
   assert(manifest.license === "Apache-2.0", `${key}: expected Apache-2.0 license metadata`);
   assert(
