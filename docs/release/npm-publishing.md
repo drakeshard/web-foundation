@@ -34,7 +34,10 @@ The workflow runs only when a GitHub Release is published and:
 6. runs the non-browser publication-quality gates;
 7. packs the reviewed package directories;
 8. publishes the exact packed tarballs to npm;
-9. skips a package/version that already exists rather than attempting to overwrite an immutable npm version.
+9. skips a package/version that already exists rather than attempting to overwrite an immutable npm version;
+10. verifies registry propagation and clean external consumption;
+11. verifies the exact packed tarballs against npm registry integrity metadata and requires valid npm provenance attestations for both packages;
+12. attaches `release-evidence.json`, `release-evidence.md`, and raw `npm-audit-signatures.json` to the GitHub Release.
 
 There is no branch-triggered or generic manual publish path in the workflow. Normal CI also runs the same validator without a release tag so package-version drift is rejected before release creation.
 
@@ -55,7 +58,9 @@ npm trusted publishing requires a supported npm CLI/Node runtime and exchanges t
 
 ## Provenance
 
-Trusted publishing automatically supplies npm provenance for future publications from this public GitHub repository. The initial manually published `0.1.1` packages remain valid registry releases but are the bootstrap publication before trusted-publisher automation was configured.
+Trusted publishing supplies npm provenance for future publications from this public GitHub repository. The initial manually published `0.1.1` packages remain valid registry releases but are the bootstrap publication before trusted-publisher automation was configured.
+
+Sprint 10 adds durable verification rather than relying on console output. The first real release published through the automated workflow must produce the release evidence defined in `docs/release/release-evidence.md`; no dummy release is created solely to manufacture that record.
 
 ## Versioning
 

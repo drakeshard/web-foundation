@@ -5,7 +5,7 @@ on:
     types: [published]
 
 permissions:
-  contents: read
+  contents: write
   id-token: write
 
 concurrency:
@@ -64,6 +64,7 @@ jobs:
           ls -la release-artifacts
 
       - name: Publish Foundation
+        id: publish-foundation
         shell: bash
         run: |
           set -euo pipefail
@@ -72,11 +73,14 @@ jobs:
 
           if npm view "@drakeshard/foundation@${VERSION}" version >/dev/null 2>&1; then
             echo "@drakeshard/foundation@${VERSION} already exists; skipping."
+            echo "disposition=already-present" >> "$GITHUB_OUTPUT"
           else
             npm publish "release-artifacts/drakeshard-foundation-${VERSION}.tgz" --access public
+            echo "disposition=published" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Publish Testing
+        id: publish-testing
         shell: bash
         run: |
           set -euo pipefail
@@ -85,8 +89,10 @@ jobs:
 
           if npm view "@drakeshard/testing@${VERSION}" version >/dev/null 2>&1; then
             echo "@drakeshard/testing@${VERSION} already exists; skipping."
+            echo "disposition=already-present" >> "$GITHUB_OUTPUT"
           else
             npm publish "release-artifacts/drakeshard-testing-${VERSION}.tgz" --access public
+            echo "disposition=published" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Verify npm registry consumption
@@ -96,3 +102,29 @@ jobs:
           VERSION="${{ github.event.release.tag_name }}"
           VERSION="${VERSION#v}"
           node scripts/validate-npm-registry.mjs "$VERSION"
+
+      - name: Create durable release evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          VERSION="${{ github.event.release.tag_name }}"
+          VERSION="${VERSION#v}"
+          node scripts/create-release-evidence.mjs \
+            --version "${VERSION}" \
+            --tag "${{ github.event.release.tag_name }}" \
+            --artifacts-dir release-artifacts \
+            --output-dir release-evidence \
+            --foundation-publish-status "${{ steps.publish-foundation.outputs.disposition }}" \
+            --testing-publish-status "${{ steps.publish-testing.outputs.disposition }}"
+
+      - name: Upload release evidence
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh release upload "${{ github.event.release.tag_name }}" \
+            release-evidence/release-evidence.json \
+            release-evidence/release-evidence.md \
+            release-evidence/npm-audit-signatures.json \
+            --clobber
