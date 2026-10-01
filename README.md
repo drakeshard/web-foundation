@@ -36,6 +36,7 @@ See:
 - `docs/release/distribution.md`
 - `docs/release/rc-validation.md`
 - `docs/release/first-game-integration.md`
+- `docs/release/first-game-readiness.md`
 - `docs/release/v0.1.md`
 - `CHANGELOG.md`
 - `docs/architecture/overview.md`
