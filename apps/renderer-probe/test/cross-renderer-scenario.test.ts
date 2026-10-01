@@ -2,10 +2,10 @@ import { describe, expect, it } from "vitest";
 import { projectToyStateToPlayCanvas } from "../src/presentation/playcanvas-probe.ts";
 import { projectToyPresentation } from "../src/presentation/toy-presentation.ts";
 import {
-  compareCrossRendererScenarioResults,
   CROSS_RENDERER_FRAME_SCHEDULES,
   CROSS_RENDERER_SCENARIO,
   type CrossRendererScenarioResult,
+  compareCrossRendererScenarioResults,
   runCrossRendererScenario,
 } from "../src/scenario/cross-renderer-scenario.ts";
 
