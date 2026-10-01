@@ -38,7 +38,10 @@ export function validateAuditResult(result, expectedPackages = []) {
   assert(Array.isArray(result.invalid), "npm audit signatures result is missing invalid[]");
   assert(Array.isArray(result.missing), "npm audit signatures result is missing missing[]");
   assert(Array.isArray(result.verified), "npm audit signatures result is missing verified[]");
-  assert(result.invalid.length === 0, "npm audit signatures reported invalid signatures/attestations");
+  assert(
+    result.invalid.length === 0,
+    "npm audit signatures reported invalid signatures/attestations",
+  );
 
   for (const expected of expectedPackages) {
     const missing = result.missing.find(
@@ -49,7 +52,10 @@ export function validateAuditResult(result, expectedPackages = []) {
     const verified = result.verified.find(
       (entry) => entry?.name === expected.name && entry?.version === expected.version,
     );
-    assert(verified, `${expected.name}@${expected.version}: verified provenance attestation missing`);
+    assert(
+      verified,
+      `${expected.name}@${expected.version}: verified provenance attestation missing`,
+    );
     assert(
       verified.attestations && typeof verified.attestations === "object",
       `${expected.name}@${expected.version}: verified attestation metadata missing`,
