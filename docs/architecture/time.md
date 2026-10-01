@@ -185,3 +185,17 @@ The following are deliberately not part of S01-01:
 - production performance budgets.
 
 Those require a current consumer or later roadmap issue.
+
+
+## S07-05 lifecycle pressure evidence
+
+The Phaser renderer probe continues to own browser visibility handling at application composition
+level. Hidden state pauses the probe simulation; visible state resumes by resetting the fixed-step
+baseline and discarding the first post-resume renderer delta. The existing focused simulation test
+locks this behavior so a background gap cannot be replayed as catch-up work.
+
+Cross-renderer browser coverage additionally drives the real visibility-reset path through the shared
+BrowserInputLifecycle in both probes. Held keyboard state is invalidated before resumed/tick-aligned
+domain delivery, while renderer teardown/reinitialization preserves renderer-neutral authoritative
+ToyDomain state. Foundation still does not own requestAnimationFrame or application visibility
+subscription.
