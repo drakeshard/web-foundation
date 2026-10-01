@@ -13,11 +13,13 @@ const packageSpecs = {
 };
 
 export function comparePublicApiSnapshots(expected, actual) {
-  const expectedText = stableStringify(expected);
-  const actualText = stableStringify(actual);
-  if (expectedText === actualText) return [];
-
   const differences = [];
+
+  if (expected?.schemaVersion !== actual?.schemaVersion) {
+    differences.push(
+      `schema version changed from ${expected?.schemaVersion} to ${actual?.schemaVersion}`,
+    );
+  }
   const packageKeys = new Set([
     ...Object.keys(expected?.packages ?? {}),
     ...Object.keys(actual?.packages ?? {}),
@@ -100,7 +102,7 @@ function main() {
   const actual = createPublicApiSnapshot();
 
   if (write) {
-    fs.writeFileSync(baselinePath, `${stableStringify(actual)}\n`);
+    fs.writeFileSync(baselinePath, `${JSON.stringify(actual, null, 2)}\n`);
     console.log(`Public API baseline updated: ${path.relative(root, baselinePath)}`);
     return;
   }
@@ -190,20 +192,6 @@ function formatDiagnostics(diagnostics) {
 
 function readJson(file) {
   return JSON.parse(fs.readFileSync(file, "utf8"));
-}
-
-function stableStringify(value) {
-  return JSON.stringify(sortRecursively(value), null, 2);
-}
-
-function sortRecursively(value) {
-  if (Array.isArray(value)) return value.map(sortRecursively);
-  if (!value || typeof value !== "object") return value;
-  return Object.fromEntries(
-    Object.entries(value)
-      .sort(([left], [right]) => left.localeCompare(right))
-      .map(([key, child]) => [key, sortRecursively(child)]),
-  );
 }
 
 function assert(condition, message) {
