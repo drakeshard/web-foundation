@@ -2,7 +2,9 @@
 
 ## Status
 
-S08-05 / #89 approved v0.1 distribution decision.
+S08-05 / #89 records the original v0.1 GitHub Release tarball decision.
+
+Sprint 09 supersedes the earlier "no npm publication required" completion assumption: the project owner now requires public npm registry availability before Web Foundation is considered fully complete. Until S09-04 succeeds, the existing `v0.1.0` GitHub Release tarballs remain the working external consumer path. The npm publication candidate is `0.1.1` because publication/licensing metadata changes the package artifacts and the existing `v0.1.0` release must remain immutable.
 
 This decision selects the least-complex mechanism that can serve the first production consumer without assuming a public package registry or coupling consumption to the Foundation repository workspace.
 
@@ -17,7 +19,7 @@ The release will contain one packed artifact for each approved shared package:
 
 The canonical compatibility point remains the repository release tag. Consumers install the package tarballs from that tagged GitHub Release rather than importing repository source paths.
 
-The v0.1 manifests remain `private: true`. No npm/GitHub Packages registry publication is approved by this decision.
+That statement describes the original v0.1.0 release decision only. Sprint 09 explicitly approves public npm publication of the two existing shared packages after namespace, licensing, package-content, and registry-consumer gates pass.
 
 ## Why this mechanism
 
@@ -177,11 +179,13 @@ If organizational policy later requires signed/attested packages, registry prove
 
 ## Release automation decision
 
-No new publishing workflow is required for v0.1.
+For the original v0.1.0 GitHub Release, no dedicated publishing workflow was required.
+
+Sprint 09 changes the forward release policy: after the initial npm package creation, future npm releases must use a controlled GitHub Actions trusted-publishing/OIDC path with provenance and least-privilege release permissions.
 
 S08-07 will validate repeatable pack/consumer commands. S08-08 may execute the small number of release packing/upload steps manually or through existing GitHub release tooling. A dedicated automated publication pipeline should be introduced only if repeated releases or additional consumers make the operational benefit concrete.
 
-Therefore S08-05 creates no new release-automation follow-up issue.
+The earlier S08-05 no-follow-up conclusion is superseded by Sprint 09 issues #169–#175.
 
 ## Dependency-policy impact
 
