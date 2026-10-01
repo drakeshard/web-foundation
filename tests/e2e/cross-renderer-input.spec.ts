@@ -7,7 +7,9 @@ interface ToyDomainCommand {
   readonly position?: { readonly x: number; readonly y: number };
 }
 
-test("keyboard mapping and input-context ownership match across renderer probes", async ({ page }) => {
+test("keyboard mapping and input-context ownership match across renderer probes", async ({
+  page,
+}) => {
   await openPhaser(page);
 
   await expect(page.getByTestId("input-contexts")).toHaveText('["gameplay"]');
@@ -26,10 +28,7 @@ test("keyboard mapping and input-context ownership match across renderer probes"
   await page.getByTestId("playcanvas-input-tick").click();
   await dispatchKey(page, "keyup", "KeyD");
 
-  const playCanvasCommand = await firstRecordedCommand(
-    page,
-    "playcanvas-input-command-history",
-  );
+  const playCanvasCommand = await firstRecordedCommand(page, "playcanvas-input-command-history");
   expect(playCanvasCommand).toEqual(phaserCommand);
 
   await page.getByTestId("activate-modal").click();
@@ -49,19 +48,14 @@ test("renderer-local pointer conversion converges on the same ToyDomain command 
   await playCanvas.click({ position: { x: 420, y: 300 } });
   await page.getByTestId("playcanvas-input-tick").click();
 
-  const playCanvasCommand = await firstRecordedCommand(
-    page,
-    "playcanvas-input-command-history",
-  );
+  const playCanvasCommand = await firstRecordedCommand(page, "playcanvas-input-command-history");
   expect(playCanvasCommand?.type).toBe("set-marker");
   expect(playCanvasCommand?.position).toBeDefined();
 
   const target = playCanvasCommand?.position;
   if (!target) throw new Error("Expected PlayCanvas pointer conversion to produce a world point");
 
-  await expect
-    .poll(async () => readMarker(page, "playcanvas-domain-state"))
-    .toEqual(target);
+  await expect.poll(async () => readMarker(page, "playcanvas-domain-state")).toEqual(target);
 
   await openPhaser(page);
   const phaser = page.locator("#renderer-probe canvas");
@@ -120,11 +114,7 @@ async function openPlayCanvas(page: Page): Promise<void> {
   await expect(page.getByTestId("playcanvas-probe-status")).toHaveText("playcanvas-probe-ready");
 }
 
-async function dispatchKey(
-  page: Page,
-  phase: "keydown" | "keyup",
-  code: string,
-): Promise<void> {
+async function dispatchKey(page: Page, phase: "keydown" | "keyup", code: string): Promise<void> {
   await page.evaluate(
     ({ eventPhase, eventCode }) => {
       window.dispatchEvent(
@@ -156,9 +146,9 @@ async function readCommandHistory(
   page: Page,
   testId: string,
 ): Promise<readonly (readonly ToyDomainCommand[])[]> {
-  return JSON.parse((await page.getByTestId(testId).textContent()) ?? "[]") as readonly (
-    readonly ToyDomainCommand[]
-  )[];
+  return JSON.parse(
+    (await page.getByTestId(testId).textContent()) ?? "[]",
+  ) as readonly (readonly ToyDomainCommand[])[];
 }
 
 async function readMarker(
