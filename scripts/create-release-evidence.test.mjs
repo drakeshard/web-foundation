@@ -11,10 +11,7 @@ import {
 test("computes stable artifact hashes", () => {
   const hashes = computeArtifactHashes(Buffer.from("hello"));
   assert.equal(hashes.sha1, "aaf4c61ddcc5e8a2dabede0f3b482cd9aea9434d");
-  assert.equal(
-    hashes.sha256,
-    "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824",
-  );
+  assert.equal(hashes.sha256, "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824");
   assert.match(hashes.integrity, /^sha512-[A-Za-z0-9+/]+=*$/);
 });
 
@@ -123,10 +120,9 @@ test("rejects package evidence without provenance metadata", () => {
 test("requires verified provenance for each expected release package", () => {
   assert.throws(
     () =>
-      validateAuditResult(
-        { invalid: [], missing: [], verified: [] },
-        [{ name: "@drakeshard/foundation", version: "1.2.3" }],
-      ),
+      validateAuditResult({ invalid: [], missing: [], verified: [] }, [
+        { name: "@drakeshard/foundation", version: "1.2.3" },
+      ]),
     /verified provenance attestation missing/,
   );
 });
