@@ -131,12 +131,8 @@ function readExportedSymbols(declarationPath) {
   const program = ts.createProgram({
     rootNames: [declarationPath],
     options: {
-      allowJs: false,
-      declaration: true,
-      module: ts.ModuleKind.ESNext,
-      moduleResolution: ts.ModuleResolutionKind.Bundler,
+      noEmit: true,
       skipLibCheck: false,
-      target: ts.ScriptTarget.ES2022,
     },
   });
   const diagnostics = ts.getPreEmitDiagnostics(program);
