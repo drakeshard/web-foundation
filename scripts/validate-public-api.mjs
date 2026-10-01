@@ -173,6 +173,7 @@ export function readDeclarationExports(sourceText, label = "declaration") {
 
   return [...symbols].sort();
 }
+
 function collectObjectDiff(differences, label, expected, actual) {
   if (JSON.stringify(expected) !== JSON.stringify(actual)) {
     differences.push(
@@ -188,14 +189,6 @@ function collectArrayDiff(differences, label, expected, actual) {
   const added = actual.filter((item) => !expectedSet.has(item));
   if (removed.length > 0) differences.push(`${label} removed: ${removed.join(", ")}`);
   if (added.length > 0) differences.push(`${label} added: ${added.join(", ")}`);
-}
-
-function formatDiagnostics(diagnostics) {
-  return ts.formatDiagnosticsWithColorAndContext(diagnostics, {
-    getCanonicalFileName: (fileName) => fileName,
-    getCurrentDirectory: () => root,
-    getNewLine: () => "\n",
-  });
 }
 
 function readJson(file) {
