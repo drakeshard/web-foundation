@@ -2,6 +2,20 @@
 
 All notable Web Foundation release changes are recorded here.
 
+## 0.1.1 — npm publication preparation
+
+### Changed
+
+- Adopted the Apache License 2.0 for the public repository and both distributable shared packages.
+- Prepared `@drakeshard/foundation` and `@drakeshard/testing` for public npm publication with package descriptions, repository/homepage/bugs metadata, keywords, package READMEs, and `publishConfig.access = "public"`.
+- Removed package-level `private: true` from the two distributable packages while keeping the workspace root private.
+- Extended package and packed-artifact validation to enforce npm publication metadata, packaged README/LICENSE files, and absence of leaked workspace protocol references.
+
+### Compatibility
+
+This patch changes distribution/package metadata only. The v0.1 runtime API, export surface, deterministic RNG identity `xoshiro128starstar-v1`, save compatibility rules, and browser/runtime behavior are unchanged.
+
+
 ## 0.1.0 — release candidate
 
 ### Added

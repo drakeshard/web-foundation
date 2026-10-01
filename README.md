@@ -46,4 +46,9 @@ See:
 
 ## Current phase
 
-Phase 4 — First Production Game is active. Web Foundation v0.1.0 is released and validated for cross-repository consumption. Planned pre-v0.1 construction is complete; future Foundation work is driven by production integration defects, compatibility gaps, or shared-infrastructure requirements that pass the project admission rule.
+Sprint 09 — npm Publication and Release Automation is active as the owner-defined final distribution/completion gate. The original `v0.1.0` GitHub Release remains valid release history; the current `0.1.1` publication candidate adds Apache-2.0 licensing and npm package metadata without changing the reviewed runtime API. After npm publication is complete, Foundation returns to production-evidence-driven evolution.
+
+
+## License
+
+Apache License 2.0. See `LICENSE`.

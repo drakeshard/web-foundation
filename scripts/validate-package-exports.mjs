@@ -24,11 +24,37 @@ for (const [key, spec] of Object.entries(packages)) {
   const manifest = JSON.parse(fs.readFileSync(path.join(spec.dir, "package.json"), "utf8"));
 
   assert(manifest.name === spec.name, `${key}: unexpected package name`);
-  assert(manifest.version === "0.1.0", `${key}: expected v0.1.0 release-candidate version`);
+  assert(manifest.version === "0.1.1", `${key}: expected v0.1.1 publication-candidate version`);
+  assert(manifest.private !== true, `${key}: public package must not be marked private`);
+  assert(manifest.license === "Apache-2.0", `${key}: expected Apache-2.0 license metadata`);
   assert(
-    manifest.private === true,
-    `${key}: package must remain private until S08-05 decides distribution`,
+    manifest.publishConfig?.access === "public",
+    `${key}: scoped npm package must publish with public access`,
   );
+  assert(
+    manifest.repository?.type === "git" &&
+      manifest.repository?.url === "git+https://github.com/drakeshard/web-foundation.git" &&
+      manifest.repository?.directory === `packages/${key}`,
+    `${key}: repository metadata is incomplete or incorrect`,
+  );
+  assert(
+    manifest.homepage === "https://github.com/drakeshard/web-foundation#readme",
+    `${key}: homepage metadata is incomplete or incorrect`,
+  );
+  assert(
+    manifest.bugs?.url === "https://github.com/drakeshard/web-foundation/issues",
+    `${key}: bugs metadata is incomplete or incorrect`,
+  );
+  assert(
+    typeof manifest.description === "string" && manifest.description.length > 0,
+    `${key}: description metadata is required`,
+  );
+  assert(
+    Array.isArray(manifest.keywords) && manifest.keywords.length > 0,
+    `${key}: keywords metadata is required`,
+  );
+  assert(fs.existsSync(path.join(spec.dir, "README.md")), `${key}: package README is missing`);
+  assert(fs.existsSync(path.join(spec.dir, "LICENSE")), `${key}: package LICENSE is missing`);
   assert(manifest.type === "module", `${key}: package must remain ESM`);
   assert(
     manifest.sideEffects === false,
