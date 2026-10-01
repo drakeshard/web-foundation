@@ -236,8 +236,14 @@ function assertInstalledPackageShape(packageDir, expectedName, expectedVersion, 
     `${expectedName}: installed export surface mismatch`,
   );
   assert(fs.existsSync(path.join(packageDir, "dist")), `${expectedName}: dist missing`);
-  assert(fs.existsSync(path.join(packageDir, "README.md")), `${expectedName}: README missing from package`);
-  assert(fs.existsSync(path.join(packageDir, "LICENSE")), `${expectedName}: LICENSE missing from package`);
+  assert(
+    fs.existsSync(path.join(packageDir, "README.md")),
+    `${expectedName}: README missing from package`,
+  );
+  assert(
+    fs.existsSync(path.join(packageDir, "LICENSE")),
+    `${expectedName}: LICENSE missing from package`,
+  );
   assert(manifest.license === "Apache-2.0", `${expectedName}: license metadata mismatch`);
   assert(
     manifest.publishConfig?.access === "public",
