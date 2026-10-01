@@ -132,6 +132,22 @@ If a future networking boundary is admitted, its protocol compatibility/version 
 | `gameVersion` | opaque string in `SaveEnvelope` | Game/application | game/application release |
 | `protocolVersion` | deferred | future networking boundary | future wire-protocol incompatibility |
 
+## Public API baseline
+
+The approved package subpaths and declaration-level exported symbol names are checked into `docs/release/public-api-baseline.json`.
+
+Normal CI and npm publication run `pnpm test:public-api` after the TypeScript build. The validator compares the current package `exports` maps exactly as authored and resolves every built public declaration entry through the existing TypeScript compiler API to capture all exported public symbol names. Private implementation files and non-exported symbols are therefore outside the baseline.
+
+For an intentional approved public API change:
+
+1. make the implementation and package/export change;
+2. apply the normal compatibility/versioning review, especially for removals or renames;
+3. run `pnpm build`;
+4. run `node scripts/validate-public-api.mjs --write`;
+5. review and commit the resulting `docs/release/public-api-baseline.json` diff in the same pull request.
+
+Updating the baseline records the reviewed surface; it does not by itself approve a breaking change or determine semantic versioning.
+
 ## Compatibility review rule
 
 A release change must identify which compatibility dimensions actually changed.
