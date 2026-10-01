@@ -12,7 +12,8 @@
     "check:architecture": "node scripts/check-architecture.mjs",
     "typecheck": "tsc -b",
     "test": "vitest run --passWithNoTests",
-    "test:e2e": "playwright test",
+    "test:e2e": "playwright test --project=chromium",
+    "test:e2e:compat": "playwright test --project=firefox-compat --project=webkit-compat",
     "build": "tsc -b && pnpm --filter @drakeshard/renderer-probe-app build",
     "verify": "pnpm check && pnpm typecheck && pnpm test && pnpm build && pnpm test:e2e"
   },

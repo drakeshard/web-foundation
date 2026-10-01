@@ -1,5 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
 
+const compatibilityTest = /browser-compatibility\.spec\.ts/;
+
 export default defineConfig({
   testDir: "./tests/e2e",
   fullyParallel: true,
@@ -13,7 +15,18 @@ export default defineConfig({
   projects: [
     {
       name: "chromium",
+      testIgnore: compatibilityTest,
       use: { ...devices["Desktop Chrome"] },
+    },
+    {
+      name: "firefox-compat",
+      testMatch: compatibilityTest,
+      use: { ...devices["Desktop Firefox"] },
+    },
+    {
+      name: "webkit-compat",
+      testMatch: compatibilityTest,
+      use: { ...devices["Desktop Safari"] },
     },
   ],
   webServer: [
