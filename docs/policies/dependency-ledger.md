@@ -58,3 +58,20 @@ Security/runtime review: PlayCanvas owns only browser presentation and scene obj
 ## Review requirements
 
 A dependency change must satisfy `docs/policies/dependencies.md` and update this ledger in the same pull request when the approved dependency set changes.
+
+
+## S07-08 v0.1 release review
+
+The Sprint 07 release-surface review rechecked the lockfile/importer split and approved dependency
+boundaries after both renderer probes and the cross-renderer pressure test.
+
+- `@drakeshard/foundation` still has exactly one external runtime dependency: `idb` 8.0.3.
+- `@drakeshard/testing` adds no external runtime dependency; Foundation is a workspace development
+  dependency for deterministic test composition.
+- Phaser, PlayCanvas, Preact, and `@preact/signals` remain dependencies of the private
+  renderer-probe application only.
+- Development tooling remains outside shipped Foundation runtime code.
+- No new shared package or renderer adapter is admitted by S07-08.
+
+The detailed public-surface and extraction evidence is recorded in
+`docs/architecture/sprint-07-v01-surface-review.md`.

@@ -5,7 +5,6 @@ export type SaveSlotId = string;
 export type SaveFormatVersion = number;
 export type GameVersion = string;
 export type ContentVersion = string;
-export type FoundationVersion = string;
 
 export type JsonPrimitive = boolean | number | string | null;
 export type JsonValue =
