@@ -2,24 +2,20 @@
 
 ## Status
 
-S08-05 / #89 records the original v0.1 GitHub Release tarball decision.
+Sprint 09 supersedes the original S08-05 external-consumption decision for normal consumers.
 
-Sprint 09 supersedes the earlier "no npm publication required" completion assumption: the project owner now requires public npm registry availability before Web Foundation is considered fully complete. Until S09-04 succeeds, the existing `v0.1.0` GitHub Release tarballs remain the working external consumer path. The npm publication candidate is `0.1.1` because publication/licensing metadata changes the package artifacts and the existing `v0.1.0` release must remain immutable.
-
-This decision selects the least-complex mechanism that can serve the first production consumer without assuming a public package registry or coupling consumption to the Foundation repository workspace.
+The original `v0.1.0` GitHub Release tarballs remain immutable release history and fallback evidence. Public npm registry publication is now the primary external distribution mechanism. `@drakeshard/foundation@0.1.1` and `@drakeshard/testing@0.1.1` have been published and successfully installed by package name in a clean external consumer.
 
 ## Decision
 
-Web Foundation v0.1 will be distributed as **versioned package tarballs attached to the GitHub Release for the v0.1 tag**.
+Web Foundation's normal external distribution channel is the **public npm registry**.
 
-The release will contain one packed artifact for each approved shared package:
+The approved packages are:
 
 - `@drakeshard/foundation`;
 - `@drakeshard/testing`.
 
-The canonical compatibility point remains the repository release tag. Consumers install the package tarballs from that tagged GitHub Release rather than importing repository source paths.
-
-That statement describes the original v0.1.0 release decision only. Sprint 09 explicitly approves public npm publication of the two existing shared packages after namespace, licensing, package-content, and registry-consumer gates pass.
+Consumers install reviewed package versions by package name and commit their own lockfiles. GitHub Releases continue to provide repository release history, release notes, and optional packed-asset evidence; they are not the preferred package-resolution mechanism.
 
 ## Why this mechanism
 

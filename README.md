@@ -34,6 +34,7 @@ See:
 - `docs/guides/v0.1-usage.md`
 - `docs/release/versioning.md`
 - `docs/release/distribution.md`
+- `docs/release/npm-publishing.md`
 - `docs/release/rc-validation.md`
 - `docs/release/first-game-integration.md`
 - `docs/release/first-game-readiness.md`
@@ -46,7 +47,7 @@ See:
 
 ## Current phase
 
-Sprint 09 — npm Publication and Release Automation is active as the owner-defined final distribution/completion gate. The original `v0.1.0` GitHub Release remains valid release history; the current `0.1.1` publication candidate adds Apache-2.0 licensing and npm package metadata without changing the reviewed runtime API. After npm publication is complete, Foundation returns to production-evidence-driven evolution.
+Sprint 09 — npm Publication and Release Automation is active. `@drakeshard/foundation@0.1.1` and `@drakeshard/testing@0.1.1` are publicly available from npm and validated from a clean external consumer. Remaining Sprint 09 work is trusted-publisher/provenance setup plus final documentation/completion review.
 
 
 ## License

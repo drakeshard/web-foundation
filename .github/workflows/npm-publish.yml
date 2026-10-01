@@ -1,0 +1,95 @@
+name: Publish npm packages
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: npm-publish-${{ github.event.release.tag_name }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Publish npm
+    if: startsWith(github.event.release.tag_name, 'v')
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout release tag
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.release.tag_name }}
+
+      - name: Setup Node
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version-file: .node-version
+          registry-url: https://registry.npmjs.org
+          package-manager-cache: false
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Verify publication candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          VERSION="${{ github.event.release.tag_name }}"
+          VERSION="${VERSION#v}"
+
+          ROOT_VERSION="$(node -p "require('./package.json').version")"
+          FOUNDATION_VERSION="$(node -p "require('./packages/foundation/package.json').version")"
+          TESTING_VERSION="$(node -p "require('./packages/testing/package.json').version")"
+
+          test "$ROOT_VERSION" = "$VERSION"
+          test "$FOUNDATION_VERSION" = "$VERSION"
+          test "$TESTING_VERSION" = "$VERSION"
+
+          pnpm check
+          pnpm typecheck
+          pnpm test
+          pnpm build
+          pnpm test:consumer
+          pnpm test:release-candidate
+
+      - name: Pack reviewed packages
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p release-artifacts
+          pnpm --dir packages/foundation pack --pack-destination ../../release-artifacts
+          pnpm --dir packages/testing pack --pack-destination ../../release-artifacts
+          ls -la release-artifacts
+
+      - name: Publish Foundation
+        shell: bash
+        run: |
+          set -euo pipefail
+          VERSION="${{ github.event.release.tag_name }}"
+          VERSION="${VERSION#v}"
+
+          if npm view "@drakeshard/foundation@${VERSION}" version >/dev/null 2>&1; then
+            echo "@drakeshard/foundation@${VERSION} already exists; skipping."
+          else
+            npm publish "release-artifacts/drakeshard-foundation-${VERSION}.tgz" --access public
+          fi
+
+      - name: Publish Testing
+        shell: bash
+        run: |
+          set -euo pipefail
+          VERSION="${{ github.event.release.tag_name }}"
+          VERSION="${VERSION#v}"
+
+          if npm view "@drakeshard/testing@${VERSION}" version >/dev/null 2>&1; then
+            echo "@drakeshard/testing@${VERSION} already exists; skipping."
+          else
+            npm publish "release-artifacts/drakeshard-testing-${VERSION}.tgz" --access public
+          fi
