@@ -78,13 +78,13 @@ try {
   assertInstalledPackageShape(
     path.join(consumerDir, "node_modules/@drakeshard/foundation"),
     "@drakeshard/foundation",
-    "0.1.0",
+    "0.1.1",
     ["./input", "./input/browser", "./random", "./time", "./storage", "./storage/browser"],
   );
   assertInstalledPackageShape(
     path.join(consumerDir, "node_modules/@drakeshard/testing"),
     "@drakeshard/testing",
-    "0.1.0",
+    "0.1.1",
     ["./clock"],
   );
 
@@ -236,6 +236,17 @@ function assertInstalledPackageShape(packageDir, expectedName, expectedVersion, 
     `${expectedName}: installed export surface mismatch`,
   );
   assert(fs.existsSync(path.join(packageDir, "dist")), `${expectedName}: dist missing`);
+  assert(fs.existsSync(path.join(packageDir, "README.md")), `${expectedName}: README missing from package`);
+  assert(fs.existsSync(path.join(packageDir, "LICENSE")), `${expectedName}: LICENSE missing from package`);
+  assert(manifest.license === "Apache-2.0", `${expectedName}: license metadata mismatch`);
+  assert(
+    manifest.publishConfig?.access === "public",
+    `${expectedName}: public npm publish configuration missing`,
+  );
+  assert(
+    !JSON.stringify(manifest).includes("workspace:"),
+    `${expectedName}: workspace protocol leaked into packed manifest`,
+  );
   assert(
     !fs.existsSync(path.join(packageDir, "src")),
     `${expectedName}: source files leaked into package`,
