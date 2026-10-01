@@ -63,10 +63,7 @@ export function runCrossRendererScenario(): CrossRendererScenarioResult {
   };
 }
 
-function checksumScenarioResult(
-  domain: ToyDomainSnapshot,
-  random: DeterministicRngState,
-): string {
+function checksumScenarioResult(domain: ToyDomainSnapshot, random: DeterministicRngState): string {
   const serialized = JSON.stringify({ domain, random });
   let hash = 0x811c_9dc5;
 
