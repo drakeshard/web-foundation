@@ -93,3 +93,11 @@ jobs:
           else
             npm publish "release-artifacts/drakeshard-testing-${VERSION}.tgz" --access public
           fi
+
+      - name: Verify npm registry consumption
+        shell: bash
+        run: |
+          set -euo pipefail
+          VERSION="${{ github.event.release.tag_name }}"
+          VERSION="${VERSION#v}"
+          node scripts/validate-npm-registry.mjs "$VERSION"
