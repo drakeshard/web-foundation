@@ -8,7 +8,7 @@ This document reconciles the version concepts that are operational in the v0.1 i
 
 ## Foundation package version
 
-The release-candidate manifests for both approved shared packages currently declare `0.1.0`:
+The current publication-candidate manifests for both approved shared packages declare `0.1.1`:
 
 - `@drakeshard/foundation`;
 - `@drakeshard/testing`.
@@ -26,7 +26,7 @@ The package version identifies the shipped package/API release. It does **not** 
 
 The package version is not persisted inside `SaveEnvelope` and does not drive `SaveMigrationRegistry`.
 
-S08-08 / #92 owns the formal v0.1 tag/release after release-candidate validation. S08-05 / #89 selects versioned package tarballs attached to that GitHub Release as the v0.1 cross-repository distribution mechanism. The manifests remain `private: true`; no npm or GitHub Packages registry publication is part of v0.1.
+The immutable `v0.1.0` GitHub Release remains the original package-tarball release record. Sprint 09 introduces public npm distribution as an additional owner-defined completion requirement. Because npm publication requires package metadata and licensing changes that were not present in the `v0.1.0` artifacts, the npm publication candidate is `0.1.1` rather than silently publishing different package contents under the existing `0.1.0` version. This is a distribution/metadata-only patch; it does not change the approved runtime API or compatibility-sensitive contracts.
 
 ## Deterministic RNG compatibility
 
@@ -122,7 +122,7 @@ If a future networking boundary is admitted, its protocol compatibility/version 
 
 | Dimension | v0.1 representation | Primary owner | What changes it |
 | --- | --- | --- | --- |
-| Foundation package version | package manifest `0.1.0` | Foundation release process | shipped package/API release |
+| Foundation package version | package manifest `0.1.1` publication candidate; `v0.1.0` remains the original GitHub Release | Foundation release process | shipped package/API release |
 | RNG algorithm version | `xoshiro128starstar-v1` | Foundation random contract | deterministic sequence/state incompatibility |
 | `saveFormatVersion` | non-negative integer | Foundation persistence contract + game migration definitions | persisted save representation requiring migration |
 | `dataSchemaVersion` | application-defined | Game/application | application-owned data schema compatibility |
@@ -146,7 +146,7 @@ Do not increment or conflate unrelated dimensions merely because another version
 
 The v0.1 record is backed by:
 
-- package manifests declaring `0.1.0`;
+- current package manifests declaring `0.1.1` for npm publication preparation, with the original `v0.1.0` GitHub Release retained as immutable release history;
 - deterministic RNG golden-vector/snapshot tests;
 - `SaveMigrationRegistry` sequential-version enforcement;
 - browser persistence tests covering migration, unsupported versions, corruption, and source preservation;
